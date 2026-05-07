@@ -6,8 +6,6 @@ Run one command on a target machine → get a JSON file with sign / verify /
 aggregate timings plus CPU and memory usage, committed back to this repo →
 GitHub Pages renders it with charts grouped by machine.
 
-Live site: _configure once Pages is enabled; see [deploy](#deploy) below._
-
 ## Three workload groups
 
 1. **leanSig** (the research crate at `leanEthereum/leanSig`, variant
