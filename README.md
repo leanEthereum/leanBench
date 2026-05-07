@@ -181,9 +181,9 @@ leanBench/
 │  ├─ bench.py                   invokes binary, samples resources, writes JSON
 │  ├─ sysinfo.py                 CPU / RAM / OS detection + fingerprint
 │  └─ sampler.py                 psutil-based CPU/memory polling
-├─ runner-rust/                  Rust workload binary
+├─ workloads/                    Rust binary, one subcommand per workload → JSON stdout
 │  ├─ Cargo.toml                 pins leanSig + leanMultisig SHAs
-│  └─ crates/lean-bench-runner/  one subcommand per workload → JSON stdout
+│  └─ src/main.rs                workload dispatch + per-sample timing
 ├─ scripts/
 │  ├─ build_index.py             scans results/*.json → results/index.json (CI)
 │  └─ dev_server.py              live-reload preview (uv run serve)

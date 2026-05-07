@@ -410,12 +410,12 @@ def _detect_repo_url() -> str | None:
 
 def _discover_signers_cache() -> Path | None:
     """Find a local benchmark_signers_cache_<footprint>.bin matching the
-    pinned leanMultisig SHA in runner-rust/Cargo.toml. The cache file is
+    pinned leanMultisig SHA in workloads/Cargo.toml. The cache file is
     content-addressed by the hash of signer #0's pubkey, so it's stable
     across leanMultisig SHAs as long as the XMSS scheme params don't change
     — but we still narrow to the pinned-SHA checkout dir to avoid grabbing
     a stale file from an older Rust toolchain or build."""
-    cargo_toml = Path("runner-rust/Cargo.toml")
+    cargo_toml = Path("workloads/Cargo.toml")
     if not cargo_toml.is_file():
         return None
     text = cargo_toml.read_text()

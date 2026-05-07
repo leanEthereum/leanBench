@@ -5,10 +5,10 @@
 use std::{env, fs, path::PathBuf};
 
 fn main() {
-    let workspace_cargo = workspace_root().join("Cargo.toml");
-    println!("cargo:rerun-if-changed={}", workspace_cargo.display());
+    let cargo_toml = manifest_dir().join("Cargo.toml");
+    println!("cargo:rerun-if-changed={}", cargo_toml.display());
 
-    let Ok(text) = fs::read_to_string(&workspace_cargo) else { return };
+    let Ok(text) = fs::read_to_string(&cargo_toml) else { return };
 
     if let Some(rev) = find_rev(&text, "leansig") {
         println!("cargo:rustc-env=LEANSIG_SHA={rev}");
@@ -18,11 +18,8 @@ fn main() {
     }
 }
 
-fn workspace_root() -> PathBuf {
-    let mut p = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
-    p.pop();
-    p.pop();
-    p
+fn manifest_dir() -> PathBuf {
+    PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap())
 }
 
 fn find_rev(text: &str, dep_name: &str) -> Option<String> {

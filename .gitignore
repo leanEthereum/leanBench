@@ -1,4 +1,4 @@
-/runner-rust/target
+/workloads/target
 Cargo.lock.local
 *.swp
 .DS_Store

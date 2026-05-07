@@ -1,4 +1,4 @@
-//! lean-bench-runner — single binary that runs one workload per invocation
+//! lean-bench-workloads — single binary that runs one workload per invocation
 //! and prints a JSON record of per-sample timings on stdout.
 //!
 //! The Python orchestrator wraps each invocation to sample CPU and memory,

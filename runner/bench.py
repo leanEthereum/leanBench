@@ -103,7 +103,7 @@ def select_workloads(args) -> list[tuple[str, str, int | None]]:
     ]
 
 
-RUST_DIR = ROOT / "runner-rust"
+RUST_DIR = ROOT / "workloads"
 
 
 def build_runner() -> Path:
@@ -120,17 +120,17 @@ def build_runner() -> Path:
     `.cargo/config.toml` — that config doesn't apply when leanMultisig is
     consumed as a git dep, so we set it here instead.
     """
-    print("Building lean-bench-runner (release)...", flush=True)
+    print("Building lean-bench-workloads (release)...", flush=True)
     env = {**os.environ, "RUSTFLAGS": "-C target-cpu=native"}
     r = subprocess.run(
-        ["cargo", "build", "--release", "--bin", "lean-bench-runner",
+        ["cargo", "build", "--release", "--bin", "lean-bench-workloads",
          "--manifest-path", str(RUST_DIR / "Cargo.toml")],
         cwd=ROOT,
         env=env,
     )
     if r.returncode != 0:
         sys.exit("cargo build failed")
-    return RUST_DIR / "target" / "release" / "lean-bench-runner"
+    return RUST_DIR / "target" / "release" / "lean-bench-workloads"
 
 
 def run_workload(binary: Path, subcmd: str, samples: int, warmup: int) -> dict:

@@ -1056,7 +1056,7 @@ async function renderRun() {
   const t = rec.toolchain || {};
   // GitHub `tree/<sha>` shows the working dir at that commit — better than
   // `commit/<sha>` which shows just the diff. Both SHAs are pinned to the
-  // upstream leanEthereum repos via runner-rust/Cargo.toml.
+  // upstream leanEthereum repos via workloads/Cargo.toml.
   const treeBase = (repo) => `https://github.com/leanEthereum/${repo}/tree/`;
   const provEntries = [
     ["rustc",            t.rustc, null],
