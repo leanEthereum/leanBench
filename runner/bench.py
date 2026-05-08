@@ -20,6 +20,7 @@ import math
 import os
 import subprocess
 import sys
+from dataclasses import dataclass, field
 from pathlib import Path
 
 from runner import sysinfo
@@ -28,8 +29,17 @@ from runner.sampler import ResourceSampler
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 
-# (cli-subcommand, workload-name, include-in-default-set, samples-override)
-#
+@dataclass(frozen=True)
+class Workload:
+    # argv passed to the Rust binary; aggregates take positional `n` (flat)
+    # or `fan n` (tree).
+    cli_args: list[str]
+    # workload identifier emitted in the JSON record (`workload` field).
+    name: str
+    in_default_set: bool = field(kw_only=True)
+    samples_override: int | None = field(default=None, kw_only=True)
+
+
 # xmss.sign uses rejection sampling against the WOTS+ TargetSum constraint;
 # the per-sign cost is geometric and stays heavy-tailed (cv ≈ 0.85 across
 # every machine in the matrix) regardless of how high the acceptance rate
@@ -42,29 +52,26 @@ ROOT = HERE.parent
 # that pushed acceptance to ≈ 1 in 2.3k attempts and the mean to ~220 ms.
 # The grinding lock was removed in the 123 → 124 bit security rework, so
 # the mean dropped ~45× — but the cv is unchanged.)
-# Each row: (cli_args, workload_name, in_default_set, samples_override).
-# `cli_args` is the argv passed to the Rust binary; for aggregate workloads
-# the binary takes positional `n` (flat) or `fan n` (tree).
-ALL_WORKLOADS: list[tuple[list[str], str, bool, int | None]] = [
-    (["leansig-keygen"],       "leansig.keygen",          False, None),
-    (["leansig-sign"],          "leansig.sign",            True,  None),
-    (["leansig-verify"],        "leansig.verify",          True,  None),
-    (["xmss-keygen"],           "xmss.keygen",             False, None),
-    (["xmss-sign"],             "xmss.sign",               True,  300),
-    (["xmss-verify"],           "xmss.verify",             True,  None),
-    (["aggregate-flat", "125"],  "aggregate.flat_125_r2",   True,  None),
-    (["aggregate-flat", "250"],  "aggregate.flat_250_r2",   True,  None),
-    (["aggregate-flat", "500"],  "aggregate.flat_500_r2",   True,  None),
-    (["aggregate-flat", "1000"], "aggregate.flat_1000_r2",  True,  None),
-    (["aggregate-tree", "2", "125"], "aggregate.tree_2x125_r2", True, None),
-    (["aggregate-tree", "2", "250"], "aggregate.tree_2x250_r2", True, None),
-    (["aggregate-tree", "2", "500"], "aggregate.tree_2x500_r2", True, None),
-    (["aggregate-tree", "4", "125"], "aggregate.tree_4x125_r2", True, None),
-    (["aggregate-tree", "4", "250"], "aggregate.tree_4x250_r2", True, None),
-    (["aggregate-tree", "4", "500"], "aggregate.tree_4x500_r2", True, None),
-    (["aggregate-tree", "8", "125"], "aggregate.tree_8x125_r2", True, None),
-    (["aggregate-tree", "8", "250"], "aggregate.tree_8x250_r2", True, None),
-    (["aggregate-tree", "8", "500"], "aggregate.tree_8x500_r2", True, None),
+ALL_WORKLOADS: list[Workload] = [
+    Workload(["leansig-keygen"],            "leansig.keygen",          in_default_set=False),
+    Workload(["leansig-sign"],              "leansig.sign",            in_default_set=True),
+    Workload(["leansig-verify"],            "leansig.verify",          in_default_set=True),
+    Workload(["xmss-keygen"],               "xmss.keygen",             in_default_set=False),
+    Workload(["xmss-sign"],                 "xmss.sign",               in_default_set=True, samples_override=300),
+    Workload(["xmss-verify"],               "xmss.verify",             in_default_set=True),
+    Workload(["aggregate-flat", "125"],     "aggregate.flat_125_r2",   in_default_set=True),
+    Workload(["aggregate-flat", "250"],     "aggregate.flat_250_r2",   in_default_set=True),
+    Workload(["aggregate-flat", "500"],     "aggregate.flat_500_r2",   in_default_set=True),
+    Workload(["aggregate-flat", "1000"],    "aggregate.flat_1000_r2",  in_default_set=True),
+    Workload(["aggregate-tree", "2", "125"], "aggregate.tree_2x125_r2", in_default_set=True),
+    Workload(["aggregate-tree", "2", "250"], "aggregate.tree_2x250_r2", in_default_set=True),
+    Workload(["aggregate-tree", "2", "500"], "aggregate.tree_2x500_r2", in_default_set=True),
+    Workload(["aggregate-tree", "4", "125"], "aggregate.tree_4x125_r2", in_default_set=True),
+    Workload(["aggregate-tree", "4", "250"], "aggregate.tree_4x250_r2", in_default_set=True),
+    Workload(["aggregate-tree", "4", "500"], "aggregate.tree_4x500_r2", in_default_set=True),
+    Workload(["aggregate-tree", "8", "125"], "aggregate.tree_8x125_r2", in_default_set=True),
+    Workload(["aggregate-tree", "8", "250"], "aggregate.tree_8x250_r2", in_default_set=True),
+    Workload(["aggregate-tree", "8", "500"], "aggregate.tree_8x500_r2", in_default_set=True),
 ]
 
 
@@ -87,19 +94,15 @@ def parse_args():
     return ap.parse_args()
 
 
-def select_workloads(args) -> list[tuple[list[str], str, int | None]]:
+def select_workloads(args) -> list[Workload]:
     if args.only:
         requested = set(args.only)
-        selected = [(cli, name, ovr) for (cli, name, _, ovr) in ALL_WORKLOADS if name in requested]
-        missing = requested - {name for (_, name, _) in selected}
+        selected = [w for w in ALL_WORKLOADS if w.name in requested]
+        missing = requested - {w.name for w in selected}
         if missing:
             sys.exit(f"unknown workload(s): {', '.join(sorted(missing))}")
         return selected
-    return [
-        (cli, name, ovr)
-        for (cli, name, default, ovr) in ALL_WORKLOADS
-        if default or args.include_keygen
-    ]
+    return [w for w in ALL_WORKLOADS if w.in_default_set or args.include_keygen]
 
 
 RUST_DIR = ROOT / "workloads"
@@ -224,15 +227,15 @@ def main():
 
     workloads_to_run = select_workloads(args)
     print(f"Running {len(workloads_to_run)} workload(s): "
-          f"{', '.join(name for _, name, _ in workloads_to_run)}")
+          f"{', '.join(w.name for w in workloads_to_run)}")
     print()
 
     workload_results = []
-    for cli_args, name, samples_override in workloads_to_run:
-        n = samples_override if samples_override is not None else args.samples
-        suffix = f" (n={n})" if samples_override is not None else ""
-        print(f"  → {name}{suffix} ...", end="", flush=True)
-        rec = run_workload(binary, cli_args, n, args.warmup)
+    for w in workloads_to_run:
+        n = w.samples_override if w.samples_override is not None else args.samples
+        suffix = f" (n={n})" if w.samples_override is not None else ""
+        print(f"  → {w.name}{suffix} ...", end="", flush=True)
+        rec = run_workload(binary, w.cli_args, n, args.warmup)
         if rec:
             mean_ms = rec["timing"]["mean_ns"] / 1e6
             print(f" {mean_ms:.2f} ms (n={rec['timing']['n']})")
