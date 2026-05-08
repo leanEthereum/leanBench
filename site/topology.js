@@ -639,12 +639,11 @@ function fitCostModel(machine) {
   for (const [N, vs] of recByFanIn) recPoints.push({ x: N, y: mean(vs) });
   for (const [N, vs] of proofByFanIn) proofPoints.push({ x: N, y: mean(vs) });
 
-  // xmss.sign is single-thread, machine-level, and used for slot timing
-  // suggestions. Pull both mean and p95; the per-row attest-interval
-  // suggestion uses p95 since the rejection-sampling distribution is
-  // heavy-tailed (cv ≈ 0.85) and mean understates the worst-case attester.
+  // xmss.sign is single-thread, machine-level, and used for the per-row
+  // attest-interval suggestion. Use p95 — the rejection-sampling
+  // distribution is heavy-tailed (cv ≈ 0.85) and the mean understates
+  // the worst-case attester.
   const xmss = (latest.workloads || []).find((w) => w.name === "xmss.sign");
-  const signMs = xmss?.mean_ns != null ? xmss.mean_ns / 1e6 : null;
   const signP95Ms = xmss?.p95_ns != null ? xmss.p95_ns / 1e6 : null;
 
   return {
@@ -652,7 +651,7 @@ function fitCostModel(machine) {
     flat:  linearFit(flatPoints,  "ms",  "M", "raw_xmss per leaf"),
     rec:   linearFit(recPoints,   "ms",  "N", "fan-in"),
     proof: linearFit(proofPoints, "KiB", "N", "fan-in"),
-    signMs, signP95Ms,
+    signP95Ms,
   };
 }
 
