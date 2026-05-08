@@ -96,11 +96,15 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         self.send_header("Cache-Control", "no-store")
         super().end_headers()
 
-    def log_message(self, fmt, *args):
-        # Quieter than the default one-line-per-request log. Still show errors.
-        rendered = fmt % args
-        if " 4" in rendered or " 5" in rendered:
-            sys.stderr.write("%s - %s\n" % (self.address_string(), rendered))
+    def log_request(self, code="-", size="-"):
+        # Quieter than the default one-line-per-request log: skip 2xx and
+        # 3xx, let everything else (4xx, 5xx, errors) fall through.
+        try:
+            if 200 <= int(code) < 400:
+                return
+        except (TypeError, ValueError):
+            pass
+        super().log_request(code, size)
 
 
 class _Server(socketserver.ThreadingTCPServer):

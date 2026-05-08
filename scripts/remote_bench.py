@@ -96,8 +96,9 @@ def main():
                     help="Path to a local benchmark_signers_cache_<hash>.bin file to "
                          "pre-upload to each VM. Skips the ~few-minute lazy regen on "
                          "first bench. If omitted, auto-discovered from "
-                         "~/.cargo/git/checkouts/leanmultisig-*/<sha>*/target/signers-cache/. "
-                         "Pass --signers-cache '' to disable upload.")
+                         "~/.cargo/git/checkouts/leanmultisig-*/<sha>*/target/signers-cache/.")
+    ap.add_argument("--no-signers-cache", action="store_true",
+                    help="Disable signers-cache upload (override auto-discovery).")
     args = ap.parse_args()
 
     if not args.credentials.is_file():
@@ -117,19 +118,19 @@ def main():
         if not args.repo_url:
             sys.exit("could not auto-detect --repo-url; pass it explicitly")
 
-    # Resolve the signers-cache: explicit empty string disables upload; None
-    # triggers auto-discovery; explicit path is taken as-is. Resolution is
-    # logged once here so per-VM noise stays minimal.
-    if args.signers_cache is None:
+    # Resolve the signers-cache: --no-signers-cache disables; --signers-cache
+    # PATH is taken as-is; otherwise auto-discover. Logged once here so
+    # per-VM noise stays minimal.
+    if args.no_signers_cache:
+        args.signers_cache = None
+        print("signers-cache: disabled by --no-signers-cache")
+    elif args.signers_cache is None:
         args.signers_cache = _discover_signers_cache()
         if args.signers_cache:
             size_mb = args.signers_cache.stat().st_size / (1024 * 1024)
             print(f"signers-cache (auto): {args.signers_cache} ({size_mb:.1f} MiB)")
         else:
             print("signers-cache (auto): none found — VMs will regen on first bench")
-    elif str(args.signers_cache) == "":
-        args.signers_cache = None
-        print("signers-cache: disabled by --signers-cache ''")
     elif not args.signers_cache.is_file():
         sys.exit(f"--signers-cache file not found: {args.signers_cache}")
 

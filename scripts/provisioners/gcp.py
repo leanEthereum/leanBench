@@ -91,7 +91,8 @@ class GCPProvisioner:
             )
             if r.returncode == 0:
                 return
-            last_err = (r.stderr or "").strip().splitlines()[-1:][0:1]
+            lines = (r.stderr or "").strip().splitlines()
+            last_err = lines[-1] if lines else ""
             time.sleep(5)
         raise RuntimeError(f"SSH not ready after {timeout_s}s: {last_err}")
 

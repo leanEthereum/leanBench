@@ -29,6 +29,10 @@ def build_index(results_dir: Path) -> dict:
         runs.append(_summarize(rec, f.name))
 
     machines: dict[str, dict] = {}
+    # Track the newest timestamp seen per fingerprint so we can pick the
+    # "current" label without injecting bookkeeping fields into the public
+    # machine dict.
+    latest_ts: dict[str, str] = {}
     for r in runs:
         fp = r["machine"]["fingerprint"]
         m = machines.setdefault(fp, {
@@ -41,9 +45,9 @@ def build_index(results_dir: Path) -> dict:
             "os": r["machine"].get("os"),
             "runs": [],
         })
-        if r["timestamp"] >= m.get("_latest_ts", ""):
+        if r["timestamp"] >= latest_ts.get(fp, ""):
             m["label"] = r["machine"].get("label", m["label"])
-            m["_latest_ts"] = r["timestamp"]
+            latest_ts[fp] = r["timestamp"]
         m["runs"].append({
             "run_id": r["run_id"],
             "timestamp": r["timestamp"],
@@ -52,7 +56,6 @@ def build_index(results_dir: Path) -> dict:
             "workloads": r["workloads"],
         })
     for m in machines.values():
-        m.pop("_latest_ts", None)
         m["runs"].sort(key=lambda x: x["timestamp"], reverse=True)
 
     # Sort machines by physical core count (ascending), then label
