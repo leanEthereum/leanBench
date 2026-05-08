@@ -81,8 +81,6 @@ def parse_args():
                          "semantics if you list them explicitly.")
     ap.add_argument("--notes", default="",
                     help="Free-form note attached to the run record")
-    ap.add_argument("--release", action="store_true", default=True,
-                    help="Build the runner in release mode (default on)")
     return ap.parse_args()
 
 
