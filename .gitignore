@@ -1,5 +1,4 @@
 /workloads/target
-Cargo.lock.local
 *.swp
 .DS_Store
 **/__pycache__
