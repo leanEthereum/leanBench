@@ -18,9 +18,6 @@ from typing import Any, Protocol
 
 @dataclass
 class InstanceSpec:
-    """Cloud-agnostic VM creation request. Fields are interpreted by the
-    concrete provisioner; for example, `image_family` is a GCP concept and
-    the AWS provisioner would map it to an AMI name pattern."""
     name: str
     machine_type: str
     image_family: str
@@ -32,8 +29,8 @@ class InstanceSpec:
 
 @dataclass
 class Instance:
-    """Handle returned by `create()`. Opaque to the orchestrator beyond
-    `name`; everything provider-specific lives in `data`."""
+    # Opaque to the orchestrator beyond `name`; everything provider-
+    # specific lives in `data` (e.g. GCP `zone`, AWS `region` + `instance_id`).
     name: str
     data: dict[str, Any] = field(default_factory=dict)
 
@@ -49,6 +46,7 @@ class Provisioner(Protocol):
     def ssh_capture(self, inst: Instance, cmd: str) -> str: ...
     # `remote` is an absolute or home-relative path on the VM.
     def scp_back(self, inst: Instance, remote: str, local: Path) -> None: ...
+    def scp_to(self, inst: Instance, local: Path, remote: str) -> None: ...
     def destroy(self, inst: Instance) -> None: ...
     # Release any provisioner-side resources (e.g. temp config dirs).
     def close(self) -> None: ...
