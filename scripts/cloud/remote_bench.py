@@ -33,8 +33,8 @@ import subprocess
 import sys
 from pathlib import Path
 
-from scripts.provisioners import Instance, InstanceSpec
-from scripts.provisioners.gcp import GCPProvisioner
+from .provisioners import Instance, InstanceSpec
+from .provisioners.gcp import GCPProvisioner
 
 
 # Default machine matrix used when `--machine-type` is not given.

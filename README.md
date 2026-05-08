@@ -7,7 +7,7 @@ aggregate timings plus CPU and memory usage, committed back to this repo →
 GitHub Pages renders it with charts grouped by machine.
 
 Flow: `workloads/` (Rust binary) → `runner/` (Python harness) →
-`results/*.json` → `scripts/build_index.py` → `site/` (static, deployed
+`results/*.json` → `scripts/site/build_index.py` → `site/` (static, deployed
 to Pages).
 
 ## Workload groups
@@ -74,7 +74,7 @@ uv run remote-bench \
 ```
 
 The default matrix is intentionally small and EIP-7870-anchored — defined
-in [`scripts/remote_bench.py`](scripts/remote_bench.py) as
+in [`scripts/cloud/remote_bench.py`](scripts/cloud/remote_bench.py) as
 `DEFAULT_MACHINE_TYPES`.
 
 | Option | Description |
@@ -147,10 +147,13 @@ leanBench/
 │     ├─ main.rs                 workload dispatch + per-sample timing
 │     └─ workloads.rs            per-workload setup and measurement
 ├─ scripts/
-│  ├─ build_index.py             scans results/*.json → results/index.json (CI)
-│  ├─ dev_server.py              live-reload preview (uv run serve)
-│  ├─ remote_bench.py            spin up + tear down cloud VMs (uv run remote-bench)
-│  └─ provisioners/              cloud-provider drivers (currently GCP only)
+│  ├─ site/                      static-site tooling
+│  │  ├─ build_index.py          scans results/*.json → results/index.json (CI)
+│  │  └─ dev_server.py           live-reload preview (uv run serve)
+│  └─ cloud/                     remote-VM orchestration
+│     ├─ remote_bench.py         spin up + tear down cloud VMs (uv run remote-bench)
+│     ├─ remote_setup.sh         bash run on the VM after SSH is up
+│     └─ provisioners/           cloud-provider drivers (currently GCP only)
 ├─ results/                      committed JSON, one file per run
 ├─ site/                         static site (vanilla JS + Chart.js, vendored)
 │  ├─ index.html                 list of machines; cross-machine comparison

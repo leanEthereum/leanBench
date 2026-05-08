@@ -19,7 +19,7 @@ import time
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from scripts.provisioners import Instance, InstanceSpec
+from . import Instance, InstanceSpec
 
 
 @dataclass

@@ -26,7 +26,7 @@ import urllib.parse
 import webbrowser
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parent.parent.parent
 SITE = ROOT / "site"
 RESULTS = ROOT / "results"
 
@@ -35,15 +35,16 @@ def build_index_bytes() -> bytes:
     """Return the current index as JSON bytes (regenerated on every call so
     it always reflects what's on disk).
 
-    Reloads `scripts.build_index` on every request so edits to that module
-    take effect without restarting the dev server. The first import is the
-    only one that triggers Python's module cache; without reload we'd serve
-    stale `build_index` logic for the lifetime of the dev server process,
-    which has bitten us several times when adding new index fields.
+    Reloads `scripts.site.build_index` on every request so edits to that
+    module take effect without restarting the dev server. The first import
+    is the only one that triggers Python's module cache; without reload
+    we'd serve stale `build_index` logic for the lifetime of the dev
+    server process, which has bitten us several times when adding new
+    index fields.
     """
     import importlib
 
-    import scripts.build_index as _build_index_module
+    from . import build_index as _build_index_module
     importlib.reload(_build_index_module)
     return (json.dumps(_build_index_module.build_index(RESULTS), indent=2) + "\n").encode("utf-8")
 

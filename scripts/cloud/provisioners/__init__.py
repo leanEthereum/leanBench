@@ -1,6 +1,6 @@
 """Cloud-agnostic VM provisioning interface.
 
-The orchestrator (`scripts.remote_bench`) drives a `Provisioner` to create a
+The orchestrator (`scripts.cloud.remote_bench`) drives a `Provisioner` to create a
 VM, run a benchmark on it, pull the result file back, and tear down. Each
 concrete provisioner translates the abstract `InstanceSpec` into provider-
 specific calls (gcloud / aws / hetzner / ssh).
