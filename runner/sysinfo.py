@@ -74,9 +74,6 @@ def toolchain() -> dict[str, Any]:
     return {"rustc": rustc}
 
 
-# ---------------------------------------------------------------------------
-
-
 def _cpu_info() -> dict[str, Any]:
     system = platform.system()
     model = "unknown"

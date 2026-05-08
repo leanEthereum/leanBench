@@ -257,7 +257,6 @@ function recompute() {
   renderResults(evaluated, model, totalSigs, leafBudgetMs, slotEnv);
 }
 
-// ---------- topology simulator ---------------------------------------------
 
 function setupSimulator() {
   refreshSimulatorMachines();
@@ -604,7 +603,6 @@ function alignTreeWithTiers() {
   tree.style.marginRight = `${wrapRect.right - tiersRect.right}px`;
 }
 
-// ---------- cost model -----------------------------------------------------
 
 // Pull the latest run's aggregate workloads for a machine, fit linear models
 // for flat(M), r(N), proof(N). Each model returns a { predict, a, b, r2,
@@ -702,7 +700,6 @@ function fmtFit(fit) {
   return `${a.toFixed(1)}${sign}${Math.abs(b).toFixed(2)} × ${fit.xVar}  ${fit.yUnit}`;
 }
 
-// ---------- topology enumeration -------------------------------------------
 
 const ALLOWED_FANINS_ALL = [2, 3, 4, 5, 6, 8, 10, 12, 16, 20, 25, 32, 40];
 const MAX_TIERS = 5;
@@ -784,7 +781,6 @@ function evaluateTopology(t, model, slotEnv) {
   };
 }
 
-// ---------- rendering ------------------------------------------------------
 
 function renderCostModel(model) {
   const grid = document.querySelector("#topo-cost-grid");

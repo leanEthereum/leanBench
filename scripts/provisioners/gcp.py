@@ -40,8 +40,6 @@ class GCPProvisioner:
         self._gcloud("config", "set", "project", self.project, check=True, quiet=True)
         self._activated = True
 
-    # ---- lifecycle --------------------------------------------------------
-
     def close(self) -> None:
         if self.cfg_dir.exists():
             shutil.rmtree(self.cfg_dir, ignore_errors=True)
@@ -51,8 +49,6 @@ class GCPProvisioner:
 
     def __exit__(self, *_) -> None:
         self.close()
-
-    # ---- Provisioner protocol --------------------------------------------
 
     def create(self, spec: InstanceSpec) -> Instance:
         image_project = spec.extras.get("image_project", "ubuntu-os-cloud")
@@ -163,8 +159,6 @@ class GCPProvisioner:
             "--zone", self.zone, "--quiet",
             check=True,
         )
-
-    # ---- internals --------------------------------------------------------
 
     def _env(self) -> dict[str, str]:
         return {**os.environ, "CLOUDSDK_CONFIG": str(self.cfg_dir)}

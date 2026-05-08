@@ -8,7 +8,6 @@ const page = document.body.dataset.page
   || (location.pathname.endsWith("/run.html") ? "run"
       : "index");
 
-// ---------- shared helpers --------------------------------------------------
 
 const fmtNs = (ns) => {
   if (ns == null || Number.isNaN(ns)) return "—";
@@ -102,7 +101,6 @@ const chartTheme = () => {
     .getPropertyValue("--sans") || "-apple-system, sans-serif";
 })();
 
-// ---------- INDEX page ------------------------------------------------------
 
 // Active (leansig, leanmultisig) SHA pair. Runs from other combos are hidden
 // from the stats row, compare charts, and machine cards. Defaults to the
@@ -1009,7 +1007,6 @@ function renderMachineCard(m) {
   return card;
 }
 
-// ---------- RUN detail page -------------------------------------------------
 
 async function renderRun() {
   const params = new URLSearchParams(location.search);
@@ -1172,7 +1169,6 @@ function renderWorkload(w, idx) {
   return card;
 }
 
-// ---------- dispatch --------------------------------------------------------
 
 if (page === "run") renderRun();
 else if (page === "topology") { /* handled by topology.js */ }

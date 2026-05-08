@@ -144,7 +144,6 @@ def main():
         if not args.project:
             sys.exit("--project not given and credentials JSON has no project_id field")
 
-    # ---- decide which machines to bench ---------------------------------
     if args.machine_type:
         machines = [args.machine_type]
     else:
@@ -157,7 +156,6 @@ def main():
             print("aborted.")
             sys.exit(0)
 
-    # ---- pick + initialise provisioner ----------------------------------
     if args.provider == "gcp":
         prov = GCPProvisioner(
             project=args.project,
