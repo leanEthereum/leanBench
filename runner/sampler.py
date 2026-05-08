@@ -20,10 +20,6 @@ class Sample:
 
 
 class ResourceSampler:
-    """Start a thread that polls `pid` until stop() is called, then compute
-    aggregate statistics.
-    """
-
     def __init__(self, pid: int, interval_ms: float = 100.0):
         self._proc = psutil.Process(pid)
         # Prime cpu_percent — first call returns 0.0 in psutil.

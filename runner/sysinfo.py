@@ -13,6 +13,8 @@ import re
 import subprocess
 from typing import Any
 
+import psutil  # type: ignore
+
 
 def auto_label() -> str:
     """Pick a sensible default --label for this host.
@@ -80,13 +82,8 @@ def _cpu_info() -> dict[str, Any]:
     physical = 0
     logical = 0
 
-    try:
-        import psutil  # type: ignore
-
-        logical = psutil.cpu_count(logical=True) or 0
-        physical = psutil.cpu_count(logical=False) or 0
-    except Exception:
-        pass
+    logical = psutil.cpu_count(logical=True) or 0
+    physical = psutil.cpu_count(logical=False) or 0
 
     if system == "Darwin":
         model = _run(["sysctl", "-n", "machdep.cpu.brand_string"]) or model
@@ -111,12 +108,7 @@ def _cpu_info() -> dict[str, Any]:
 
 
 def _memory_gb() -> float:
-    try:
-        import psutil  # type: ignore
-
-        return round(psutil.virtual_memory().total / (1024**3), 1)
-    except Exception:
-        return 0.0
+    return round(psutil.virtual_memory().total / (1024**3), 1)
 
 
 def _os_info() -> dict[str, Any]:

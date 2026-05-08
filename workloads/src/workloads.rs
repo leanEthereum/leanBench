@@ -127,7 +127,7 @@ pub mod xmss_wl {
         });
         // One signature for size metadata.
         let sig = xmss_sign(&mut rng, &sk, &msg, BENCHMARK_SLOT).expect("sign");
-        let sig_bytes = postcard::to_allocvec(&sig).unwrap_or_default().len();
+        let sig_bytes = postcard::to_allocvec(&sig).expect("serialize sig").len();
         Ok(make_record(
             "xmss.sign",
             samples,
@@ -146,7 +146,7 @@ pub mod xmss_wl {
         let samples = time_loop(args, || {
             xmss_verify(&pk, &msg, &sig, BENCHMARK_SLOT).expect("verify");
         });
-        let sig_bytes = postcard::to_allocvec(&sig).unwrap_or_default().len();
+        let sig_bytes = postcard::to_allocvec(&sig).expect("serialize sig").len();
         Ok(make_record(
             "xmss.verify",
             samples,

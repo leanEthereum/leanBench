@@ -177,7 +177,7 @@ def main():
             for mt, inst in list(live_instances.items()):
                 try:
                     prov.destroy(inst)
-                except Exception as e:  # noqa: BLE001
+                except Exception as e:
                     print(f"    error destroying {mt}: {e}")
         prov.close()
         sys.exit(130)
@@ -198,7 +198,7 @@ def main():
             )
             if summary:
                 summaries.append(summary)
-        except Exception as e:  # noqa: BLE001
+        except Exception as e:
             print(f"\nerror on {machine_type}: {e}", file=sys.stderr)
             failures.append((machine_type, str(e)))
 
@@ -323,7 +323,7 @@ def run_one_machine(
             print(f"{prefix}==> destroying {inst.name}")
             try:
                 prov.destroy(inst)
-            except Exception as e:  # noqa: BLE001
+            except Exception as e:
                 print(f"{prefix}    error destroying (cleanup manually!): {e}", file=sys.stderr)
             with live_lock:
                 live_instances.pop(machine_type, None)
