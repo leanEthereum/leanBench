@@ -14,22 +14,19 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 clap = { version = "4.5", features = ["derive"] }
 anyhow = "1.0"
-# leanSig is on rand 0.9; leanMultisig xmss is on rand 0.10. They're
-# incompatible types across versions, so we pull both with distinct names.
-rand    = "0.10"
-rand_09 = { package = "rand", version = "0.9" }
+rand = "0.10"
 postcard = { version = "1.1", features = ["alloc"] }
 
 # Pinned upstream SHAs. Bump deliberately.
-# leanSig @ main as of 2026-04-23
-leansig = { git = "https://github.com/leanEthereum/leanSig.git", rev = "16c660e93c60240de113fdca6be7455d6d7721a1" }
+# leanSig @ main as of 2026-05-08
+leansig = { git = "https://github.com/leanEthereum/leanSig.git", rev = "c08a3bae74b0d85379cab72dcbefa4091546ecbb" }
 
-# leanMultisig @ main as of 2026-04-29 — PR #206 (52abd7f2) merged
-# the structured-benchmark API the runner uses to capture per-node
-# proof_kib without parsing stdout.
-xmss            = { git = "https://github.com/leanEthereum/leanMultisig.git", rev = "f5e2299b" }
-rec_aggregation = { git = "https://github.com/leanEthereum/leanMultisig.git", rev = "f5e2299b" }
-backend         = { git = "https://github.com/leanEthereum/leanMultisig.git", rev = "f5e2299b" }
+# leanMultisig @ main as of 2026-05-08. Must include PR #206 (52abd7f2)
+# or later — that's where the structured-benchmark API lives, which
+# the runner uses to capture per-node proof_kib without parsing stdout.
+xmss            = { git = "https://github.com/leanEthereum/leanMultisig.git", rev = "44635cabde097ac7e774297c22dcb447323e6adc" }
+rec_aggregation = { git = "https://github.com/leanEthereum/leanMultisig.git", rev = "44635cabde097ac7e774297c22dcb447323e6adc" }
+backend         = { git = "https://github.com/leanEthereum/leanMultisig.git", rev = "44635cabde097ac7e774297c22dcb447323e6adc" }
 
 [profile.release]
 lto = "thin"

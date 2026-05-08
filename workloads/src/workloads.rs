@@ -11,8 +11,7 @@ pub mod leansig {
     use ::leansig::signature::generalized_xmss::instantiations_poseidon::lifetime_2_to_the_20::target_sum::SIGTargetSumLifetime20W4NoOff as Scheme;
     use ::leansig::signature::{SignatureScheme, SignatureSchemeSecretKey};
     use ::leansig::MESSAGE_LENGTH;
-    // leanSig pins rand 0.9; use the aliased import.
-    use rand_09::{rngs::StdRng, Rng, SeedableRng};
+    use rand::{rngs::StdRng, RngExt, SeedableRng};
 
     const VARIANT: &str = "SIGTargetSumLifetime20W4NoOff";
 
@@ -158,9 +157,8 @@ pub mod xmss_wl {
 
 pub mod aggregate {
     use super::*;
-    use ::rec_aggregation::{
-        benchmark::{run_aggregation_benchmark, BenchmarkReport},
-        AggregationTopology,
+    use ::rec_aggregation::benchmark::{
+        run_aggregation_benchmark, AggregationTopology, BenchmarkReport,
     };
 
     /// Per-node entry for the JSON `proof_kib_by_path` field.
