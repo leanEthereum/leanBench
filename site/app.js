@@ -1031,8 +1031,7 @@ async function renderRun() {
   }
 
   document.querySelector("#run-title").textContent = rec.machine?.label || rec.run_id;
-  document.querySelector("#run-subtitle").textContent =
-    `${fmtDate(rec.timestamp)} · schema v${rec.schema_version ?? "?"}`;
+  document.querySelector("#run-subtitle").textContent = fmtDate(rec.timestamp);
 
   const spec = document.querySelector("#spec-grid");
   spec.className = "grid";

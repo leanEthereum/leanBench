@@ -135,7 +135,6 @@ leanBench/
 │  ├─ build_index.py             scans results/*.json → results/index.json (CI)
 │  └─ dev_server.py              live-reload preview (uv run serve)
 ├─ results/                      committed JSON, one file per run
-├─ schema/v1.json                JSON Schema for current record shape
 ├─ site/                         static site (vanilla JS + Chart.js via CDN)
 │  ├─ index.html                 list of machines; cross-machine comparison
 │  ├─ run.html                   per-run detail with per-workload charts
@@ -144,16 +143,6 @@ leanBench/
 └─ .github/workflows/
    └─ deploy-pages.yml           on push: rebuild index + deploy site to Pages
 ```
-
-## Schema evolution
-
-`schema_version: 1` in every record. **Additive-only** evolution: new
-versions may add fields but must never remove or repurpose existing ones.
-The site branches on `schema_version` where necessary so old records always
-render.
-
-If a field is no longer meaningful in v2+, stop writing it — don't repurpose
-the key.
 
 ## One-time GCP setup (least-privilege)
 

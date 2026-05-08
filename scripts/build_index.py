@@ -48,7 +48,6 @@ def build_index(results_dir: Path) -> dict:
             "run_id": r["run_id"],
             "timestamp": r["timestamp"],
             "file": r["file"],
-            "schema_version": r["schema_version"],
             "git_shas": r["git_shas"],
             "workloads": r["workloads"],
         })
@@ -136,7 +135,6 @@ def _summarize(rec: dict, filename: str) -> dict:
     ]
     shas = (rec.get("toolchain") or {}).get("git_shas") or {}
     return {
-        "schema_version": rec.get("schema_version"),
         "run_id": rec.get("run_id"),
         "timestamp": rec.get("timestamp"),
         "file": filename,

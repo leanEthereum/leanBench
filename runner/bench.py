@@ -28,8 +28,6 @@ from runner.sampler import ResourceSampler
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 
-SCHEMA_VERSION = 1
-
 # (cli-subcommand, workload-name, include-in-default-set, samples-override)
 #
 # xmss.sign uses rejection sampling against the WOTS+ TargetSum constraint;
@@ -245,7 +243,6 @@ def main():
     run_id = f"{timestamp}__{machine['fingerprint']}"
 
     record = {
-        "schema_version": SCHEMA_VERSION,
         "run_id": run_id,
         "timestamp": dt.datetime.now(dt.timezone.utc).isoformat(),
         "machine": machine,
