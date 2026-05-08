@@ -26,6 +26,7 @@ import glob
 import json
 import os
 import re
+import shlex
 import shutil
 import signal
 import subprocess
@@ -49,57 +50,7 @@ DEFAULT_MACHINE_TYPES = [
 ]
 
 
-# Bash run on the VM after SSH is up. Idempotent; designed to survive a
-# re-run on the same VM during debugging.
-SETUP_AND_RUN = r"""
-set -euo pipefail
-
-# Wait out cloud-init before touching apt — avoids dpkg-lock contention
-# during the first ~60s after boot.
-echo '==> [remote] waiting for cloud-init...'
-sudo cloud-init status --wait >/dev/null 2>&1 || true
-
-echo '==> [remote] installing build prerequisites...'
-sudo DEBIAN_FRONTEND=noninteractive apt-get update -qq
-sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq \
-    build-essential git curl ca-certificates pkg-config
-
-if ! command -v cargo >/dev/null 2>&1; then
-    echo '==> [remote] installing rustup...'
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \
-        | sh -s -- -y --default-toolchain stable --profile minimal
-fi
-. "$HOME/.cargo/env"
-
-if ! command -v uv >/dev/null 2>&1; then
-    echo '==> [remote] installing uv...'
-    curl -LsSf https://astral.sh/uv/install.sh | sh
-fi
-export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
-
-if [ ! -d leanBench ]; then
-    echo "==> [remote] cloning {repo_url}"
-    git clone --depth 1 --branch {branch} {repo_url} leanBench
-fi
-cd leanBench
-git fetch origin {branch} --quiet
-git checkout --quiet {branch}
-git reset --hard --quiet origin/{branch}
-
-# leanMultisig generates ~10k XMSS test signatures lazily on first bench
-# invocation (~few minutes on slow VMs). When SIGNERS_CACHE_DIR points at
-# a directory holding a content-addressed cache file pre-uploaded by the
-# orchestrator, the lazy-init loads from disk in milliseconds instead.
-mkdir -p "$HOME/leanBench-signers"
-export SIGNERS_CACHE_DIR="$HOME/leanBench-signers"
-
-echo '==> [remote] running benchmark...'
-uv run bench {bench_args}
-
-# Echo a parseable marker so the orchestrator knows where the result
-# landed (independent of bench.py's free-form output).
-echo "RESULT_FILE=$(ls -t results/*.json 2>/dev/null | grep -v 'results/index.json' | head -1)"
-"""
+REMOTE_SETUP_SH = Path(__file__).resolve().parent / "remote_setup.sh"
 
 
 def main():
@@ -326,11 +277,14 @@ def run_one_machine(
         if not prefix:
             print("─" * 64)
         bench_args = f"--label {machine_type} {args.bench_args}".strip()
-        cmd = SETUP_AND_RUN.format(
-            repo_url=args.repo_url,
-            branch=args.branch,
-            bench_args=bench_args,
+        # shlex.quote wraps each value in shell-safe single quotes so a
+        # malicious branch / args string can't break out into bash.
+        env_exports = (
+            f"export REPO_URL={shlex.quote(args.repo_url)}\n"
+            f"export BRANCH={shlex.quote(args.branch)}\n"
+            f"export BENCH_ARGS={shlex.quote(bench_args)}\n"
         )
+        cmd = env_exports + REMOTE_SETUP_SH.read_text()
         rc = prov.ssh_exec(inst, cmd, prefix=prefix)
         if not prefix:
             print("─" * 64)
