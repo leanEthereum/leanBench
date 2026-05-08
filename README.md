@@ -6,14 +6,20 @@ Run one command on a target machine → get a JSON file with sign / verify /
 aggregate timings plus CPU and memory usage, committed back to this repo →
 GitHub Pages renders it with charts grouped by machine.
 
+Flow: `workloads/` (Rust binary) → `runner/` (Python harness) →
+`results/*.json` → `scripts/build_index.py` → `site/` (static, deployed
+to Pages).
+
 ## Workload groups
 
-1. **leanSig** (the research crate at `leanEthereum/leanSig`, variant
-   `SIGTargetSumLifetime20W4NoOff`) — keygen / sign / verify
+1. **leanSig** (variant `SIGTargetSumLifetime20W4NoOff`, lifetime 2^20) —
+   sign / verify
 2. **xmss** (the XMSS inside `leanEthereum/leanMultisig`, which is what
-   leanSpec actually consumes) — keygen / sign / verify at crate defaults
-3. **leanMultisig aggregation** at `LOG_INV_RATE_PROD=2` — one flat
-   1000-sig leaf aggregation + one 2-to-1 recursion over two 500-sig leaves
+   leanSpec actually consumes) — sign / verify at crate defaults
+3. **leanMultisig aggregation** at `LOG_INV_RATE_PROD=2` — flat
+   aggregation over 125 / 250 / 500 / 1000 sigs, plus tree aggregation
+   with fan-in 2 / 4 / 8 over 125 / 250 / 500-sig leaves. 13 aggregate
+   variants total, all run by default.
 
 Key-generation is opt-in (`--include-keygen`) because lifetime-2^20 keygen
 adds significant wall time.
@@ -22,8 +28,14 @@ adds significant wall time.
 
 ### Prerequisites
 
-Dependencies: **rustc** (rustup) and **uv**. uv manages the Python side
-(psutil); cargo fetches everything the runner binary needs.
+- **Python ≥ 3.10** and [**uv**](https://docs.astral.sh/uv/) — uv manages
+  the Python side (`psutil`).
+- **rustc ≥ 1.87** via [rustup](https://rustup.rs/) — release builds use
+  `target-cpu=native`. Cargo fetches everything else.
+- On Linux, you may need `build-essential` and `pkg-config` if they
+  aren't already installed.
+- For `uv run remote-bench` only: the **gcloud** CLI. See
+  [One-time GCP setup](#one-time-gcp-setup-least-privilege).
 
 ### Run default workloads
 
@@ -130,16 +142,24 @@ leanBench/
 │  └─ sampler.py                 psutil-based CPU/memory polling
 ├─ workloads/                    Rust binary, one subcommand per workload → JSON stdout
 │  ├─ Cargo.toml                 pins leanSig + leanMultisig SHAs
-│  └─ src/main.rs                workload dispatch + per-sample timing
+│  ├─ build.rs                   bakes the pinned SHAs into the binary
+│  └─ src/
+│     ├─ main.rs                 workload dispatch + per-sample timing
+│     └─ workloads.rs            per-workload setup and measurement
 ├─ scripts/
 │  ├─ build_index.py             scans results/*.json → results/index.json (CI)
-│  └─ dev_server.py              live-reload preview (uv run serve)
+│  ├─ dev_server.py              live-reload preview (uv run serve)
+│  ├─ remote_bench.py            spin up + tear down cloud VMs (uv run remote-bench)
+│  └─ provisioners/              cloud-provider drivers (currently GCP only)
 ├─ results/                      committed JSON, one file per run
-├─ site/                         static site (vanilla JS + Chart.js via CDN)
+├─ site/                         static site (vanilla JS + Chart.js, vendored)
 │  ├─ index.html                 list of machines; cross-machine comparison
 │  ├─ run.html                   per-run detail with per-workload charts
-│  ├─ app.js
-│  └─ style.css
+│  ├─ topology.html              aggregation-topology feasibility explorer
+│  ├─ trend.html                 trends across runs and SHAs
+│  ├─ app.js / topology.js / trend.js
+│  ├─ style.css
+│  └─ vendor/                    chart.umd.min.js (no CDN dependency)
 └─ .github/workflows/
    └─ deploy-pages.yml           on push: rebuild index + deploy site to Pages
 ```
