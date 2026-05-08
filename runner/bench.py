@@ -135,8 +135,16 @@ def build_runner() -> Path:
     return RUST_DIR / "target" / "release" / "lean-bench-workloads"
 
 
-def run_workload(binary: Path, cli_args: list[str], samples: int, warmup: int) -> dict:
-    """Run one workload subprocess, sample resources, return merged record."""
+def run_workload(
+    binary: Path, cli_args: list[str], samples: int, warmup: int,
+) -> tuple[dict, dict] | None:
+    """Run one workload subprocess, sample resources, return (record, shas).
+
+    `shas` is `{"leansig_sha", "leanmultisig_sha"}` extracted from the same
+    Rust output. Caller uses this to populate `toolchain.git_shas` once per
+    run; the SHAs are constants baked into the binary so any successful run
+    has the authoritative values. Returns None on failure.
+    """
     proc = subprocess.Popen(
         [str(binary), *cli_args,
          "--samples", str(samples),
@@ -155,7 +163,7 @@ def run_workload(binary: Path, cli_args: list[str], samples: int, warmup: int) -
     if proc.returncode != 0:
         print(f"[error] {' '.join(cli_args)} exited {proc.returncode}")
         print(stderr_b.decode(errors="replace"), file=sys.stderr)
-        return {}
+        return None
 
     stdout = stdout_b.decode(errors="replace").strip()
     # Take the last line — stray cargo / tracing output may appear above.
@@ -165,12 +173,12 @@ def run_workload(binary: Path, cli_args: list[str], samples: int, warmup: int) -
     except json.JSONDecodeError as e:
         print(f"[error] {' '.join(cli_args)}: could not parse runner JSON: {e}\nstdout: {stdout!r}",
               file=sys.stderr)
-        return {}
+        return None
 
     samples_ns = rec.get("samples_ns", [])
     summary = _summarize(samples_ns)
 
-    return {
+    record = {
         "name": rec["workload"],
         "unit": rec.get("unit", "ns"),
         "samples_ns": samples_ns,              # keep raw samples for charts
@@ -178,6 +186,11 @@ def run_workload(binary: Path, cli_args: list[str], samples: int, warmup: int) -
         "resources": resources,
         "meta": rec.get("meta", {}),
     }
+    shas = {
+        "leansig_sha": rec.get("leansig_sha", "unknown"),
+        "leanmultisig_sha": rec.get("leanmultisig_sha", "unknown"),
+    }
+    return record, shas
 
 
 def _summarize(samples: list[int]) -> dict:
@@ -199,17 +212,9 @@ def _summarize(samples: list[int]) -> dict:
     }
 
 
-def read_provenance(binary: Path) -> dict:
-    r = subprocess.run([str(binary), "provenance"], capture_output=True, text=True)
-    if r.returncode != 0:
-        return {"leansig_sha": "unknown", "leanmultisig_sha": "unknown"}
-    return json.loads(r.stdout)
-
-
 def main():
     args = parse_args()
     binary = build_runner()
-    provenance = read_provenance(binary)
 
     machine = sysinfo.capture()
     label = args.label or sysinfo.auto_label()
@@ -229,15 +234,21 @@ def main():
     print()
 
     workload_results = []
+    shas: dict = {"leansig_sha": "unknown", "leanmultisig_sha": "unknown"}
     for w in workloads_to_run:
         n = w.samples_override if w.samples_override is not None else args.samples
         suffix = f" (n={n})" if w.samples_override is not None else ""
         print(f"  → {w.name}{suffix} ...", end="", flush=True)
-        rec = run_workload(binary, w.cli_args, n, args.warmup)
-        if rec:
+        result = run_workload(binary, w.cli_args, n, args.warmup)
+        if result is not None:
+            rec, run_shas = result
             mean_ms = rec["timing"]["mean_ns"] / 1e6
             print(f" {mean_ms:.2f} ms (n={rec['timing']['n']})")
             workload_results.append(rec)
+            # SHAs are baked-in constants identical across every run, so
+            # any successful workload supplies the authoritative pair.
+            if shas["leansig_sha"] == "unknown":
+                shas = run_shas
         else:
             print(" FAILED")
 
@@ -248,7 +259,7 @@ def main():
         "run_id": run_id,
         "timestamp": dt.datetime.now(dt.timezone.utc).isoformat(),
         "machine": machine,
-        "toolchain": {**sysinfo.toolchain(), "git_shas": provenance},
+        "toolchain": {**sysinfo.toolchain(), "git_shas": shas},
         "workloads": workload_results,
         "notes": args.notes,
     }

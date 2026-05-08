@@ -59,9 +59,6 @@ enum Cli {
         #[command(flatten)]
         common: CommonArgs,
     },
-
-    #[command(about = "Print version/provenance JSON and exit")]
-    Provenance,
 }
 
 #[derive(Parser, Clone)]
@@ -99,14 +96,6 @@ fn main() -> Result<()> {
         Cli::XmssVerify(a)    => workloads::xmss_wl::verify(&a),
         Cli::AggregateFlat { n, common } => workloads::aggregate::flat_r2(&common, n),
         Cli::AggregateTree { fan, n, common } => workloads::aggregate::tree_r2(&common, fan, n),
-        Cli::Provenance => {
-            let j = serde_json::json!({
-                "leansig_sha": LEANSIG_SHA,
-                "leanmultisig_sha": LEANMULTISIG_SHA,
-            });
-            println!("{}", serde_json::to_string_pretty(&j)?);
-            return Ok(());
-        }
     }?;
 
     let out = serde_json::to_string(&rec)?;
