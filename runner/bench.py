@@ -42,26 +42,29 @@ ROOT = HERE.parent
 # that pushed acceptance to ≈ 1 in 2.3k attempts and the mean to ~220 ms.
 # The grinding lock was removed in the 123 → 124 bit security rework, so
 # the mean dropped ~45× — but the cv is unchanged.)
-ALL_WORKLOADS: list[tuple[str, str, bool, int | None]] = [
-    ("leansig-keygen",      "leansig.keygen",           False, None),
-    ("leansig-sign",        "leansig.sign",             True,  None),
-    ("leansig-verify",      "leansig.verify",           True,  None),
-    ("xmss-keygen",         "xmss.keygen",              False, None),
-    ("xmss-sign",           "xmss.sign",                True,  300),
-    ("xmss-verify",         "xmss.verify",              True,  None),
-    ("aggregate-flat-125",  "aggregate.flat_125_r2",    True,  None),
-    ("aggregate-flat-250",  "aggregate.flat_250_r2",    True,  None),
-    ("aggregate-flat-500",  "aggregate.flat_500_r2",    True,  None),
-    ("aggregate-flat-1000", "aggregate.flat_1000_r2",   True,  None),
-    ("aggregate-tree-125",  "aggregate.tree_2x125_r2",  True,  None),
-    ("aggregate-tree-250",  "aggregate.tree_2x250_r2",  True,  None),
-    ("aggregate-tree-500",  "aggregate.tree_2x500_r2",  True,  None),
-    ("aggregate-tree4-125", "aggregate.tree_4x125_r2",  True,  None),
-    ("aggregate-tree4-250", "aggregate.tree_4x250_r2",  True,  None),
-    ("aggregate-tree4-500", "aggregate.tree_4x500_r2",  True,  None),
-    ("aggregate-tree8-125", "aggregate.tree_8x125_r2",  True,  None),
-    ("aggregate-tree8-250", "aggregate.tree_8x250_r2",  True,  None),
-    ("aggregate-tree8-500", "aggregate.tree_8x500_r2",  True,  None),
+# Each row: (cli_args, workload_name, in_default_set, samples_override).
+# `cli_args` is the argv passed to the Rust binary; for aggregate workloads
+# the binary takes positional `n` (flat) or `fan n` (tree).
+ALL_WORKLOADS: list[tuple[list[str], str, bool, int | None]] = [
+    (["leansig-keygen"],       "leansig.keygen",          False, None),
+    (["leansig-sign"],          "leansig.sign",            True,  None),
+    (["leansig-verify"],        "leansig.verify",          True,  None),
+    (["xmss-keygen"],           "xmss.keygen",             False, None),
+    (["xmss-sign"],             "xmss.sign",               True,  300),
+    (["xmss-verify"],           "xmss.verify",             True,  None),
+    (["aggregate-flat", "125"],  "aggregate.flat_125_r2",   True,  None),
+    (["aggregate-flat", "250"],  "aggregate.flat_250_r2",   True,  None),
+    (["aggregate-flat", "500"],  "aggregate.flat_500_r2",   True,  None),
+    (["aggregate-flat", "1000"], "aggregate.flat_1000_r2",  True,  None),
+    (["aggregate-tree", "2", "125"], "aggregate.tree_2x125_r2", True, None),
+    (["aggregate-tree", "2", "250"], "aggregate.tree_2x250_r2", True, None),
+    (["aggregate-tree", "2", "500"], "aggregate.tree_2x500_r2", True, None),
+    (["aggregate-tree", "4", "125"], "aggregate.tree_4x125_r2", True, None),
+    (["aggregate-tree", "4", "250"], "aggregate.tree_4x250_r2", True, None),
+    (["aggregate-tree", "4", "500"], "aggregate.tree_4x500_r2", True, None),
+    (["aggregate-tree", "8", "125"], "aggregate.tree_8x125_r2", True, None),
+    (["aggregate-tree", "8", "250"], "aggregate.tree_8x250_r2", True, None),
+    (["aggregate-tree", "8", "500"], "aggregate.tree_8x500_r2", True, None),
 ]
 
 
@@ -84,17 +87,17 @@ def parse_args():
     return ap.parse_args()
 
 
-def select_workloads(args) -> list[tuple[str, str, int | None]]:
+def select_workloads(args) -> list[tuple[list[str], str, int | None]]:
     if args.only:
         requested = set(args.only)
-        selected = [(cmd, name, ovr) for (cmd, name, _, ovr) in ALL_WORKLOADS if name in requested]
+        selected = [(cli, name, ovr) for (cli, name, _, ovr) in ALL_WORKLOADS if name in requested]
         missing = requested - {name for (_, name, _) in selected}
         if missing:
             sys.exit(f"unknown workload(s): {', '.join(sorted(missing))}")
         return selected
     return [
-        (cmd, name, ovr)
-        for (cmd, name, default, ovr) in ALL_WORKLOADS
+        (cli, name, ovr)
+        for (cli, name, default, ovr) in ALL_WORKLOADS
         if default or args.include_keygen
     ]
 
@@ -129,10 +132,10 @@ def build_runner() -> Path:
     return RUST_DIR / "target" / "release" / "lean-bench-workloads"
 
 
-def run_workload(binary: Path, subcmd: str, samples: int, warmup: int) -> dict:
+def run_workload(binary: Path, cli_args: list[str], samples: int, warmup: int) -> dict:
     """Run one workload subprocess, sample resources, return merged record."""
     proc = subprocess.Popen(
-        [str(binary), subcmd,
+        [str(binary), *cli_args,
          "--samples", str(samples),
          "--warmup", str(warmup)],
         cwd=ROOT,
@@ -147,7 +150,7 @@ def run_workload(binary: Path, subcmd: str, samples: int, warmup: int) -> dict:
     resources = sampler.stop()
 
     if proc.returncode != 0:
-        print(f"[error] {subcmd} exited {proc.returncode}")
+        print(f"[error] {' '.join(cli_args)} exited {proc.returncode}")
         print(stderr_b.decode(errors="replace"), file=sys.stderr)
         return {}
 
@@ -225,11 +228,11 @@ def main():
     print()
 
     workload_results = []
-    for subcmd, name, samples_override in workloads_to_run:
+    for cli_args, name, samples_override in workloads_to_run:
         n = samples_override if samples_override is not None else args.samples
         suffix = f" (n={n})" if samples_override is not None else ""
         print(f"  → {name}{suffix} ...", end="", flush=True)
-        rec = run_workload(binary, subcmd, n, args.warmup)
+        rec = run_workload(binary, cli_args, n, args.warmup)
         if rec:
             mean_ms = rec["timing"]["mean_ns"] / 1e6
             print(f" {mean_ms:.2f} ms (n={rec['timing']['n']})")

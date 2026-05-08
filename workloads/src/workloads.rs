@@ -231,7 +231,7 @@ pub mod aggregate {
     /// Aggregation internally does heavy one-time setup (DFT twiddles, bytecode,
     /// signer cache). First call amortises it, so the warmup iterations matter
     /// — we count only post-warmup samples.
-    fn flat_n_r2(args: &CommonArgs, n: usize) -> Result<Record> {
+    pub fn flat_r2(args: &CommonArgs, n: usize) -> Result<Record> {
         let topology = AggregationTopology { raw_xmss: n, children: vec![], log_inv_rate: 2, overlap: 0 };
         let (samples, proof_sizes, reports) = run_loop(args, &topology);
         let (root_kib, leaf_kib) = root_and_leaf_kib(&proof_sizes);
@@ -251,116 +251,34 @@ pub mod aggregate {
         ))
     }
 
-    pub fn flat_125_r2(args: &CommonArgs) -> Result<Record> { flat_n_r2(args, 125) }
-    pub fn flat_250_r2(args: &CommonArgs) -> Result<Record> { flat_n_r2(args, 250) }
-    pub fn flat_500_r2(args: &CommonArgs) -> Result<Record> { flat_n_r2(args, 500) }
-    pub fn flat_1000_r2(args: &CommonArgs) -> Result<Record> { flat_n_r2(args, 1000) }
-
-    /// 2-to-1 recursion: root combines two `n`-sig leaves at LOG_INV_RATE_PROD=2.
-    /// Reports total wall time including both leaves + the recursion step.
-    /// Subtract `2 × aggregate.flat_<n>_r2` for the recursion-only cost.
-    fn tree_2xn_r2(args: &CommonArgs, n: usize) -> Result<Record> {
+    /// `fan`-to-1 recursion: root combines `fan` `n`-sig leaves at LOG_INV_RATE_PROD=2.
+    /// Reports total wall time including all leaves + the recursion step.
+    /// Subtract `fan × aggregate.flat_<n>_r2` for the recursion-only cost.
+    pub fn tree_r2(args: &CommonArgs, fan: usize, n: usize) -> Result<Record> {
         let leaf = AggregationTopology { raw_xmss: n, children: vec![], log_inv_rate: 2, overlap: 0 };
         let topology = AggregationTopology {
             raw_xmss: 0,
-            children: vec![leaf.clone(), leaf],
+            children: vec![leaf; fan],
             log_inv_rate: 2,
             overlap: 0,
         };
         let (samples, proof_sizes, reports) = run_loop(args, &topology);
         let (root_kib, leaf_kib) = root_and_leaf_kib(&proof_sizes);
         Ok(make_record(
-            &format!("aggregate.tree_2x{n}_r2"),
+            &format!("aggregate.tree_{fan}x{n}_r2"),
             samples,
             args.warmup,
             serde_json::json!({
                 "leaf_raw_xmss": n,
-                "fan_in": 2,
+                "fan_in": fan,
                 "log_inv_rate": 2,
-                "topology": "2-to-1 recursion",
+                "topology": format!("{fan}-to-1 recursion"),
                 "proof_kib_root": root_kib,
                 "proof_kib_leaf": leaf_kib,
                 "proof_kib_by_path": proof_sizes,
                 "reports": reports,
-                "note": format!("recursion-only time = root node `time_secs` from any report; or total - 2 × aggregate.flat_{n}_r2 as a fallback"),
+                "note": format!("recursion-only time = root node `time_secs` from any report; or total - {fan} × aggregate.flat_{n}_r2 as a fallback"),
             }),
         ))
     }
-
-    pub fn tree_2x125_r2(args: &CommonArgs) -> Result<Record> { tree_2xn_r2(args, 125) }
-    pub fn tree_2x250_r2(args: &CommonArgs) -> Result<Record> { tree_2xn_r2(args, 250) }
-    pub fn tree_2x500_r2(args: &CommonArgs) -> Result<Record> { tree_2xn_r2(args, 500) }
-
-    /// 4-to-1 recursion: root combines four `n`-sig leaves at LOG_INV_RATE_PROD=2.
-    /// Reports total wall time including all four leaves + the recursion step.
-    /// Subtract `4 × aggregate.flat_<n>_r2` for the recursion-only cost.
-    fn tree_4xn_r2(args: &CommonArgs, n: usize) -> Result<Record> {
-        let leaf = AggregationTopology { raw_xmss: n, children: vec![], log_inv_rate: 2, overlap: 0 };
-        let topology = AggregationTopology {
-            raw_xmss: 0,
-            children: vec![leaf.clone(), leaf.clone(), leaf.clone(), leaf],
-            log_inv_rate: 2,
-            overlap: 0,
-        };
-        let (samples, proof_sizes, reports) = run_loop(args, &topology);
-        let (root_kib, leaf_kib) = root_and_leaf_kib(&proof_sizes);
-        Ok(make_record(
-            &format!("aggregate.tree_4x{n}_r2"),
-            samples,
-            args.warmup,
-            serde_json::json!({
-                "leaf_raw_xmss": n,
-                "fan_in": 4,
-                "log_inv_rate": 2,
-                "topology": "4-to-1 recursion",
-                "proof_kib_root": root_kib,
-                "proof_kib_leaf": leaf_kib,
-                "proof_kib_by_path": proof_sizes,
-                "reports": reports,
-                "note": format!("recursion-only time = root node `time_secs` from any report; or total - 4 × aggregate.flat_{n}_r2 as a fallback"),
-            }),
-        ))
-    }
-
-    pub fn tree_4x125_r2(args: &CommonArgs) -> Result<Record> { tree_4xn_r2(args, 125) }
-    pub fn tree_4x250_r2(args: &CommonArgs) -> Result<Record> { tree_4xn_r2(args, 250) }
-    pub fn tree_4x500_r2(args: &CommonArgs) -> Result<Record> { tree_4xn_r2(args, 500) }
-
-    /// 8-to-1 recursion: root combines eight `n`-sig leaves at LOG_INV_RATE_PROD=2.
-    /// Reports total wall time including all eight leaves + the recursion step.
-    /// Subtract `8 × aggregate.flat_<n>_r2` for the recursion-only cost.
-    fn tree_8xn_r2(args: &CommonArgs, n: usize) -> Result<Record> {
-        let leaf = AggregationTopology { raw_xmss: n, children: vec![], log_inv_rate: 2, overlap: 0 };
-        let topology = AggregationTopology {
-            raw_xmss: 0,
-            children: vec![
-                leaf.clone(), leaf.clone(), leaf.clone(), leaf.clone(),
-                leaf.clone(), leaf.clone(), leaf.clone(), leaf,
-            ],
-            log_inv_rate: 2,
-            overlap: 0,
-        };
-        let (samples, proof_sizes, reports) = run_loop(args, &topology);
-        let (root_kib, leaf_kib) = root_and_leaf_kib(&proof_sizes);
-        Ok(make_record(
-            &format!("aggregate.tree_8x{n}_r2"),
-            samples,
-            args.warmup,
-            serde_json::json!({
-                "leaf_raw_xmss": n,
-                "fan_in": 8,
-                "log_inv_rate": 2,
-                "topology": "8-to-1 recursion",
-                "proof_kib_root": root_kib,
-                "proof_kib_leaf": leaf_kib,
-                "proof_kib_by_path": proof_sizes,
-                "reports": reports,
-                "note": format!("recursion-only time = root node `time_secs` from any report; or total - 8 × aggregate.flat_{n}_r2 as a fallback"),
-            }),
-        ))
-    }
-
-    pub fn tree_8x125_r2(args: &CommonArgs) -> Result<Record> { tree_8xn_r2(args, 125) }
-    pub fn tree_8x250_r2(args: &CommonArgs) -> Result<Record> { tree_8xn_r2(args, 250) }
-    pub fn tree_8x500_r2(args: &CommonArgs) -> Result<Record> { tree_8xn_r2(args, 500) }
 }

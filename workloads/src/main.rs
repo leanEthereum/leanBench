@@ -41,49 +41,24 @@ enum Cli {
     #[command(about = "XMSS verify")]
     XmssVerify(CommonArgs),
 
-    // clap derive's kebab-case converter doesn't insert a dash between a
-    // letter and a digit (`AggregateFlat500` → `aggregate-flat500`), so we
-    // override the CLI name explicitly to keep the dash-separated form that
-    // bench.py and humans expect.
-    #[command(name = "aggregate-flat-125",
-              about = "Aggregation: flat 125-sig leaf at LOG_INV_RATE_PROD=2")]
-    AggregateFlat125(CommonArgs),
-    #[command(name = "aggregate-flat-250",
-              about = "Aggregation: flat 250-sig leaf at LOG_INV_RATE_PROD=2")]
-    AggregateFlat250(CommonArgs),
-    #[command(name = "aggregate-flat-500",
-              about = "Aggregation: flat 500-sig leaf at LOG_INV_RATE_PROD=2")]
-    AggregateFlat500(CommonArgs),
-    #[command(name = "aggregate-flat-1000",
-              about = "Aggregation: flat 1000-sig leaf at LOG_INV_RATE_PROD=2")]
-    AggregateFlat1000(CommonArgs),
-    #[command(name = "aggregate-tree-125",
-              about = "Aggregation: 2-to-1 recursion over two 125-sig leaves at r=2")]
-    AggregateTree125(CommonArgs),
-    #[command(name = "aggregate-tree-250",
-              about = "Aggregation: 2-to-1 recursion over two 250-sig leaves at r=2")]
-    AggregateTree250(CommonArgs),
-    #[command(name = "aggregate-tree-500",
-              about = "Aggregation: 2-to-1 recursion over two 500-sig leaves at r=2")]
-    AggregateTree500(CommonArgs),
-    #[command(name = "aggregate-tree4-125",
-              about = "Aggregation: 4-to-1 recursion over four 125-sig leaves at r=2")]
-    AggregateTree4x125(CommonArgs),
-    #[command(name = "aggregate-tree4-250",
-              about = "Aggregation: 4-to-1 recursion over four 250-sig leaves at r=2")]
-    AggregateTree4x250(CommonArgs),
-    #[command(name = "aggregate-tree4-500",
-              about = "Aggregation: 4-to-1 recursion over four 500-sig leaves at r=2")]
-    AggregateTree4x500(CommonArgs),
-    #[command(name = "aggregate-tree8-125",
-              about = "Aggregation: 8-to-1 recursion over eight 125-sig leaves at r=2")]
-    AggregateTree8x125(CommonArgs),
-    #[command(name = "aggregate-tree8-250",
-              about = "Aggregation: 8-to-1 recursion over eight 250-sig leaves at r=2")]
-    AggregateTree8x250(CommonArgs),
-    #[command(name = "aggregate-tree8-500",
-              about = "Aggregation: 8-to-1 recursion over eight 500-sig leaves at r=2")]
-    AggregateTree8x500(CommonArgs),
+    #[command(name = "aggregate-flat",
+              about = "Aggregation: flat n-sig leaf at LOG_INV_RATE_PROD=2")]
+    AggregateFlat {
+        /// Number of raw XMSS signatures to aggregate.
+        n: usize,
+        #[command(flatten)]
+        common: CommonArgs,
+    },
+    #[command(name = "aggregate-tree",
+              about = "Aggregation: fan-to-1 recursion over fan n-sig leaves at LOG_INV_RATE_PROD=2")]
+    AggregateTree {
+        /// Fan-in at the root (e.g. 2, 4, 8).
+        fan: usize,
+        /// Raw XMSS signatures per leaf.
+        n: usize,
+        #[command(flatten)]
+        common: CommonArgs,
+    },
 
     #[command(about = "Print version/provenance JSON and exit")]
     Provenance,
@@ -123,19 +98,8 @@ fn main() -> Result<()> {
         Cli::XmssKeygen(a)    => workloads::xmss_wl::keygen(&a),
         Cli::XmssSign(a)      => workloads::xmss_wl::sign(&a),
         Cli::XmssVerify(a)    => workloads::xmss_wl::verify(&a),
-        Cli::AggregateFlat125(a)  => workloads::aggregate::flat_125_r2(&a),
-        Cli::AggregateFlat250(a)  => workloads::aggregate::flat_250_r2(&a),
-        Cli::AggregateFlat500(a)  => workloads::aggregate::flat_500_r2(&a),
-        Cli::AggregateFlat1000(a) => workloads::aggregate::flat_1000_r2(&a),
-        Cli::AggregateTree125(a)  => workloads::aggregate::tree_2x125_r2(&a),
-        Cli::AggregateTree250(a)  => workloads::aggregate::tree_2x250_r2(&a),
-        Cli::AggregateTree500(a)  => workloads::aggregate::tree_2x500_r2(&a),
-        Cli::AggregateTree4x125(a) => workloads::aggregate::tree_4x125_r2(&a),
-        Cli::AggregateTree4x250(a) => workloads::aggregate::tree_4x250_r2(&a),
-        Cli::AggregateTree4x500(a) => workloads::aggregate::tree_4x500_r2(&a),
-        Cli::AggregateTree8x125(a) => workloads::aggregate::tree_8x125_r2(&a),
-        Cli::AggregateTree8x250(a) => workloads::aggregate::tree_8x250_r2(&a),
-        Cli::AggregateTree8x500(a) => workloads::aggregate::tree_8x500_r2(&a),
+        Cli::AggregateFlat { n, common } => workloads::aggregate::flat_r2(&common, n),
+        Cli::AggregateTree { fan, n, common } => workloads::aggregate::tree_r2(&common, fan, n),
         Cli::Provenance => {
             let j = serde_json::json!({
                 "leansig_sha": LEANSIG_SHA,
