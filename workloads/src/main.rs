@@ -83,7 +83,6 @@ struct Record {
     unit: &'static str,
     samples_ns: Vec<u128>,
     warmup: usize,
-    #[serde(flatten)]
     meta: serde_json::Value,
     leansig_sha: &'static str,
     leanmultisig_sha: &'static str,

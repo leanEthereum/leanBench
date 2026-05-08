@@ -163,7 +163,7 @@ def run_workload(binary: Path, cli_args: list[str], samples: int, warmup: int) -
     try:
         rec = json.loads(last_line)
     except json.JSONDecodeError as e:
-        print(f"[error] {subcmd}: could not parse runner JSON: {e}\nstdout: {stdout!r}",
+        print(f"[error] {' '.join(cli_args)}: could not parse runner JSON: {e}\nstdout: {stdout!r}",
               file=sys.stderr)
         return {}
 
@@ -176,9 +176,7 @@ def run_workload(binary: Path, cli_args: list[str], samples: int, warmup: int) -
         "samples_ns": samples_ns,              # keep raw samples for charts
         "timing": summary,
         "resources": resources,
-        "meta": {k: v for k, v in rec.items()
-                 if k not in {"workload", "unit", "samples_ns", "warmup",
-                              "leansig_sha", "leanmultisig_sha"}},
+        "meta": rec.get("meta", {}),
     }
 
 
