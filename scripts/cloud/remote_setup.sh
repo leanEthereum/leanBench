@@ -19,7 +19,7 @@ sudo cloud-init status --wait >/dev/null 2>&1 || true
 echo '==> [remote] installing build prerequisites...'
 sudo DEBIAN_FRONTEND=noninteractive apt-get update -qq
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq \
-    build-essential git curl ca-certificates pkg-config
+    build-essential git curl ca-certificates pkg-config tmux
 
 if ! command -v cargo >/dev/null 2>&1; then
     echo '==> [remote] installing rustup...'
@@ -50,11 +50,17 @@ git reset --hard --quiet "origin/$BRANCH"
 mkdir -p "$HOME/leanBench-signers"
 export SIGNERS_CACHE_DIR="$HOME/leanBench-signers"
 
-echo '==> [remote] running benchmark...'
-# Intentionally unquoted: BENCH_ARGS is multi-arg (e.g. "--label foo --samples 10").
+echo '==> [remote] launching bench in detached tmux session...'
+# Detach the long bench (cargo build + 17 workloads, can run > 30 min)
+# so a dropped SSH/IAP tunnel can't kill it. The orchestrator polls
+# bench.log + tmux session state separately.
+cat > run-bench.sh <<RUN
+#!/usr/bin/env bash
 # shellcheck disable=SC2086
-uv run bench $BENCH_ARGS
-
-# Echo a parseable marker so the orchestrator knows where the result
-# landed (independent of bench.py's free-form output).
-echo "RESULT_FILE=$(ls -t results/*.json 2>/dev/null | grep -v 'results/index.json' | head -1)"
+uv run bench $BENCH_ARGS > bench.log 2>&1
+echo "EXIT=\$?" > bench.exit
+RUN
+chmod +x run-bench.sh
+tmux kill-session -t leanbench 2>/dev/null || true
+tmux new-session -d -s leanbench ./run-bench.sh
+echo '==> [remote] tmux session leanbench started; orchestrator will poll'

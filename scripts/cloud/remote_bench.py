@@ -31,6 +31,7 @@ import shutil
 import signal
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 from .provisioners import Instance, InstanceSpec
@@ -92,6 +93,11 @@ def main():
                     help="Don't destroy the VM if the bench fails — useful for debugging")
     ap.add_argument("--out-dir", type=Path, default=Path("results"))
     ap.add_argument("--ssh-timeout-s", type=int, default=300)
+    ap.add_argument("--poll-interval-s", type=int, default=30,
+                    help="Seconds between bench-completion polls. The bench "
+                         "runs in a detached tmux session on the VM; the "
+                         "orchestrator tails its log and checks for exit on "
+                         "this cadence.")
     ap.add_argument("--signers-cache", type=Path, default=None,
                     help="Path to a local benchmark_signers_cache_<hash>.bin file to "
                          "pre-upload to each VM. Skips the ~few-minute lazy regen on "
@@ -272,9 +278,7 @@ def run_one_machine(
             prov.scp_to(inst, args.signers_cache,
                         f"leanBench-signers/{args.signers_cache.name}")
 
-        print(f"{prefix}==> running setup + bench")
-        if not prefix:
-            print("─" * 64)
+        print(f"{prefix}==> running setup + launching bench in detached tmux")
         bench_args = f"--label {machine_type} {args.bench_args}".strip()
         # shlex.quote wraps each value in shell-safe single quotes so a
         # malicious branch / args string can't break out into bash.
@@ -285,10 +289,19 @@ def run_one_machine(
         )
         cmd = env_exports + REMOTE_SETUP_SH.read_text()
         rc = prov.ssh_exec(inst, cmd, prefix=prefix)
+        if rc != 0:
+            raise RuntimeError(f"setup + launch failed with code {rc}")
+
+        # Bench is now running in a detached tmux session on the VM, so a
+        # dropped SSH/IAP tunnel can't kill it. Poll separately for
+        # progress + completion.
+        print(f"{prefix}==> polling bench (interval {args.poll_interval_s}s)")
         if not prefix:
             print("─" * 64)
-        if rc != 0:
-            raise RuntimeError(f"benchmark exited with code {rc}")
+        _poll_bench_completion(prov, inst, prefix=prefix,
+                               poll_interval_s=args.poll_interval_s)
+        if not prefix:
+            print("─" * 64)
 
         marker = prov.ssh_capture(
             inst,
@@ -329,6 +342,66 @@ def run_one_machine(
                 live_instances.pop(machine_type, None)
 
     return summary
+
+
+def _poll_bench_completion(prov, inst, prefix: str, poll_interval_s: int) -> None:
+    """Poll the VM until the detached bench tmux session exits.
+
+    Streams new bench.log bytes to stdout (with optional `prefix`) so
+    progress is visible. Raises RuntimeError if bench exited non-zero
+    or never wrote its exit-code file.
+
+    Tolerates transient SSH failures: a brief IAP tunnel outage shouldn't
+    tear down a healthy VM mid-bench. We only give up after MAX_FAILURES
+    consecutive bad polls.
+    """
+    MAX_FAILURES = 6
+    last_byte = 0
+    consecutive_failures = 0
+    while True:
+        try:
+            chunk = prov.ssh_capture(
+                inst,
+                f"tail -c +{last_byte + 1} leanBench/bench.log 2>/dev/null || true",
+            )
+            if chunk:
+                for line in chunk.splitlines():
+                    print(f"{prefix}{line}")
+                last_byte += len(chunk.encode("utf-8"))
+
+            status = prov.ssh_capture(
+                inst,
+                "tmux has-session -t leanbench 2>/dev/null && echo running || echo done",
+            )
+            consecutive_failures = 0
+            if status == "done":
+                break
+        except subprocess.CalledProcessError as e:
+            consecutive_failures += 1
+            print(
+                f"{prefix}    poll failed ({consecutive_failures}/{MAX_FAILURES}): "
+                f"{e}",
+                file=sys.stderr,
+            )
+            if consecutive_failures >= MAX_FAILURES:
+                raise RuntimeError(
+                    f"bench poll failed {MAX_FAILURES} times in a row; "
+                    f"VM may be unreachable. Bench may still be running on "
+                    f"the VM — re-attach with: "
+                    f"gcloud compute ssh {inst.name} --zone {inst.data.get('zone', '?')} "
+                    f"--tunnel-through-iap -- tmux attach -t leanbench"
+                ) from e
+        time.sleep(poll_interval_s)
+
+    exit_str = prov.ssh_capture(
+        inst, "cat leanBench/bench.exit 2>/dev/null || true",
+    ).strip()
+    if exit_str.startswith("EXIT="):
+        code = int(exit_str.split("=", 1)[1])
+        if code != 0:
+            raise RuntimeError(f"bench exited with code {code}")
+    else:
+        raise RuntimeError("bench did not write bench.exit; outcome unknown")
 
 
 def _confirm(prompt: str) -> bool:
