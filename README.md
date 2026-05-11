@@ -12,17 +12,14 @@ to Pages).
 
 ## Workload groups
 
-1. **leanSig** (variant `SIGTargetSumLifetime20W4NoOff`, lifetime 2^20) —
-   sign / verify
-2. **xmss** (the XMSS inside `leanEthereum/leanMultisig`, which is what
-   leanSpec actually consumes) — sign / verify at crate defaults
-3. **leanMultisig aggregation** at `LOG_INV_RATE_PROD=2` — flat
+1. **xmss** — leanSpec `PROD_CONFIG` GeneralizedXMSS (DIMENSION=46,
+   BASE=8, TARGET_SUM=200, LOG_LIFETIME=32), the scheme leanMultisig's
+   mainnet ships. sign / verify by default; opt-in keygen via
+   `--include-keygen`.
+2. **leanMultisig aggregation** at `LOG_INV_RATE_PROD=2` — flat
    aggregation over 125 / 250 / 500 / 1000 sigs, plus tree aggregation
    with fan-in 2 / 4 / 8 over 125 / 250 / 500-sig leaves. 13 aggregate
    variants total, all run by default.
-
-Key-generation is opt-in (`--include-keygen`) because lifetime-2^20 keygen
-adds significant wall time.
 
 ## Running on a target machine
 

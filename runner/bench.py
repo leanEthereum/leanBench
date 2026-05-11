@@ -53,9 +53,6 @@ class Workload:
 # The grinding lock was removed in the 123 → 124 bit security rework, so
 # the mean dropped ~45× — but the cv is unchanged.)
 ALL_WORKLOADS: list[Workload] = [
-    Workload(["leansig-keygen"],            "leansig.keygen",          in_default_set=False),
-    Workload(["leansig-sign"],              "leansig.sign",            in_default_set=True),
-    Workload(["leansig-verify"],            "leansig.verify",          in_default_set=True),
     Workload(["xmss-keygen"],               "xmss.keygen",             in_default_set=False),
     Workload(["xmss-sign"],                 "xmss.sign",               in_default_set=True, samples_override=300),
     Workload(["xmss-verify"],               "xmss.verify",             in_default_set=True),
@@ -85,7 +82,7 @@ def parse_args():
                     help="Timed samples per workload (warm-up excluded)")
     ap.add_argument("--warmup", type=int, default=3)
     ap.add_argument("--include-keygen", action="store_true",
-                    help="Also run leansig.keygen and xmss.keygen (slow)")
+                    help="Also run xmss.keygen (slow on lifetime-2^32 schemes)")
     ap.add_argument("--only", action="append", default=None,
                     help="Run only these workload names; repeatable. Implies --include-keygen "
                          "semantics if you list them explicitly.")
