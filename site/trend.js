@@ -10,7 +10,10 @@ if (document.body.dataset.page === "trend") renderTrendPage();
 
 const TREND_HEADLINES = [
   { name: "xmss.sign",                 col: "xmss.sign" },
+  { name: "aggregate.flat_125_r2",     col: "flat_125" },
+  { name: "aggregate.flat_250_r2",     col: "flat_250" },
   { name: "aggregate.flat_500_r2",     col: "flat_500" },
+  { name: "aggregate.flat_1000_r2",    col: "flat_1000" },
   { name: "aggregate.tree_2x500_r2",   col: "tree_2x500" },
   { name: "aggregate.tree_4x500_r2",   col: "tree_4x500" },
   { name: "aggregate.tree_8x500_r2",   col: "tree_8x500" },
