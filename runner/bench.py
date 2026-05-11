@@ -40,6 +40,10 @@ class Workload:
     samples_override: int | None = field(default=None, kw_only=True)
 
 
+# samples_override on the heaviest tree workloads: cv ≤ 0.025 on these
+# four, so n=5 gives a 95% CI on the mean of ≤ ±2.2% — tight enough for
+# cross-machine comparison and topology fitting. Keeps the full matrix
+# under a ~30-min wall budget on 8-core remote VMs.
 ALL_WORKLOADS: list[Workload] = [
     Workload(["xmss-keygen"],               "xmss.keygen",             in_default_set=False),
     Workload(["xmss-sign"],                 "xmss.sign",               in_default_set=True),
@@ -53,10 +57,10 @@ ALL_WORKLOADS: list[Workload] = [
     Workload(["aggregate-tree", "2", "500"], "aggregate.tree_2x500_r2", in_default_set=True),
     Workload(["aggregate-tree", "4", "125"], "aggregate.tree_4x125_r2", in_default_set=True),
     Workload(["aggregate-tree", "4", "250"], "aggregate.tree_4x250_r2", in_default_set=True),
-    Workload(["aggregate-tree", "4", "500"], "aggregate.tree_4x500_r2", in_default_set=True),
-    Workload(["aggregate-tree", "8", "125"], "aggregate.tree_8x125_r2", in_default_set=True),
-    Workload(["aggregate-tree", "8", "250"], "aggregate.tree_8x250_r2", in_default_set=True),
-    Workload(["aggregate-tree", "8", "500"], "aggregate.tree_8x500_r2", in_default_set=True),
+    Workload(["aggregate-tree", "4", "500"], "aggregate.tree_4x500_r2", in_default_set=True, samples_override=5),
+    Workload(["aggregate-tree", "8", "125"], "aggregate.tree_8x125_r2", in_default_set=True, samples_override=5),
+    Workload(["aggregate-tree", "8", "250"], "aggregate.tree_8x250_r2", in_default_set=True, samples_override=5),
+    Workload(["aggregate-tree", "8", "500"], "aggregate.tree_8x500_r2", in_default_set=True, samples_override=5),
 ]
 
 
@@ -66,9 +70,9 @@ def parse_args():
                     help="Human-readable nickname for this machine. "
                          "Defaults to hostname (or CPU-slug if hostname is generic).")
     ap.add_argument("--out-dir", type=Path, default=ROOT / "results")
-    ap.add_argument("--samples", type=int, default=30,
+    ap.add_argument("--samples", type=int, default=10,
                     help="Timed samples per workload (warm-up excluded)")
-    ap.add_argument("--warmup", type=int, default=3)
+    ap.add_argument("--warmup", type=int, default=1)
     ap.add_argument("--include-keygen", action="store_true",
                     help="Also run xmss.keygen (slow on lifetime-2^32 schemes)")
     ap.add_argument("--only", action="append", default=None,
