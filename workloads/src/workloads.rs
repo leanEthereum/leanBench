@@ -5,94 +5,11 @@ use anyhow::Result;
 
 use crate::{make_record, time_loop, CommonArgs, Record};
 
-pub mod leansig {
-    use super::*;
-    use ::leansig::serialization::Serializable;
-    use ::leansig::signature::generalized_xmss::instantiations_poseidon::lifetime_2_to_the_20::target_sum::SIGTargetSumLifetime20W4NoOff as Scheme;
-    use ::leansig::signature::{SignatureScheme, SignatureSchemeSecretKey};
-    use ::leansig::MESSAGE_LENGTH;
-    use rand::{rngs::StdRng, RngExt, SeedableRng};
-
-    const VARIANT: &str = "SIGTargetSumLifetime20W4NoOff";
-
-    pub fn keygen(args: &CommonArgs) -> Result<Record> {
-        // Keygen is the heaviest operation (lifetime 2^20). Warmup = 0; we
-        // measure the real cost from sample 0. Callers wanting stability use
-        // higher --samples.
-        let mut samples = Vec::with_capacity(args.samples);
-        for i in 0..(args.samples + args.warmup) {
-            let mut rng = StdRng::seed_from_u64(args.seed ^ i as u64);
-            let t = std::time::Instant::now();
-            let _ = Scheme::key_gen(&mut rng, 0, Scheme::LIFETIME as usize);
-            if i >= args.warmup {
-                samples.push(t.elapsed().as_nanos());
-            }
-        }
-        Ok(make_record(
-            "leansig.keygen",
-            samples,
-            args.warmup,
-            serde_json::json!({ "variant": VARIANT, "lifetime_log2": 20 }),
-        ))
-    }
-
-    pub fn sign(args: &CommonArgs) -> Result<Record> {
-        let mut rng = StdRng::seed_from_u64(args.seed);
-        let (_pk, sk) = Scheme::key_gen(&mut rng, 0, Scheme::LIFETIME as usize);
-        let prepared = sk.get_prepared_interval();
-        // Pick a fixed epoch inside the prepared window to avoid variance
-        // from differing epoch positions.
-        let epoch = prepared.clone().next().unwrap() as u32;
-        let msg: [u8; MESSAGE_LENGTH] = rng.random();
-
-        let samples = time_loop(args, || {
-            let _ = Scheme::sign(&sk, epoch, &msg).expect("sign");
-        });
-        // Capture one signature size for the record.
-        let sig = Scheme::sign(&sk, epoch, &msg).expect("sign");
-        let sig_bytes = sig.to_bytes().len();
-        Ok(make_record(
-            "leansig.sign",
-            samples,
-            args.warmup,
-            serde_json::json!({
-                "variant": VARIANT,
-                "lifetime_log2": 20,
-                "message_bytes": MESSAGE_LENGTH,
-                "signature_bytes": sig_bytes,
-            }),
-        ))
-    }
-
-    pub fn verify(args: &CommonArgs) -> Result<Record> {
-        let mut rng = StdRng::seed_from_u64(args.seed);
-        let (pk, sk) = Scheme::key_gen(&mut rng, 0, Scheme::LIFETIME as usize);
-        let prepared = sk.get_prepared_interval();
-        let epoch = prepared.clone().next().unwrap() as u32;
-        let msg: [u8; MESSAGE_LENGTH] = rng.random();
-        let sig = Scheme::sign(&sk, epoch, &msg).expect("sign");
-
-        let samples = time_loop(args, || {
-            assert!(Scheme::verify(&pk, epoch, &msg, &sig));
-        });
-        let sig_bytes = sig.to_bytes().len();
-        Ok(make_record(
-            "leansig.verify",
-            samples,
-            args.warmup,
-            serde_json::json!({
-                "variant": VARIANT,
-                "lifetime_log2": 20,
-                "signature_bytes": sig_bytes,
-            }),
-        ))
-    }
-}
-
 pub mod xmss_wl {
     // GeneralizedXMSS at LOG_LIFETIME=32 — the variant leanMultisig's
-    // mainnet ships. Counterpart to the leansig.* module above, which
-    // measures lifetime-2^20 SIGTargetSumLifetime20W4NoOff.
+    // mainnet ships. Mirrors leanSpec's PROD_CONFIG (DIMENSION=46,
+    // BASE=8, TARGET_SUM=200, LOG_LIFETIME=32) — see
+    // workspace/leanSpec/src/lean_spec/subspecs/xmss/constants.py.
     use super::*;
     use ::leansig::serialization::Serializable;
     use ::leansig::signature::SignatureScheme;

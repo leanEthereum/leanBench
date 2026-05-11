@@ -35,14 +35,7 @@ const LEANMULTISIG_BRANCH: &str = match option_env!("LEANMULTISIG_BRANCH") {
 #[derive(Parser)]
 #[command(version, about = "Run one leanSig / leanMultisig workload and emit JSON samples.")]
 enum Cli {
-    #[command(about = "leanSig key generation")]
-    LeansigKeygen(CommonArgs),
-    #[command(about = "leanSig sign (fixed instantiation)")]
-    LeansigSign(CommonArgs),
-    #[command(about = "leanSig verify")]
-    LeansigVerify(CommonArgs),
-
-    #[command(about = "XMSS (leanSpec-aligned) key generation")]
+    #[command(about = "XMSS (leanSpec PROD_CONFIG) key generation")]
     XmssKeygen(CommonArgs),
     #[command(about = "XMSS sign")]
     XmssSign(CommonArgs),
@@ -98,9 +91,6 @@ struct Record {
 fn main() -> Result<()> {
     let cli = Cli::parse();
     let rec = match cli {
-        Cli::LeansigKeygen(a) => workloads::leansig::keygen(&a),
-        Cli::LeansigSign(a)   => workloads::leansig::sign(&a),
-        Cli::LeansigVerify(a) => workloads::leansig::verify(&a),
         Cli::XmssKeygen(a)    => workloads::xmss_wl::keygen(&a),
         Cli::XmssSign(a)      => workloads::xmss_wl::sign(&a),
         Cli::XmssVerify(a)    => workloads::xmss_wl::verify(&a),
