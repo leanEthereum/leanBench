@@ -22,23 +22,26 @@ postcard = { version = "1.1", features = ["alloc"] }
 # (informational, baked into the binary by build.rs for UI display)
 # lives in [package.metadata.bench-pins] below. Bump them together.
 #
-# leanSig: tracks whatever leanMultisig depends on transitively
-# (currently branch = "devnet4"). Match the spec exactly so cargo
-# dedups instead of pulling two leansig copies with incompatible
-# trait identities.
-leansig = { git = "https://github.com/leanEthereum/leanSig", branch = "devnet4" }
+# leanSig: tracks whatever leanMultisig depends on transitively.
+# leanMultisig devnet4 declares `leansig = { git = "..." }` with no
+# branch/rev — match the spec exactly so cargo dedups instead of
+# pulling two leansig copies with incompatible trait identities.
+leansig = { git = "https://github.com/leanEthereum/leanSig" }
 
-# leanMultisig tracking devnet5; pinned 2026-05-11.
-leansig_wrapper = { git = "https://github.com/leanEthereum/leanMultisig.git", rev = "b80fd0076fe3cab580cab294d1d0f7540bc89000" }
-rec_aggregation = { git = "https://github.com/leanEthereum/leanMultisig.git", rev = "b80fd0076fe3cab580cab294d1d0f7540bc89000" }
+# leanMultisig pointing at unnawut's fork on the rec-aggregation PR
+# branch — pre-merge verification that the BenchmarkReport-returning
+# API exposes per-node parity with devnet5. Bump to leanEthereum/devnet4
+# (or back to devnet5) once the PR merges.
+leansig_wrapper = { git = "https://github.com/unnawut/leanMultisig.git", rev = "610dd2d2" }
+rec_aggregation = { git = "https://github.com/unnawut/leanMultisig.git", rev = "610dd2d2" }
 
 # Branch names corresponding to the rev pins above. Cargo itself
 # ignores this section; build.rs reads it and bakes the values into
 # the runner binary so result files (and the site) can show which
 # upstream branch each run was tracking.
 [package.metadata.bench-pins]
-leansig-branch = "devnet4"
-leanmultisig-branch = "devnet5"
+leansig-branch = "main"
+leanmultisig-branch = "devnet4"
 
 [profile.release]
 lto = "thin"

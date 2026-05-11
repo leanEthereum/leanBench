@@ -83,9 +83,8 @@ pub mod xmss_wl {
 
 pub mod aggregate {
     use super::*;
-    use ::rec_aggregation::benchmark::{
-        run_aggregation_benchmark, AggregationTopology, BenchmarkReport,
-    };
+    use ::rec_aggregation::AggregationTopology;
+    use ::rec_aggregation::benchmark::{run_aggregation_benchmark_report, BenchmarkReport};
 
     /// Per-node entry for the JSON `proof_kib_by_path` field.
     /// `path = []` is the root; deeper paths are the children/leaves.
@@ -121,7 +120,7 @@ pub mod aggregate {
         let mut reports: Vec<BenchmarkReport> = Vec::with_capacity(args.samples);
         for i in 0..(args.samples + args.warmup) {
             let t = std::time::Instant::now();
-            let report = run_aggregation_benchmark(topology, false, true);
+            let report = run_aggregation_benchmark_report(topology, 0, false);
             if i >= args.warmup {
                 samples.push(t.elapsed().as_nanos());
                 if proof_sizes.is_empty() {
@@ -156,7 +155,7 @@ pub mod aggregate {
     /// signer cache). First call amortises it, so the warmup iterations matter
     /// — we count only post-warmup samples.
     pub fn flat_r2(args: &CommonArgs, n: usize) -> Result<Record> {
-        let topology = AggregationTopology { raw_xmss: n, children: vec![], log_inv_rate: 2, overlap: 0 };
+        let topology = AggregationTopology { raw_xmss: n, children: vec![], log_inv_rate: 2 };
         let (samples, proof_sizes, reports) = run_loop(args, &topology);
         let (root_kib, leaf_kib) = root_and_leaf_kib(&proof_sizes);
         Ok(make_record(
@@ -179,12 +178,11 @@ pub mod aggregate {
     /// Reports total wall time including all leaves + the recursion step.
     /// Subtract `fan × aggregate.flat_<n>_r2` for the recursion-only cost.
     pub fn tree_r2(args: &CommonArgs, fan: usize, n: usize) -> Result<Record> {
-        let leaf = AggregationTopology { raw_xmss: n, children: vec![], log_inv_rate: 2, overlap: 0 };
+        let leaf = AggregationTopology { raw_xmss: n, children: vec![], log_inv_rate: 2 };
         let topology = AggregationTopology {
             raw_xmss: 0,
             children: vec![leaf; fan],
             log_inv_rate: 2,
-            overlap: 0,
         };
         let (samples, proof_sizes, reports) = run_loop(args, &topology);
         let (root_kib, leaf_kib) = root_and_leaf_kib(&proof_sizes);
