@@ -208,17 +208,16 @@ function renderComboFilter(combos) {
 
   const updateLabel = () => {
     label.textContent = comboShortLabel(activeCombo);
-    details.title = `leansig ${activeCombo.leansig_sha} · leanmultisig ${activeCombo.leanmultisig_sha}`;
+    details.title = comboFullLabel(activeCombo);
   };
   updateLabel();
 
   menu.innerHTML = "";
   for (const c of combos) {
     const active = sameCombo(c, activeCombo);
-    const opt = el("div", { class: `combo-option${active ? " active" : ""}`, title:
-      `leansig ${c.leansig_sha}\nleanmultisig ${c.leanmultisig_sha}` },
-      el("div", { class: "combo-option-shas",
-        text: `leansig ${shortSha(c.leansig_sha)} · leanmultisig ${shortSha(c.leanmultisig_sha)}` }),
+    const opt = el("div", { class: `combo-option${active ? " active" : ""}`,
+      title: comboFullLabel(c).replace(" · ", "\n") },
+      el("div", { class: "combo-option-shas", text: comboShortLabel(c, /*withTime=*/false) }),
       el("div", { class: "combo-option-meta",
         text: `${fmtRelative(c.latest_run_ts)} · ${c.run_count} run${c.run_count === 1 ? "" : "s"}` }),
     );
@@ -237,9 +236,29 @@ function renderComboFilter(combos) {
   }
 }
 
-function comboShortLabel(c) {
+function comboShortLabel(c, withTime = true) {
   if (!c) return "no combo";
-  return `leansig ${shortSha(c.leansig_sha)} · leanmultisig ${shortSha(c.leanmultisig_sha)}  —  ${fmtRelative(c.latest_run_ts)}`;
+  const ls = `leansig ${comboRef(c.leansig_branch, c.leansig_sha)}`;
+  const lm = `leanmultisig ${comboRef(c.leanmultisig_branch, c.leanmultisig_sha)}`;
+  return withTime
+    ? `${ls} · ${lm}  —  ${fmtRelative(c.latest_run_ts)}`
+    : `${ls} · ${lm}`;
+}
+
+function comboFullLabel(c) {
+  if (!c) return "no combo";
+  const ls = `leansig ${comboRef(c.leansig_branch, c.leansig_sha, /*fullSha=*/true)}`;
+  const lm = `leanmultisig ${comboRef(c.leanmultisig_branch, c.leanmultisig_sha, /*fullSha=*/true)}`;
+  return `${ls} · ${lm}`;
+}
+
+// Render a ref as `<branch>@<sha>` when both are known, else fall back
+// to whichever we have. Historical runs (pre-branch-tracking) have
+// branch="unknown" and only get the SHA.
+function comboRef(branch, sha, fullSha = false) {
+  const s = fullSha ? (sha || "—") : shortSha(sha);
+  if (branch && branch !== "unknown") return `${branch}@${s}`;
+  return s;
 }
 
 function shortSha(s) { return s && s.length >= 8 ? s.slice(0, 8) : (s || "—"); }
@@ -1055,11 +1074,13 @@ async function renderRun() {
   // upstream leanEthereum repos via workloads/Cargo.toml.
   const treeBase = (repo) => `https://github.com/leanEthereum/${repo}/tree/`;
   const provEntries = [
-    ["rustc",            t.rustc, null],
-    ["leanSig SHA",      t.git_shas?.leansig_sha,      treeBase("leanSig")],
-    ["leanMultisig SHA", t.git_shas?.leanmultisig_sha, treeBase("leanMultisig")],
-    ["Run ID",           rec.run_id, null],
-    ["Notes",            rec.notes, null],
+    ["rustc",               t.rustc, null],
+    ["leanSig branch",      t.branches?.leansig_branch,   null],
+    ["leanSig SHA",         t.git_shas?.leansig_sha,      treeBase("leanSig")],
+    ["leanMultisig branch", t.branches?.leanmultisig_branch, null],
+    ["leanMultisig SHA",    t.git_shas?.leanmultisig_sha, treeBase("leanMultisig")],
+    ["Run ID",              rec.run_id, null],
+    ["Notes",               rec.notes, null],
   ];
   for (const [k, v, urlBase] of provEntries) {
     if (!v) continue;

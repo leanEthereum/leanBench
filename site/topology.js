@@ -128,7 +128,7 @@ function setupComboFilter(combos) {
 
   const updateLabel = () => {
     label.textContent = comboShortLabel(topoActiveCombo);
-    details.title = `leansig ${topoActiveCombo.leansig_sha} · leanmultisig ${topoActiveCombo.leanmultisig_sha}`;
+    details.title = comboFullLabel(topoActiveCombo);
   };
   updateLabel();
 
@@ -137,10 +137,9 @@ function setupComboFilter(combos) {
                 && c.leanmultisig_sha === topoActiveCombo.leanmultisig_sha;
     const opt = el("div", {
       class: `combo-option${active ? " active" : ""}`,
-      title: `leansig ${c.leansig_sha}\nleanmultisig ${c.leanmultisig_sha}`,
+      title: comboFullLabel(c).replace(" · ", "\n"),
     },
-      el("div", { class: "combo-option-shas",
-        text: `leansig ${shortSha(c.leansig_sha)} · leanmultisig ${shortSha(c.leanmultisig_sha)}` }),
+      el("div", { class: "combo-option-shas", text: comboShortLabel(c, /*withTime=*/false) }),
       el("div", { class: "combo-option-meta",
         text: `${fmtRelative(c.latest_run_ts)} · ${c.run_count} run${c.run_count === 1 ? "" : "s"}` }),
     );
@@ -188,7 +187,7 @@ function applyActiveCombo() {
   topoMachines = deriveMachinesForCombo(topoActiveCombo);
   if (!topoMachines.length) {
     document.querySelector("#topology-results").innerHTML =
-      `<p>No aggregate-workload data in this combo (leansig ${shortSha(topoActiveCombo.leansig_sha)} · leanmultisig ${shortSha(topoActiveCombo.leanmultisig_sha)}).</p>`;
+      `<p>No aggregate-workload data in this combo (${comboShortLabel(topoActiveCombo, /*withTime=*/false)}).</p>`;
     document.querySelector("#topo-cost-grid").innerHTML = "";
     return;
   }

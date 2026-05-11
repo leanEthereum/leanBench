@@ -106,7 +106,7 @@ function renderTrendChart(machine, chronologicalCombos, best) {
   grid.innerHTML = "";
 
   const labels = chronologicalCombos.map((c) =>
-    `${shortSha(c.leansig_sha)}·${shortSha(c.leanmultisig_sha)}`);
+    `${comboRef(c.leansig_branch, c.leansig_sha)}·${comboRef(c.leanmultisig_branch, c.leanmultisig_sha)}`);
 
   let added = 0;
   for (const [i, h] of TREND_HEADLINES.entries()) {
@@ -254,8 +254,8 @@ function renderTrendTable(machine, newestFirstCombos, best) {
       el("td", { class: "trend-name" },
         el("a", {
           href: link,
-          title: `leansig ${c.leansig_sha}\nleanmultisig ${c.leanmultisig_sha}`,
-        }, `${shortSha(c.leansig_sha)} · ${shortSha(c.leanmultisig_sha)}`)),
+          title: comboFullLabel(c).replace(" · ", "\n"),
+        }, comboShortLabel(c, /*withTime=*/false))),
       el("td", { class: "trend-ts", text: fmtRelative(c.latest_run_ts) }),
       ...TREND_HEADLINES.map((h) => el("td", { text: fmtMs(best(c, h.name)) })),
     ));

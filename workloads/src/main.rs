@@ -23,6 +23,14 @@ const LEANMULTISIG_SHA: &str = match option_env!("LEANMULTISIG_SHA") {
     Some(s) => s,
     None => "unknown",
 };
+const LEANSIG_BRANCH: &str = match option_env!("LEANSIG_BRANCH") {
+    Some(s) => s,
+    None => "unknown",
+};
+const LEANMULTISIG_BRANCH: &str = match option_env!("LEANMULTISIG_BRANCH") {
+    Some(s) => s,
+    None => "unknown",
+};
 
 #[derive(Parser)]
 #[command(version, about = "Run one leanSig / leanMultisig workload and emit JSON samples.")]
@@ -83,6 +91,8 @@ struct Record {
     meta: serde_json::Value,
     leansig_sha: &'static str,
     leanmultisig_sha: &'static str,
+    leansig_branch: &'static str,
+    leanmultisig_branch: &'static str,
 }
 
 fn main() -> Result<()> {
@@ -134,5 +144,7 @@ fn make_record(
         meta,
         leansig_sha: LEANSIG_SHA,
         leanmultisig_sha: LEANMULTISIG_SHA,
+        leansig_branch: LEANSIG_BRANCH,
+        leanmultisig_branch: LEANMULTISIG_BRANCH,
     }
 }

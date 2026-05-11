@@ -90,19 +90,24 @@ pub mod leansig {
 }
 
 pub mod xmss_wl {
+    // GeneralizedXMSS at LOG_LIFETIME=32 — the variant leanMultisig's
+    // mainnet ships. Counterpart to the leansig.* module above, which
+    // measures lifetime-2^20 SIGTargetSumLifetime20W4NoOff.
     use super::*;
-    use ::backend::KoalaBear;
-    use ::xmss::signers_cache::{message_for_benchmark, BENCHMARK_SLOT};
-    use ::xmss::{xmss_key_gen, xmss_sign, xmss_verify, MESSAGE_LEN_FE};
+    use ::leansig::serialization::Serializable;
+    use ::leansig::signature::SignatureScheme;
+    use ::leansig_wrapper::{LeanSigScheme as Scheme, LOG_LIFETIME, MESSAGE_LENGTH};
+    use ::rec_aggregation::signatures_cache::BENCHMARK_SLOT;
     use rand::{rngs::StdRng, RngExt, SeedableRng};
 
     pub fn keygen(args: &CommonArgs) -> Result<Record> {
+        // Activate only one epoch — keygen scales linearly in epoch
+        // count and lifetime 2^32 is infeasible to materialize in full.
         let mut samples = Vec::with_capacity(args.samples);
         for i in 0..(args.samples + args.warmup) {
             let mut rng = StdRng::seed_from_u64(args.seed ^ i as u64);
-            let seed: [u8; 32] = rng.random();
             let t = std::time::Instant::now();
-            let _ = xmss_key_gen(seed, BENCHMARK_SLOT, BENCHMARK_SLOT + 1);
+            let _ = Scheme::key_gen(&mut rng, BENCHMARK_SLOT as usize, 1);
             if i >= args.warmup {
                 samples.push(t.elapsed().as_nanos());
             }
@@ -111,46 +116,50 @@ pub mod xmss_wl {
             "xmss.keygen",
             samples,
             args.warmup,
-            serde_json::json!({ "slot_range": 1, "log_lifetime": 32 }),
+            serde_json::json!({ "log_lifetime": LOG_LIFETIME, "num_active_epochs": 1 }),
         ))
     }
 
     pub fn sign(args: &CommonArgs) -> Result<Record> {
         let mut rng = StdRng::seed_from_u64(args.seed);
-        let seed: [u8; 32] = rng.random();
-        let (sk, _pk) = xmss_key_gen(seed, BENCHMARK_SLOT, BENCHMARK_SLOT + 1).expect("keygen");
-        let msg: [KoalaBear; MESSAGE_LEN_FE] = message_for_benchmark();
+        let (_pk, sk) = Scheme::key_gen(&mut rng, BENCHMARK_SLOT as usize, 1);
+        let msg: [u8; MESSAGE_LENGTH] = rng.random();
 
         let samples = time_loop(args, || {
-            let _ = xmss_sign(&mut rng, &sk, &msg, BENCHMARK_SLOT).expect("sign");
+            let _ = Scheme::sign(&sk, BENCHMARK_SLOT, &msg).expect("sign");
         });
-        // One signature for size metadata.
-        let sig = xmss_sign(&mut rng, &sk, &msg, BENCHMARK_SLOT).expect("sign");
-        let sig_bytes = postcard::to_allocvec(&sig).expect("serialize sig").len();
+        let sig = Scheme::sign(&sk, BENCHMARK_SLOT, &msg).expect("sign");
+        let sig_bytes = sig.to_bytes().len();
         Ok(make_record(
             "xmss.sign",
             samples,
             args.warmup,
-            serde_json::json!({ "message_len_fe": MESSAGE_LEN_FE, "signature_bytes": sig_bytes }),
+            serde_json::json!({
+                "log_lifetime": LOG_LIFETIME,
+                "message_bytes": MESSAGE_LENGTH,
+                "signature_bytes": sig_bytes,
+            }),
         ))
     }
 
     pub fn verify(args: &CommonArgs) -> Result<Record> {
         let mut rng = StdRng::seed_from_u64(args.seed);
-        let seed: [u8; 32] = rng.random();
-        let (sk, pk) = xmss_key_gen(seed, BENCHMARK_SLOT, BENCHMARK_SLOT + 1).expect("keygen");
-        let msg: [KoalaBear; MESSAGE_LEN_FE] = message_for_benchmark();
-        let sig = xmss_sign(&mut rng, &sk, &msg, BENCHMARK_SLOT).expect("sign");
+        let (pk, sk) = Scheme::key_gen(&mut rng, BENCHMARK_SLOT as usize, 1);
+        let msg: [u8; MESSAGE_LENGTH] = rng.random();
+        let sig = Scheme::sign(&sk, BENCHMARK_SLOT, &msg).expect("sign");
 
         let samples = time_loop(args, || {
-            xmss_verify(&pk, &msg, &sig, BENCHMARK_SLOT).expect("verify");
+            assert!(Scheme::verify(&pk, BENCHMARK_SLOT, &msg, &sig));
         });
-        let sig_bytes = postcard::to_allocvec(&sig).expect("serialize sig").len();
+        let sig_bytes = sig.to_bytes().len();
         Ok(make_record(
             "xmss.verify",
             samples,
             args.warmup,
-            serde_json::json!({ "signature_bytes": sig_bytes }),
+            serde_json::json!({
+                "log_lifetime": LOG_LIFETIME,
+                "signature_bytes": sig_bytes,
+            }),
         ))
     }
 }

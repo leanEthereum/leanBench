@@ -137,13 +137,15 @@ def build_runner() -> Path:
 
 def run_workload(
     binary: Path, cli_args: list[str], samples: int, warmup: int,
-) -> tuple[dict, dict] | None:
-    """Run one workload subprocess, sample resources, return (record, shas).
+) -> tuple[dict, dict, dict] | None:
+    """Run one workload subprocess, sample resources, return (record, shas, branches).
 
-    `shas` is `{"leansig_sha", "leanmultisig_sha"}` extracted from the same
-    Rust output. Caller uses this to populate `toolchain.git_shas` once per
-    run; the SHAs are constants baked into the binary so any successful run
-    has the authoritative values. Returns None on failure.
+    `shas` is `{"leansig_sha", "leanmultisig_sha"}` and `branches` is
+    `{"leansig_branch", "leanmultisig_branch"}`, both extracted from the
+    Rust output. Caller uses these to populate `toolchain.git_shas` and
+    `toolchain.branches` once per run; the values are constants baked
+    into the binary so any successful run has the authoritative pair.
+    Returns None on failure.
     """
     proc = subprocess.Popen(
         [str(binary), *cli_args,
@@ -190,7 +192,11 @@ def run_workload(
         "leansig_sha": rec.get("leansig_sha", "unknown"),
         "leanmultisig_sha": rec.get("leanmultisig_sha", "unknown"),
     }
-    return record, shas
+    branches = {
+        "leansig_branch": rec.get("leansig_branch", "unknown"),
+        "leanmultisig_branch": rec.get("leanmultisig_branch", "unknown"),
+    }
+    return record, shas, branches
 
 
 def _summarize(samples: list[int]) -> dict:
@@ -235,20 +241,23 @@ def main():
 
     workload_results = []
     shas: dict = {"leansig_sha": "unknown", "leanmultisig_sha": "unknown"}
+    branches: dict = {"leansig_branch": "unknown", "leanmultisig_branch": "unknown"}
     for w in workloads_to_run:
         n = w.samples_override if w.samples_override is not None else args.samples
         suffix = f" (n={n})" if w.samples_override is not None else ""
         print(f"  → {w.name}{suffix} ...", end="", flush=True)
         result = run_workload(binary, w.cli_args, n, args.warmup)
         if result is not None:
-            rec, run_shas = result
+            rec, run_shas, run_branches = result
             mean_ms = rec["timing"]["mean_ns"] / 1e6
             print(f" {mean_ms:.2f} ms (n={rec['timing']['n']})")
             workload_results.append(rec)
-            # SHAs are baked-in constants identical across every run, so
-            # any successful workload supplies the authoritative pair.
+            # SHAs and branches are baked-in constants identical across
+            # every run, so any successful workload supplies the
+            # authoritative pair.
             if shas["leansig_sha"] == "unknown":
                 shas = run_shas
+                branches = run_branches
         else:
             print(" FAILED")
 
@@ -259,7 +268,11 @@ def main():
         "run_id": run_id,
         "timestamp": dt.datetime.now(dt.timezone.utc).isoformat(),
         "machine": machine,
-        "toolchain": {**sysinfo.toolchain(), "git_shas": shas},
+        "toolchain": {
+            **sysinfo.toolchain(),
+            "git_shas": shas,
+            "branches": branches,
+        },
         "workloads": workload_results,
         "notes": args.notes,
     }

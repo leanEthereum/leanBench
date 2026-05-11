@@ -53,6 +53,7 @@ def build_index(results_dir: Path) -> dict:
             "timestamp": r["timestamp"],
             "file": r["file"],
             "git_shas": r["git_shas"],
+            "branches": r["branches"],
             "workloads": r["workloads"],
         })
     for m in machines.values():
@@ -136,7 +137,9 @@ def _summarize(rec: dict, filename: str) -> dict:
          **_proof_and_node_times(w)}
         for w in rec.get("workloads", [])
     ]
-    shas = (rec.get("toolchain") or {}).get("git_shas") or {}
+    toolchain = rec.get("toolchain") or {}
+    shas = toolchain.get("git_shas") or {}
+    branches = toolchain.get("branches") or {}
     return {
         "run_id": rec.get("run_id"),
         "timestamp": rec.get("timestamp"),
@@ -145,6 +148,10 @@ def _summarize(rec: dict, filename: str) -> dict:
         "git_shas": {
             "leansig_sha":      shas.get("leansig_sha", "unknown"),
             "leanmultisig_sha": shas.get("leanmultisig_sha", "unknown"),
+        },
+        "branches": {
+            "leansig_branch":      branches.get("leansig_branch", "unknown"),
+            "leanmultisig_branch": branches.get("leanmultisig_branch", "unknown"),
         },
         "workloads": workloads,
     }
@@ -159,11 +166,13 @@ def _combos(runs: list[dict]) -> list[dict]:
     for r in runs:
         key = (r["git_shas"]["leansig_sha"], r["git_shas"]["leanmultisig_sha"])
         b = buckets.setdefault(key, {
-            "leansig_sha":      key[0],
-            "leanmultisig_sha": key[1],
-            "latest_run_ts":    r["timestamp"],
-            "run_count":        0,
-            "_machines":        set(),
+            "leansig_sha":         key[0],
+            "leanmultisig_sha":    key[1],
+            "leansig_branch":      r["branches"].get("leansig_branch", "unknown"),
+            "leanmultisig_branch": r["branches"].get("leanmultisig_branch", "unknown"),
+            "latest_run_ts":       r["timestamp"],
+            "run_count":           0,
+            "_machines":           set(),
         })
         b["run_count"] += 1
         b["_machines"].add(r["machine"].get("fingerprint"))
@@ -173,11 +182,13 @@ def _combos(runs: list[dict]) -> list[dict]:
     out = []
     for b in buckets.values():
         out.append({
-            "leansig_sha":      b["leansig_sha"],
-            "leanmultisig_sha": b["leanmultisig_sha"],
-            "latest_run_ts":    b["latest_run_ts"],
-            "run_count":        b["run_count"],
-            "machine_count":    len(b["_machines"]),
+            "leansig_sha":         b["leansig_sha"],
+            "leanmultisig_sha":    b["leanmultisig_sha"],
+            "leansig_branch":      b["leansig_branch"],
+            "leanmultisig_branch": b["leanmultisig_branch"],
+            "latest_run_ts":       b["latest_run_ts"],
+            "run_count":           b["run_count"],
+            "machine_count":       len(b["_machines"]),
         })
     out.sort(key=lambda c: c["latest_run_ts"], reverse=True)
     return out

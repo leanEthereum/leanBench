@@ -17,16 +17,28 @@ anyhow = "1.0"
 rand = "0.10"
 postcard = { version = "1.1", features = ["alloc"] }
 
-# Pinned upstream SHAs. Bump deliberately.
-# leanSig @ main as of 2026-05-08
-leansig = { git = "https://github.com/leanEthereum/leanSig.git", rev = "c08a3bae74b0d85379cab72dcbefa4091546ecbb" }
+# Pinned upstream refs. Bump deliberately. Each dep is locked to a
+# specific rev for reproducibility; the corresponding branch name
+# (informational, baked into the binary by build.rs for UI display)
+# lives in [package.metadata.bench-pins] below. Bump them together.
+#
+# leanSig: tracks whatever leanMultisig depends on transitively
+# (currently branch = "devnet4"). Match the spec exactly so cargo
+# dedups instead of pulling two leansig copies with incompatible
+# trait identities.
+leansig = { git = "https://github.com/leanEthereum/leanSig", branch = "devnet4" }
 
-# leanMultisig @ main as of 2026-05-08. Must include PR #206 (52abd7f2)
-# or later — that's where the structured-benchmark API lives, which
-# the runner uses to capture per-node proof_kib without parsing stdout.
-xmss            = { git = "https://github.com/leanEthereum/leanMultisig.git", rev = "44635cabde097ac7e774297c22dcb447323e6adc" }
-rec_aggregation = { git = "https://github.com/leanEthereum/leanMultisig.git", rev = "44635cabde097ac7e774297c22dcb447323e6adc" }
-backend         = { git = "https://github.com/leanEthereum/leanMultisig.git", rev = "44635cabde097ac7e774297c22dcb447323e6adc" }
+# leanMultisig tracking devnet5; pinned 2026-05-11.
+leansig_wrapper = { git = "https://github.com/leanEthereum/leanMultisig.git", rev = "b80fd0076fe3cab580cab294d1d0f7540bc89000" }
+rec_aggregation = { git = "https://github.com/leanEthereum/leanMultisig.git", rev = "b80fd0076fe3cab580cab294d1d0f7540bc89000" }
+
+# Branch names corresponding to the rev pins above. Cargo itself
+# ignores this section; build.rs reads it and bakes the values into
+# the runner binary so result files (and the site) can show which
+# upstream branch each run was tracking.
+[package.metadata.bench-pins]
+leansig-branch = "devnet4"
+leanmultisig-branch = "devnet5"
 
 [profile.release]
 lto = "thin"
