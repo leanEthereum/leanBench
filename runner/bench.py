@@ -40,9 +40,24 @@ class Workload:
     samples_override: int | None = field(default=None, kw_only=True)
 
 
+# xmss.sign uses rejection sampling against the WOTS+ TargetSum constraint;
+# the per-sign cost is geometric and stays heavy-tailed (cv ≈ 0.85 across
+# every machine in the matrix) regardless of how high the acceptance rate
+# is — cv = √(1−p)/p ≈ 1 for any small p. n=30 gives a 95% CI on the mean
+# of about ±30% (e.g. ±2.3 ms on a 7.6 ms mean on n1-standard-4); n=300
+# tightens that to ~±10%. Other workloads sit at cv ≈ 0.05 and stay at
+# n=30.
+#
+# (Pre-2026-05-05, leanMultisig WOTS+ also enforced a `V_GRINDING` lock
+# that pushed acceptance to ≈ 1 in 2.3k attempts and the mean to ~220 ms.
+# The grinding lock was removed in the 123 → 124 bit security rework, so
+# the mean dropped ~45× — but the cv is unchanged.)
 ALL_WORKLOADS: list[Workload] = [
+    Workload(["leansig-keygen"],            "leansig.keygen",          in_default_set=False),
+    Workload(["leansig-sign"],              "leansig.sign",            in_default_set=True),
+    Workload(["leansig-verify"],            "leansig.verify",          in_default_set=True),
     Workload(["xmss-keygen"],               "xmss.keygen",             in_default_set=False),
-    Workload(["xmss-sign"],                 "xmss.sign",               in_default_set=True),
+    Workload(["xmss-sign"],                 "xmss.sign",               in_default_set=True, samples_override=300),
     Workload(["xmss-verify"],               "xmss.verify",             in_default_set=True),
     Workload(["aggregate-flat", "125"],     "aggregate.flat_125_r2",   in_default_set=True),
     Workload(["aggregate-flat", "250"],     "aggregate.flat_250_r2",   in_default_set=True),
@@ -70,7 +85,7 @@ def parse_args():
                     help="Timed samples per workload (warm-up excluded)")
     ap.add_argument("--warmup", type=int, default=3)
     ap.add_argument("--include-keygen", action="store_true",
-                    help="Also run xmss.keygen (slow on lifetime-2^32 schemes)")
+                    help="Also run leansig.keygen and xmss.keygen (slow)")
     ap.add_argument("--only", action="append", default=None,
                     help="Run only these workload names; repeatable. Implies --include-keygen "
                          "semantics if you list them explicitly.")
