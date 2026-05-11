@@ -249,13 +249,14 @@ function renderTrendTable(machine, newestFirstCombos, best) {
   table.appendChild(thead);
   const tbody = el("tbody");
   for (const c of newestFirstCombos) {
-    const link = `index.html?leansig=${shortSha(c.leansig_sha)}&leanmultisig=${shortSha(c.leanmultisig_sha)}`;
+    const indexLink = `index.html?leansig=${shortSha(c.leansig_sha)}&leanmultisig=${shortSha(c.leanmultisig_sha)}`;
+    const cell = el("td", { class: "trend-name", title: comboFullLabel(c).replace(" · ", "\n") },
+      comboLabelDom(c, /*withTime=*/false),
+      document.createTextNode("  "),
+      el("a", { href: indexLink, title: "view runs in index" }, "→ runs"),
+    );
     tbody.appendChild(el("tr", {},
-      el("td", { class: "trend-name" },
-        el("a", {
-          href: link,
-          title: comboFullLabel(c).replace(" · ", "\n"),
-        }, comboShortLabel(c, /*withTime=*/false))),
+      cell,
       el("td", { class: "trend-ts", text: fmtRelative(c.latest_run_ts) }),
       ...TREND_HEADLINES.map((h) => el("td", { text: fmtMs(best(c, h.name)) })),
     ));

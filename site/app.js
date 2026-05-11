@@ -207,7 +207,8 @@ function renderComboFilter(combos) {
   }
 
   const updateLabel = () => {
-    label.textContent = comboShortLabel(activeCombo);
+    label.innerHTML = "";
+    label.appendChild(comboLabelDom(activeCombo));
     details.title = comboFullLabel(activeCombo);
   };
   updateLabel();
@@ -217,7 +218,7 @@ function renderComboFilter(combos) {
     const active = sameCombo(c, activeCombo);
     const opt = el("div", { class: `combo-option${active ? " active" : ""}`,
       title: comboFullLabel(c).replace(" · ", "\n") },
-      el("div", { class: "combo-option-shas", text: comboShortLabel(c, /*withTime=*/false) }),
+      el("div", { class: "combo-option-shas" }, comboLabelDom(c, /*withTime=*/false)),
       el("div", { class: "combo-option-meta",
         text: `${fmtRelative(c.latest_run_ts)} · ${c.run_count} run${c.run_count === 1 ? "" : "s"}` }),
     );
@@ -262,6 +263,40 @@ function comboRef(branch, sha, fullSha = false) {
 }
 
 function shortSha(s) { return s && s.length >= 8 ? s.slice(0, 8) : (s || "—"); }
+
+// DOM version of comboShortLabel that turns each `branch@sha` into a
+// GitHub link to that commit's tree. Use this where we render to DOM
+// (dropdown options, trend table cells); fall back to comboShortLabel
+// for text-only contexts like tooltips and Chart.js axis labels.
+function comboLabelDom(c, withTime = true) {
+  const frag = document.createDocumentFragment();
+  if (!c) { frag.appendChild(document.createTextNode("no combo")); return frag; }
+  frag.appendChild(document.createTextNode("leansig "));
+  frag.appendChild(repoRefLink("leanSig", c.leansig_branch, c.leansig_sha));
+  frag.appendChild(document.createTextNode(" · leanmultisig "));
+  frag.appendChild(repoRefLink("leanMultisig", c.leanmultisig_branch, c.leanmultisig_sha));
+  if (withTime) {
+    frag.appendChild(document.createTextNode(`  —  ${fmtRelative(c.latest_run_ts)}`));
+  }
+  return frag;
+}
+
+// Render `branch@sha` as an <a> linking to the GitHub tree at that
+// commit. stopPropagation so a click on the link doesn't also bubble
+// to a parent combo-option's select handler.
+function repoRefLink(repo, branch, sha) {
+  const display = comboRef(branch, sha);
+  if (!sha || !/^[0-9a-f]{7,40}$/i.test(sha)) {
+    return document.createTextNode(display);
+  }
+  return el("a", {
+    href: `https://github.com/leanEthereum/${repo}/tree/${sha}`,
+    target: "_blank",
+    rel: "noopener",
+    title: `${repo} ${sha}`,
+    onclick: (e) => e.stopPropagation(),
+  }, display);
+}
 
 function rerenderIndexForCombo() {
   const machines = filteredMachines(indexData.machines || [], activeCombo);

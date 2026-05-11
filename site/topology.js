@@ -127,7 +127,8 @@ function setupComboFilter(combos) {
   }
 
   const updateLabel = () => {
-    label.textContent = comboShortLabel(topoActiveCombo);
+    label.innerHTML = "";
+    label.appendChild(comboLabelDom(topoActiveCombo));
     details.title = comboFullLabel(topoActiveCombo);
   };
   updateLabel();
@@ -139,7 +140,7 @@ function setupComboFilter(combos) {
       class: `combo-option${active ? " active" : ""}`,
       title: comboFullLabel(c).replace(" · ", "\n"),
     },
-      el("div", { class: "combo-option-shas", text: comboShortLabel(c, /*withTime=*/false) }),
+      el("div", { class: "combo-option-shas" }, comboLabelDom(c, /*withTime=*/false)),
       el("div", { class: "combo-option-meta",
         text: `${fmtRelative(c.latest_run_ts)} · ${c.run_count} run${c.run_count === 1 ? "" : "s"}` }),
     );
