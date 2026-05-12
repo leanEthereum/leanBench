@@ -22,6 +22,56 @@ const TREND_HEADLINES = [
 let trendIndexData = null;
 let trendCharts = []; // one per workload — destroyed/rebuilt on machine change
 let trendMachines = []; // closed over by helpers below for the proof-size lookup
+let trendMarkings = []; // arbitrary annotations from site/trend-markings.json
+
+// Chart.js plugin: draw a faded dashed vertical line + outlined numbered
+// badge in the top padding (off the plot grid) at each marking's
+// resolved combo position. The badge number keys into the legend below
+// the chart grid where the full explanation lives.
+const trendMarkingsPlugin = {
+  id: "trend-markings",
+  afterDatasetsDraw(chart, _args, opts) {
+    if (!opts || !opts.markings || !opts.markings.length) return;
+    const ctx = chart.ctx;
+    const x = chart.scales.x;
+    const y = chart.scales.y;
+    const BADGE_R = 5;
+    const BADGE_CY = y.top - BADGE_R - 6; // center sits clearly above the plot, no data-point overlap
+    const grey = getComputedStyle(document.body)
+      .getPropertyValue("--ink-faint").trim() || "#888";
+    ctx.save();
+    for (const m of opts.markings) {
+      const px = x.getPixelForValue(m.index);
+      if (!Number.isFinite(px)) continue;
+      // Dashed vertical line spans the full plot area + the gap up to the
+      // badge so the connection reads.
+      ctx.strokeStyle = "rgba(128,128,128,0.3)";
+      ctx.lineWidth = 1;
+      ctx.setLineDash([4, 3]);
+      ctx.beginPath();
+      ctx.moveTo(px, BADGE_CY + BADGE_R);
+      ctx.lineTo(px, y.bottom);
+      ctx.stroke();
+      // Filled grey badge — subtle marker, full readability via the
+      // numbered legend below the chart grid. globalAlpha fades the
+      // whole badge (fill + numeral together) so contrast is preserved.
+      ctx.setLineDash([]);
+      ctx.globalAlpha = 0.5;
+      ctx.fillStyle = grey;
+      ctx.beginPath();
+      ctx.arc(px, BADGE_CY, BADGE_R, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#fff";
+      ctx.font = "600 7px ui-monospace, SFMono-Regular, monospace";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(String(m.number), px, BADGE_CY);
+      ctx.globalAlpha = 1;
+    }
+    ctx.restore();
+  },
+};
+Chart.register(trendMarkingsPlugin);
 
 async function renderTrendPage() {
   try {
@@ -31,6 +81,12 @@ async function renderTrendPage() {
       "<p>No results yet — run a sweep first.</p>";
     return;
   }
+  // Markings are arbitrary annotations editable from site/trend-markings.json
+  // without touching code. Missing or malformed file → just render no markings.
+  try {
+    const r = await fetch("trend-markings.json");
+    if (r.ok) trendMarkings = await r.json();
+  } catch (e) { /* ignore */ }
   const combos = trendIndexData.combos || [];
   if (combos.length < 2) {
     document.querySelector("#trend-chart-section").innerHTML =
@@ -107,9 +163,30 @@ function renderTrendChart(machine, chronologicalCombos, best) {
   for (const c of trendCharts) c.destroy();
   trendCharts = [];
   grid.innerHTML = "";
+  // Clear any previous legend (we always rebuild on machine change).
+  document.querySelector("#trend-markings-legend")?.remove();
 
   const labels = chronologicalCombos.map((c) =>
     `${comboRef(c.leansig_branch, c.leansig_sha)}·${comboRef(c.leanmultisig_branch, c.leanmultisig_sha)}`);
+
+  // Resolve marking SHA-prefix pairs to combo indices in the current
+  // chronological list. Markings whose combo isn't in this view are
+  // dropped. The dashed line lands directly on the matched combo's tick,
+  // and the legend below documents what changed at that combo. Sort by
+  // chronological position so badges read 1..N left-to-right regardless
+  // of the order entries appear in trend-markings.json.
+  const resolvedMarkings = (trendMarkings || [])
+    .map((m) => {
+      const idx = chronologicalCombos.findIndex((c) =>
+        c.leansig_sha && c.leanmultisig_sha
+        && c.leansig_sha.startsWith(m.from_leansig_sha || "")
+        && c.leanmultisig_sha.startsWith(m.from_leanmultisig_sha || ""));
+      if (idx < 0) return null;
+      return { index: idx, combo: chronologicalCombos[idx], label: m.label };
+    })
+    .filter(Boolean)
+    .sort((a, b) => a.index - b.index)
+    .map((m, i) => ({ ...m, number: i + 1 }));
 
   let added = 0;
   for (const [i, h] of TREND_HEADLINES.entries()) {
@@ -193,6 +270,9 @@ function renderTrendChart(machine, chronologicalCombos, best) {
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          // Reserve space above the plot for the trend-markings badges
+          // (only when at least one marking is on this chart).
+          layout: { padding: { top: resolvedMarkings.length ? 18 : 0 } },
           plugins: {
             legend: { display: false },
             tooltip: {
@@ -205,15 +285,71 @@ function renderTrendChart(machine, chronologicalCombos, best) {
                 },
               },
             },
+            "trend-markings": { markings: resolvedMarkings },
           },
           scales,
         },
       });
       trendCharts.push(chart);
+
+      // Make the on-chart badges clickable: click anywhere within (a tiny
+      // halo around) a badge to scroll the legend row into view. Keep
+      // the geometry in sync with the plugin's drawing constants above
+      // (BADGE_R = 5, BADGE_CY = y.top - BADGE_R - 6).
+      if (resolvedMarkings.length) {
+        const BADGE_R = 5;
+        const HIT_R = BADGE_R + 3; // small click halo for usability
+        const badgeHit = (e) => {
+          const rect = canvas.getBoundingClientRect();
+          const cx = e.clientX - rect.left;
+          const cy = e.clientY - rect.top;
+          const xs = chart.scales.x;
+          const ys = chart.scales.y;
+          const badgeCY = ys.top - BADGE_R - 6;
+          for (const m of resolvedMarkings) {
+            const badgeCX = xs.getPixelForValue(m.index);
+            const dx = cx - badgeCX;
+            const dy = cy - badgeCY;
+            if (dx * dx + dy * dy <= HIT_R * HIT_R) return m;
+          }
+          return null;
+        };
+        canvas.addEventListener("click", (e) => {
+          const m = badgeHit(e);
+          if (!m) return;
+          const row = document.getElementById(`marking-${m.number}`);
+          if (!row) return;
+          row.scrollIntoView({ behavior: "smooth", block: "center" });
+          row.classList.remove("marking-row-flash");
+          // Force reflow so the animation restarts on a repeat click.
+          // eslint-disable-next-line no-unused-expressions
+          row.offsetWidth;
+          row.classList.add("marking-row-flash");
+        });
+        canvas.addEventListener("mousemove", (e) => {
+          canvas.style.cursor = badgeHit(e) ? "pointer" : "";
+        });
+      }
     });
   }
   if (!added) {
     grid.innerHTML = "<p>No headline-workload data on this machine across combos.</p>";
+  }
+
+  // Legend for the on-chart numbered badges. One row per marking, in the
+  // same numbering used by the on-chart shapes.
+  if (resolvedMarkings.length) {
+    const legend = el("div", { id: "trend-markings-legend", class: "trend-markings-legend" });
+    legend.appendChild(el("h3", { text: "Annotations" }));
+    for (const m of resolvedMarkings) {
+      const row = el("div", { id: `marking-${m.number}`, class: "marking-row" });
+      row.appendChild(el("span", { class: "marking-badge", text: String(m.number) }));
+      row.appendChild(el("span", { class: "marking-combo" },
+        comboLabelDom(m.combo, /*withTime=*/false)));
+      row.appendChild(el("span", { class: "marking-label", text: m.label }));
+      legend.appendChild(row);
+    }
+    grid.parentNode.appendChild(legend);
   }
 }
 
