@@ -61,6 +61,18 @@ ALL_WORKLOADS: list[Workload] = [
     Workload(["aggregate-tree", "8", "125"], "aggregate.tree_8x125_r2", in_default_set=True, samples_override=5),
     Workload(["aggregate-tree", "8", "250"], "aggregate.tree_8x250_r2", in_default_set=True, samples_override=5),
     Workload(["aggregate-tree", "8", "500"], "aggregate.tree_8x500_r2", in_default_set=True, samples_override=5),
+    # split / merge_many strategies on parent type-2 (K x N at LOG_INV_RATE_PROD=2).
+    # Heavier than flat/tree because every iteration rebuilds the parent type-2;
+    # samples_override=5 on the merge / strategy variants keeps the budget bounded.
+    Workload(["split", "125", "2"],                "aggregate.split_2x125_r2",                in_default_set=True),
+    Workload(["split", "250", "2"],                "aggregate.split_2x250_r2",                in_default_set=True),
+    Workload(["split", "500", "2"],                "aggregate.split_2x500_r2",                in_default_set=True, samples_override=5),
+    Workload(["merge-split-and-original", "125", "2"], "aggregate.merge_split_and_original_2x125_r2", in_default_set=True),
+    Workload(["merge-split-and-original", "250", "2"], "aggregate.merge_split_and_original_2x250_r2", in_default_set=True, samples_override=5),
+    Workload(["merge-split-and-original", "500", "2"], "aggregate.merge_split_and_original_2x500_r2", in_default_set=True, samples_override=5),
+    Workload(["merge-split-and-leaves", "125", "2", "125"], "aggregate.merge_split_and_leaves_2x125x125_r2", in_default_set=True),
+    Workload(["merge-split-and-leaves", "250", "2", "250"], "aggregate.merge_split_and_leaves_2x250x250_r2", in_default_set=True, samples_override=5),
+    Workload(["merge-split-and-leaves", "500", "2", "500"], "aggregate.merge_split_and_leaves_2x500x500_r2", in_default_set=True, samples_override=5),
 ]
 
 

@@ -23,25 +23,24 @@ postcard = { version = "1.1", features = ["alloc"] }
 # lives in [package.metadata.bench-pins] below. Bump them together.
 #
 # leanSig: tracks whatever leanMultisig depends on transitively.
-# leanMultisig devnet4 declares `leansig = { git = "..." }` with no
-# branch/rev — match the spec exactly so cargo dedups instead of
-# pulling two leansig copies with incompatible trait identities.
-leansig = { git = "https://github.com/leanEthereum/leanSig" }
+# leanMultisig devnet5 declares `leansig = { git = "...", branch = "devnet4" }`
+# — match the spec exactly so cargo dedups instead of pulling two leansig
+# copies with incompatible trait identities.
+leansig = { git = "https://github.com/leanEthereum/leanSig", branch = "devnet4" }
 
-# leanMultisig pointing at unnawut's fork on the rec-aggregation PR
-# branch — pre-merge verification that the BenchmarkReport-returning
-# API exposes per-node parity with devnet5. Bump to leanEthereum/devnet4
-# (or back to devnet5) once the PR merges.
-leansig_wrapper = { git = "https://github.com/unnawut/leanMultisig.git", rev = "610dd2d2" }
-rec_aggregation = { git = "https://github.com/unnawut/leanMultisig.git", rev = "610dd2d2" }
+# leanMultisig devnet5 — pinned to the merged "add benchmark drivers for
+# split / merge_split_and_original / merge_split_and_leaves" commit so the
+# new aggregate.split_* / aggregate.merge_split_* workloads compile.
+leansig_wrapper = { git = "https://github.com/leanEthereum/leanMultisig.git", rev = "6b2fa039" }
+rec_aggregation = { git = "https://github.com/leanEthereum/leanMultisig.git", rev = "6b2fa039" }
 
 # Branch names corresponding to the rev pins above. Cargo itself
 # ignores this section; build.rs reads it and bakes the values into
 # the runner binary so result files (and the site) can show which
 # upstream branch each run was tracking.
 [package.metadata.bench-pins]
-leansig-branch = "main"
-leanmultisig-branch = "devnet4"
+leansig-branch = "devnet4"
+leanmultisig-branch = "devnet5"
 
 [profile.release]
 lto = "thin"
@@ -52,10 +51,9 @@ debug = 1
 # repos alongside leanBench (i.e. under workspace/). Keep commented in
 # committed code so fresh clones pull the pinned upstream SHAs.
 #
-# [patch."https://github.com/leanEthereum/leanSig.git"]
+# [patch."https://github.com/leanEthereum/leanSig"]
 # leansig = { path = "../../leanSig" }
 #
 # [patch."https://github.com/leanEthereum/leanMultisig.git"]
-# xmss            = { path = "../../leanMultisig/crates/xmss" }
+# leansig_wrapper = { path = "../../leanMultisig/crates/leansig_wrapper" }
 # rec_aggregation = { path = "../../leanMultisig/crates/rec_aggregation" }
-# backend         = { path = "../../leanMultisig/crates/backend" }

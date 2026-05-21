@@ -331,29 +331,48 @@ function rerenderIndexForCombo() {
   }
 }
 
-// One chart per workload, grouped by category prefix (leansig / xmss / aggregate).
+// One chart per workload, grouped by category. leansig / xmss stay at the top
+// level; aggregate.* is subdivided by second segment (flat / tree / split /
+// merge) so the leanMultisig section breaks down into focused subsections.
 // Unknown prefixes fall into an "other" bucket so new workloads render without
 // code changes.
 function renderCompare(container, workloadNames, machines) {
   const grouped = {};
   for (const name of workloadNames) {
-    const prefix = name.split(".")[0];
-    (grouped[prefix] = grouped[prefix] || []).push(name);
+    const [head, second = ""] = name.split(".");
+    let key;
+    if (head === "aggregate") {
+      if (second.startsWith("flat_"))       key = "aggregate.flat";
+      else if (second.startsWith("tree_"))  key = "aggregate.tree";
+      else if (second.startsWith("split_")) key = "aggregate.split";
+      else if (second.startsWith("merge_")) key = "aggregate.merge";
+      else                                  key = "aggregate.other";
+    } else {
+      key = head;
+    }
+    (grouped[key] = grouped[key] || []).push(name);
   }
   for (const v of Object.values(grouped)) v.sort();
 
-  const preferredOrder = ["leansig", "xmss", "aggregate"];
+  const preferredOrder = [
+    "leansig", "xmss",
+    "aggregate.flat", "aggregate.tree", "aggregate.split", "aggregate.merge",
+  ];
   const keys = [
     ...preferredOrder.filter((k) => grouped[k]),
     ...Object.keys(grouped).filter((k) => !preferredOrder.includes(k)).sort(),
   ];
 
   // Clarify which project each group belongs to. "xmss" is ambiguous
-  // (leanSig also has an XMSS flavour), and "aggregate" IS leanMultisig's
-  // main deliverable so it's labeled accordingly.
+  // (leanSig also has an XMSS flavour), and "aggregate.*" IS leanMultisig's
+  // main deliverable so the subdivided groups carry the leanmultisig prefix.
   const displayLabel = (g) => ({
-    xmss:      "leanmultisig.xmss",
-    aggregate: "leanmultisig",
+    xmss:                "leanmultisig.xmss",
+    "aggregate.flat":    "leanmultisig.flat",
+    "aggregate.tree":    "leanmultisig.tree",
+    "aggregate.split":   "leanmultisig.split",
+    "aggregate.merge":   "leanmultisig.merge",
+    "aggregate.other":   "leanmultisig.other",
   }[g] || g);
 
   for (const group of keys) {
@@ -365,7 +384,7 @@ function renderCompare(container, workloadNames, machines) {
       grid.appendChild(buildCompareCard(wl, machines));
     }
     section.appendChild(grid);
-    if (group === "aggregate") {
+    if (group === "aggregate.tree") {
       section.appendChild(el("p", { class: "compare-group-note" },
         "Note: aggregate.tree timing = N × leaf + recursion. Recursion-only time below is the root node's time_secs from the per-iteration benchmark report.",
       ));
