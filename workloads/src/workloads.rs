@@ -83,8 +83,12 @@ pub mod xmss_wl {
 
 pub mod aggregate {
     use super::*;
-    use ::rec_aggregation::AggregationTopology;
-    use ::rec_aggregation::benchmark::{run_aggregation_benchmark_report, BenchmarkReport};
+    use ::rec_aggregation::benchmark::{run_aggregation_benchmark, AggregationTopology, BenchmarkReport};
+    use ::rec_aggregation::benchmark::{
+        run_split_benchmark, run_merge_split_and_original_benchmark, run_merge_split_and_leaves_benchmark,
+    };
+
+    const LOG_INV_RATE: usize = 2;
 
     /// Per-node entry for the JSON `proof_kib_by_path` field.
     /// `path = []` is the root; deeper paths are the children/leaves.
@@ -120,7 +124,7 @@ pub mod aggregate {
         let mut reports: Vec<BenchmarkReport> = Vec::with_capacity(args.samples);
         for i in 0..(args.samples + args.warmup) {
             let t = std::time::Instant::now();
-            let report = run_aggregation_benchmark_report(topology, 0, false);
+            let report = run_aggregation_benchmark(topology, false, true);
             if i >= args.warmup {
                 samples.push(t.elapsed().as_nanos());
                 if proof_sizes.is_empty() {
@@ -155,7 +159,7 @@ pub mod aggregate {
     /// signer cache). First call amortises it, so the warmup iterations matter
     /// — we count only post-warmup samples.
     pub fn flat_r2(args: &CommonArgs, n: usize) -> Result<Record> {
-        let topology = AggregationTopology { raw_xmss: n, children: vec![], log_inv_rate: 2 };
+        let topology = AggregationTopology { raw_xmss: n, children: vec![], log_inv_rate: 2, overlap: 0 };
         let (samples, proof_sizes, reports) = run_loop(args, &topology);
         let (root_kib, leaf_kib) = root_and_leaf_kib(&proof_sizes);
         Ok(make_record(
@@ -178,11 +182,12 @@ pub mod aggregate {
     /// Reports total wall time including all leaves + the recursion step.
     /// Subtract `fan × aggregate.flat_<n>_r2` for the recursion-only cost.
     pub fn tree_r2(args: &CommonArgs, fan: usize, n: usize) -> Result<Record> {
-        let leaf = AggregationTopology { raw_xmss: n, children: vec![], log_inv_rate: 2 };
+        let leaf = AggregationTopology { raw_xmss: n, children: vec![], log_inv_rate: 2, overlap: 0 };
         let topology = AggregationTopology {
             raw_xmss: 0,
             children: vec![leaf; fan],
             log_inv_rate: 2,
+            overlap: 0,
         };
         let (samples, proof_sizes, reports) = run_loop(args, &topology);
         let (root_kib, leaf_kib) = root_and_leaf_kib(&proof_sizes);
@@ -200,6 +205,118 @@ pub mod aggregate {
                 "proof_kib_by_path": proof_sizes,
                 "reports": reports,
                 "note": format!("recursion-only time = root node `time_secs` from any report; or total - {fan} × aggregate.flat_{n}_r2 as a fallback"),
+            }),
+        ))
+    }
+
+    /// Closure-based variant of `run_loop`. Used by workloads that don't have
+    /// an `AggregationTopology` (split / merge_split_* drivers).
+    fn run_loop_with_runner<F: FnMut() -> BenchmarkReport>(
+        args: &CommonArgs,
+        mut runner: F,
+    ) -> (Vec<u128>, Vec<ProofSizeEntry>, Vec<BenchmarkReport>) {
+        let mut samples = Vec::with_capacity(args.samples);
+        let mut proof_sizes: Vec<ProofSizeEntry> = Vec::new();
+        let mut reports: Vec<BenchmarkReport> = Vec::with_capacity(args.samples);
+        for i in 0..(args.samples + args.warmup) {
+            let t = std::time::Instant::now();
+            let report = runner();
+            if i >= args.warmup {
+                samples.push(t.elapsed().as_nanos());
+                if proof_sizes.is_empty() {
+                    proof_sizes = report.nodes.iter()
+                        .map(|n| ProofSizeEntry {
+                            path: n.path.clone(),
+                            depth: n.path.len(),
+                            kib: n.stats.proof_kib,
+                        })
+                        .collect();
+                }
+                reports.push(report);
+            }
+        }
+        (samples, proof_sizes, reports)
+    }
+
+    /// Benchmark `split_type_2` at index 0 of a K-component, N-per-component parent type-2
+    /// at LOG_INV_RATE_PROD=2. Reports total wall time including parent type-2 setup
+    /// (K leaf aggregations + 1 merge_many) plus the measured split.
+    pub fn split_r2(args: &CommonArgs, per_component: usize, n_components: usize) -> Result<Record> {
+        let (samples, proof_sizes, reports) = run_loop_with_runner(args, || {
+            run_split_benchmark(per_component, n_components, LOG_INV_RATE, true)
+        });
+        let (root_kib, leaf_kib) = root_and_leaf_kib(&proof_sizes);
+        Ok(make_record(
+            &format!("aggregate.split_{n_components}x{per_component}_r2"),
+            samples,
+            args.warmup,
+            serde_json::json!({
+                "per_component": per_component,
+                "n_components": n_components,
+                "log_inv_rate": LOG_INV_RATE,
+                "operation": "split",
+                "proof_kib_root": root_kib,
+                "proof_kib_leaf": leaf_kib,
+                "proof_kib_by_path": proof_sizes,
+                "reports": reports,
+                "note": "measured split sits at path=[] with kind=split_type2; setup nodes carry kind=aggregate_type1/merge_many_type1",
+            }),
+        ))
+    }
+
+    /// Benchmark `merge_many_type_1` over one split-derived type-1 (index 0 of a
+    /// K-component parent type-2) and one freshly-aggregated original at LOG_INV_RATE_PROD=2.
+    pub fn merge_split_and_original_r2(args: &CommonArgs, per_component: usize, n_components: usize) -> Result<Record> {
+        let (samples, proof_sizes, reports) = run_loop_with_runner(args, || {
+            run_merge_split_and_original_benchmark(per_component, n_components, LOG_INV_RATE, true)
+        });
+        let (root_kib, leaf_kib) = root_and_leaf_kib(&proof_sizes);
+        Ok(make_record(
+            &format!("aggregate.merge_split_and_original_{n_components}x{per_component}_r2"),
+            samples,
+            args.warmup,
+            serde_json::json!({
+                "per_component": per_component,
+                "n_components": n_components,
+                "log_inv_rate": LOG_INV_RATE,
+                "operation": "merge_split_and_original",
+                "proof_kib_root": root_kib,
+                "proof_kib_leaf": leaf_kib,
+                "proof_kib_by_path": proof_sizes,
+                "reports": reports,
+                "note": "split-derived input at path=[1,0] (kind=split_type2); fresh original at path=[2] (kind=aggregate_type1); measured merge at path=[] (kind=merge_many_type1)",
+            }),
+        ))
+    }
+
+    /// Benchmark `aggregate_type_1` over one split-derived type-1 (index 0 of a
+    /// K-component parent type-2) plus L fresh raw XMSS leaves at
+    /// LOG_INV_RATE_PROD=2. Output claims N + L signers.
+    pub fn merge_split_and_leaves_r2(
+        args: &CommonArgs,
+        per_component: usize,
+        n_components: usize,
+        n_new_leaves: usize,
+    ) -> Result<Record> {
+        let (samples, proof_sizes, reports) = run_loop_with_runner(args, || {
+            run_merge_split_and_leaves_benchmark(per_component, n_components, n_new_leaves, LOG_INV_RATE, true)
+        });
+        let (root_kib, leaf_kib) = root_and_leaf_kib(&proof_sizes);
+        Ok(make_record(
+            &format!("aggregate.merge_split_and_leaves_{n_components}x{per_component}x{n_new_leaves}_r2"),
+            samples,
+            args.warmup,
+            serde_json::json!({
+                "per_component": per_component,
+                "n_components": n_components,
+                "n_new_leaves": n_new_leaves,
+                "log_inv_rate": LOG_INV_RATE,
+                "operation": "merge_split_and_leaves",
+                "proof_kib_root": root_kib,
+                "proof_kib_leaf": leaf_kib,
+                "proof_kib_by_path": proof_sizes,
+                "reports": reports,
+                "note": "split-derived input at path=[1,0] (kind=split_type2); measured aggregate_type_1 at path=[] (kind=aggregate_type1), claiming N+L signers",
             }),
         ))
     }

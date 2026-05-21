@@ -60,6 +60,39 @@ enum Cli {
         #[command(flatten)]
         common: CommonArgs,
     },
+
+    #[command(name = "split",
+              about = "split_type_2 at index 0 of a K-component, N-per-component parent type-2 at LOG_INV_RATE_PROD=2")]
+    Split {
+        /// Raw XMSS signers per component (N).
+        per_component: usize,
+        /// Number of components in the parent type-2 (K).
+        n_components: usize,
+        #[command(flatten)]
+        common: CommonArgs,
+    },
+    #[command(name = "merge-split-and-original",
+              about = "merge_many_type_1 over one split-derived type-1 and one freshly-aggregated original")]
+    MergeSplitAndOriginal {
+        /// Raw XMSS signers per component (N).
+        per_component: usize,
+        /// Number of components in the parent type-2 (K).
+        n_components: usize,
+        #[command(flatten)]
+        common: CommonArgs,
+    },
+    #[command(name = "merge-split-and-leaves",
+              about = "aggregate_type_1 over one split-derived type-1 plus n_new_leaves fresh raw XMSS signatures")]
+    MergeSplitAndLeaves {
+        /// Raw XMSS signers per component in the parent type-2 (N).
+        per_component: usize,
+        /// Number of components in the parent type-2 (K).
+        n_components: usize,
+        /// Fresh raw XMSS signatures to mix in alongside the split (L).
+        n_new_leaves: usize,
+        #[command(flatten)]
+        common: CommonArgs,
+    },
 }
 
 #[derive(Parser, Clone)]
@@ -96,6 +129,12 @@ fn main() -> Result<()> {
         Cli::XmssVerify(a)    => workloads::xmss_wl::verify(&a),
         Cli::AggregateFlat { n, common } => workloads::aggregate::flat_r2(&common, n),
         Cli::AggregateTree { fan, n, common } => workloads::aggregate::tree_r2(&common, fan, n),
+        Cli::Split { per_component, n_components, common } =>
+            workloads::aggregate::split_r2(&common, per_component, n_components),
+        Cli::MergeSplitAndOriginal { per_component, n_components, common } =>
+            workloads::aggregate::merge_split_and_original_r2(&common, per_component, n_components),
+        Cli::MergeSplitAndLeaves { per_component, n_components, n_new_leaves, common } =>
+            workloads::aggregate::merge_split_and_leaves_r2(&common, per_component, n_components, n_new_leaves),
     }?;
 
     let out = serde_json::to_string(&rec)?;

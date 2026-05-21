@@ -9,14 +9,17 @@
 if (document.body.dataset.page === "trend") renderTrendPage();
 
 const TREND_HEADLINES = [
-  { name: "xmss.sign",                 col: "xmss.sign" },
-  { name: "aggregate.flat_125_r2",     col: "flat_125" },
-  { name: "aggregate.flat_250_r2",     col: "flat_250" },
-  { name: "aggregate.flat_500_r2",     col: "flat_500" },
-  { name: "aggregate.flat_1000_r2",    col: "flat_1000" },
-  { name: "aggregate.tree_2x500_r2",   col: "tree_2x500" },
-  { name: "aggregate.tree_4x500_r2",   col: "tree_4x500" },
-  { name: "aggregate.tree_8x500_r2",   col: "tree_8x500" },
+  { name: "xmss.sign",                                   col: "xmss.sign" },
+  { name: "aggregate.flat_125_r2",                       col: "flat_125" },
+  { name: "aggregate.flat_250_r2",                       col: "flat_250" },
+  { name: "aggregate.flat_500_r2",                       col: "flat_500" },
+  { name: "aggregate.flat_1000_r2",                      col: "flat_1000" },
+  { name: "aggregate.tree_2x500_r2",                     col: "tree_2x500" },
+  { name: "aggregate.tree_4x500_r2",                     col: "tree_4x500" },
+  { name: "aggregate.tree_8x500_r2",                     col: "tree_8x500" },
+  { name: "aggregate.split_2x500_r2",                    col: "split_2x500" },
+  { name: "aggregate.merge_split_and_original_2x500_r2", col: "merge_split_and_original_2x500" },
+  { name: "aggregate.merge_split_and_leaves_2x500x500_r2", col: "merge_split_and_leaves_2x500x500" },
 ];
 
 let trendIndexData = null;
@@ -153,18 +156,58 @@ function recomputeTrend(machines, combos) {
   renderTrendTable(machine, combos, best);
 }
 
+// Subgroup taxonomy mirrors the index Compare page: sign / flat / tree /
+// split / merge. Anything else falls into "other" and renders at the end.
+function headlineGroup(workloadName) {
+  if (workloadName === "xmss.sign") return "sign";
+  const second = workloadName.startsWith("aggregate.")
+    ? workloadName.slice("aggregate.".length)
+    : "";
+  if (second.startsWith("flat_"))  return "flat";
+  if (second.startsWith("tree_"))  return "tree";
+  if (second.startsWith("split_")) return "split";
+  if (second.startsWith("merge_")) return "merge";
+  return "other";
+}
+
+const HEADLINE_GROUP_ORDER = ["sign", "flat", "tree", "split", "merge", "other"];
+const HEADLINE_GROUP_LABEL = {
+  sign:  "leanmultisig.sign",
+  flat:  "leanmultisig.flat",
+  tree:  "leanmultisig.tree",
+  split: "leanmultisig.split",
+  merge: "leanmultisig.merge",
+  other: "leanmultisig.other",
+};
+
 function renderTrendChart(machine, chronologicalCombos, best) {
   // Render one card-with-chart per headline workload. Each chart has two
   // y-axes: left = wall-clock ms on the chosen machine, right = published
   // proof size in KiB (machine-independent — deterministic per topology).
   // Independent linear axes so small per-combo differences on small
   // workloads stay readable.
-  const grid = document.querySelector("#trend-charts-grid");
+  const container = document.querySelector("#trend-charts-grid");
   for (const c of trendCharts) c.destroy();
   trendCharts = [];
-  grid.innerHTML = "";
+  container.innerHTML = "";
   // Clear any previous legend (we always rebuild on machine change).
   document.querySelector("#trend-markings-legend")?.remove();
+
+  // Lazily create one subsection per group as we encounter charts that
+  // belong in it — keeps the existing dual-axis chart-building loop intact.
+  const subgroupGrids = {};
+  const ensureSubgroupGrid = (g) => {
+    if (subgroupGrids[g]) return subgroupGrids[g];
+    const section = el("div", { class: "compare-group" },
+      el("h3", { class: "compare-group-head", text: HEADLINE_GROUP_LABEL[g] || g }),
+    );
+    const grid = el("div", { class: "compare-group-grid" });
+    section.appendChild(grid);
+    section.dataset.group = g;
+    container.appendChild(section);
+    subgroupGrids[g] = grid;
+    return grid;
+  };
 
   const labels = chronologicalCombos.map((c) =>
     `${comboRef(c.leansig_branch, c.leansig_sha)}·${comboRef(c.leanmultisig_branch, c.leanmultisig_sha)}`);
@@ -238,7 +281,7 @@ function renderTrendChart(machine, chronologicalCombos, best) {
     const canvas = el("canvas");
     wrap.appendChild(canvas);
     card.appendChild(wrap);
-    grid.appendChild(card);
+    ensureSubgroupGrid(headlineGroup(h.name)).appendChild(card);
 
     queueMicrotask(() => {
       // Soft axis-title styling — they're context, not signal. Tick labels
@@ -333,7 +376,7 @@ function renderTrendChart(machine, chronologicalCombos, best) {
     });
   }
   if (!added) {
-    grid.innerHTML = "<p>No headline-workload data on this machine across combos.</p>";
+    container.innerHTML = "<p>No headline-workload data on this machine across combos.</p>";
   }
 
   // Legend for the on-chart numbered badges. One row per marking, in the
@@ -349,7 +392,7 @@ function renderTrendChart(machine, chronologicalCombos, best) {
       row.appendChild(el("span", { class: "marking-label", text: m.label }));
       legend.appendChild(row);
     }
-    grid.parentNode.appendChild(legend);
+    container.parentNode.appendChild(legend);
   }
 }
 
