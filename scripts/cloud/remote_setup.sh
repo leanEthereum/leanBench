@@ -43,7 +43,7 @@ git fetch origin "$BRANCH" --quiet
 git checkout --quiet "$BRANCH"
 git reset --hard --quiet "origin/$BRANCH"
 
-# leanMultisig generates ~10k XMSS test signatures lazily on first bench
+# leanVM generates ~10k XMSS test signatures lazily on first bench
 # invocation (~few minutes on slow VMs). When SIGNERS_CACHE_DIR points at
 # a directory holding a content-addressed cache file pre-uploaded by the
 # orchestrator, the lazy-init loads from disk in milliseconds instead.

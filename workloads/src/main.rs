@@ -19,6 +19,10 @@ const LEANSIG_SHA: &str = match option_env!("LEANSIG_SHA") {
     Some(s) => s,
     None => "unknown",
 };
+// `LEANMULTISIG_*` is the historical schema label — leanMultisig was renamed
+// to leanVM upstream (2026-06) but the env var / JSON key names are kept so
+// every existing `results/*.json` keeps deserializing through one parser path.
+// UI surfaces are relabeled to "leanVM" without touching the on-disk schema.
 const LEANMULTISIG_SHA: &str = match option_env!("LEANMULTISIG_SHA") {
     Some(s) => s,
     None => "unknown",

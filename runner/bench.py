@@ -113,15 +113,15 @@ def build_runner() -> Path:
     """Build the Rust workload binary in release mode.
 
     Sets `RUSTFLAGS=-C target-cpu=native` in the subprocess env so deps
-    (specifically leanMultisig's KoalaBear backend) compile with the host's
+    (specifically leanVM's KoalaBear backend) compile with the host's
     SIMD target features. Without this, the build defaults to baseline
-    x86-64 features, falls into leanMultisig's no-SIMD path
+    x86-64 features, falls into leanVM's no-SIMD path
     (`type Packing = Self`), and trips a `w == 0` corner-case panic in its
     GKR sumcheck on x86_64 hosts.
 
-    leanMultisig itself sets the same flag in its workspace
-    `.cargo/config.toml` — that config doesn't apply when leanMultisig is
-    consumed as a git dep, so we set it here instead.
+    leanVM itself sets the same flag in its workspace `.cargo/config.toml`
+    — that config doesn't apply when leanVM is consumed as a git dep, so
+    we set it here instead.
     """
     print("Building lean-bench-workloads (release)...", flush=True)
     env = {**os.environ, "RUSTFLAGS": "-C target-cpu=native"}

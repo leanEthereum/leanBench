@@ -1,5 +1,5 @@
 // Trend page — show how headline workloads have moved across the
-// chronological sequence of leanSig / leanMultisig SHA pairs ("combos") on a
+// chronological sequence of leanSig / leanVM SHA pairs ("combos") on a
 // chosen target machine.
 //
 // Two views fed from the same data:
@@ -172,12 +172,12 @@ function headlineGroup(workloadName) {
 
 const HEADLINE_GROUP_ORDER = ["sign", "flat", "tree", "split", "merge", "other"];
 const HEADLINE_GROUP_LABEL = {
-  sign:  "leanmultisig.sign",
-  flat:  "leanmultisig.flat",
-  tree:  "leanmultisig.tree",
-  split: "leanmultisig.split",
-  merge: "leanmultisig.merge",
-  other: "leanmultisig.other",
+  sign:  "leanvm.sign",
+  flat:  "leanvm.flat",
+  tree:  "leanvm.tree",
+  split: "leanvm.split",
+  merge: "leanvm.merge",
+  other: "leanvm.other",
 };
 
 function renderTrendChart(machine, chronologicalCombos, best) {

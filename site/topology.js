@@ -836,15 +836,15 @@ function renderResults(rows, model, totalSigs, leafBudgetMs, slotEnv) {
   }
   const table = el("table", { class: "topo-results-table" });
   const head = el("thead");
-  // Group-header row above the column names: leanMultisig perf vs slot
+  // Group-header row above the column names: leanVM perf vs slot
   // structure. topology / notes stay ungrouped (single-column outliers).
   // machine count lives in the slot-structure group since it's a
   // deployment/provisioning fact derived from the topology, not a raw
-  // leanMultisig-performance metric.
+  // leanVM-performance metric.
   head.appendChild(el("tr", { class: "topo-group-row" },
     el("th", {}),
     el("th", {}),
-    el("th", { class: "topo-group", colspan: "4" }, "leanMultisig performance"),
+    el("th", { class: "topo-group", colspan: "4" }, "leanVM performance"),
     el("th", { class: "topo-group", colspan: "4" }, "slot structure"),
     el("th", {}),
   ));

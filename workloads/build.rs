@@ -1,7 +1,12 @@
-//! Bake the pinned leanSig / leanMultisig refs (SHA + branch name) into
-//! the binary so each result is provenance-complete. The Python
-//! orchestrator prints these as part of the run metadata and the site
-//! shows them in the run-detail page.
+//! Bake the pinned leanSig / leanVM refs (SHA + branch name) into the
+//! binary so each result is provenance-complete. The Python orchestrator
+//! prints these as part of the run metadata and the site shows them in
+//! the run-detail page.
+//!
+//! Env-var names (`LEANMULTISIG_SHA`, `LEANMULTISIG_BRANCH`) and the
+//! TOML key (`leanmultisig-branch`) keep the historical "leanmultisig"
+//! spelling so the on-disk result-file schema doesn't fork. leanVM is
+//! the current upstream name (was renamed from leanMultisig 2026-06).
 
 use std::{env, fs, path::PathBuf};
 

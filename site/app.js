@@ -240,7 +240,7 @@ function renderComboFilter(combos) {
 function comboShortLabel(c, withTime = true) {
   if (!c) return "no combo";
   const ls = `leansig ${comboRef(c.leansig_branch, c.leansig_sha)}`;
-  const lm = `leanmultisig ${comboRef(c.leanmultisig_branch, c.leanmultisig_sha)}`;
+  const lm = `leanvm ${comboRef(c.leanmultisig_branch, c.leanmultisig_sha)}`;
   return withTime
     ? `${ls} · ${lm}  —  ${fmtRelative(c.latest_run_ts)}`
     : `${ls} · ${lm}`;
@@ -249,7 +249,7 @@ function comboShortLabel(c, withTime = true) {
 function comboFullLabel(c) {
   if (!c) return "no combo";
   const ls = `leansig ${comboRef(c.leansig_branch, c.leansig_sha, /*fullSha=*/true)}`;
-  const lm = `leanmultisig ${comboRef(c.leanmultisig_branch, c.leanmultisig_sha, /*fullSha=*/true)}`;
+  const lm = `leanvm ${comboRef(c.leanmultisig_branch, c.leanmultisig_sha, /*fullSha=*/true)}`;
   return `${ls} · ${lm}`;
 }
 
@@ -273,8 +273,8 @@ function comboLabelDom(c, withTime = true) {
   if (!c) { frag.appendChild(document.createTextNode("no combo")); return frag; }
   frag.appendChild(document.createTextNode("leansig "));
   frag.appendChild(repoRefLink("leanSig", c.leansig_branch, c.leansig_sha));
-  frag.appendChild(document.createTextNode(" · leanmultisig "));
-  frag.appendChild(repoRefLink("leanMultisig", c.leanmultisig_branch, c.leanmultisig_sha));
+  frag.appendChild(document.createTextNode(" · leanvm "));
+  frag.appendChild(repoRefLink("leanVM", c.leanmultisig_branch, c.leanmultisig_sha));
   if (withTime) {
     frag.appendChild(document.createTextNode(`  —  ${fmtRelative(c.latest_run_ts)}`));
   }
@@ -333,7 +333,7 @@ function rerenderIndexForCombo() {
 
 // One chart per workload, grouped by category. leansig / xmss stay at the top
 // level; aggregate.* is subdivided by second segment (flat / tree / split /
-// merge) so the leanMultisig section breaks down into focused subsections.
+// merge) so the leanVM section breaks down into focused subsections.
 // Unknown prefixes fall into an "other" bucket so new workloads render without
 // code changes.
 function renderCompare(container, workloadNames, machines) {
@@ -364,15 +364,15 @@ function renderCompare(container, workloadNames, machines) {
   ];
 
   // Clarify which project each group belongs to. "xmss" is ambiguous
-  // (leanSig also has an XMSS flavour), and "aggregate.*" IS leanMultisig's
-  // main deliverable so the subdivided groups carry the leanmultisig prefix.
+  // (leanSig also has an XMSS flavour), and "aggregate.*" IS leanVM's
+  // main deliverable so the subdivided groups carry the leanvm prefix.
   const displayLabel = (g) => ({
-    xmss:                "leanmultisig.xmss",
-    "aggregate.flat":    "leanmultisig.flat",
-    "aggregate.tree":    "leanmultisig.tree",
-    "aggregate.split":   "leanmultisig.split",
-    "aggregate.merge":   "leanmultisig.merge",
-    "aggregate.other":   "leanmultisig.other",
+    xmss:                "leanvm.xmss",
+    "aggregate.flat":    "leanvm.flat",
+    "aggregate.tree":    "leanvm.tree",
+    "aggregate.split":   "leanvm.split",
+    "aggregate.merge":   "leanvm.merge",
+    "aggregate.other":   "leanvm.other",
   }[g] || g);
 
   for (const group of keys) {
@@ -683,7 +683,7 @@ function renderScaling(container, workloadNames, machines) {
     ...preferredOrder.filter((k) => grouped[k]),
     ...Object.keys(grouped).filter((k) => !preferredOrder.includes(k)).sort(),
   ];
-  const displayLabel = (g) => ({ xmss: "leanmultisig.xmss", aggregate: "leanmultisig" }[g] || g);
+  const displayLabel = (g) => ({ xmss: "leanvm.xmss", aggregate: "leanvm" }[g] || g);
 
   for (const group of keys) {
     const section = el("div", { class: "compare-group" },
@@ -1131,8 +1131,8 @@ async function renderRun() {
     ["rustc",               t.rustc, null],
     ["leanSig branch",      t.branches?.leansig_branch,   null],
     ["leanSig SHA",         t.git_shas?.leansig_sha,      treeBase("leanSig")],
-    ["leanMultisig branch", t.branches?.leanmultisig_branch, null],
-    ["leanMultisig SHA",    t.git_shas?.leanmultisig_sha, treeBase("leanMultisig")],
+    ["leanVM branch",       t.branches?.leanmultisig_branch, null],
+    ["leanVM SHA",          t.git_shas?.leanmultisig_sha, treeBase("leanVM")],
     ["Run ID",              rec.run_id, null],
     ["Notes",               rec.notes, null],
   ];

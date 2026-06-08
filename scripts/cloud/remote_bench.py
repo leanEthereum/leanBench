@@ -436,11 +436,17 @@ def _detect_repo_url() -> str | None:
 
 def _discover_signers_cache() -> Path | None:
     """Find a local benchmark_signers_cache_<footprint>.bin matching the
-    pinned leanMultisig SHA in workloads/Cargo.toml. The cache file is
+    pinned leanVM SHA in workloads/Cargo.toml. The cache file is
     content-addressed by the hash of signer #0's pubkey, so it's stable
-    across leanMultisig SHAs as long as the XMSS scheme params don't change
+    across leanVM SHAs as long as the XMSS scheme params don't change
     — but we still narrow to the pinned-SHA checkout dir to avoid grabbing
-    a stale file from an older Rust toolchain or build."""
+    a stale file from an older Rust toolchain or build.
+
+    NOTE: the regex and `leanmultisig-*` glob below pair with the
+    `leanMultisig.git` URL in workloads/Cargo.toml — GitHub redirects
+    git ops, so the legacy URL still works and cargo names the checkout
+    dir `leanmultisig-<hash>`. Flip URL + regex + glob together if/when
+    the Cargo.toml URL is updated to leanVM.git."""
     cargo_toml = Path("workloads/Cargo.toml")
     if not cargo_toml.is_file():
         return None

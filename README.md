@@ -1,6 +1,6 @@
 # leanBench
 
-**Performance benchmarks for leanSig and leanMultisig across hardware.**
+**Performance benchmarks for leanSig and leanVM across hardware.**
 
 Run one command on a target machine → get a JSON file with sign / verify /
 aggregate timings plus CPU and memory usage, committed back to this repo →
@@ -13,10 +13,10 @@ to Pages).
 ## Workload groups
 
 1. **xmss** — leanSpec `PROD_CONFIG` GeneralizedXMSS (DIMENSION=46,
-   BASE=8, TARGET_SUM=200, LOG_LIFETIME=32), the scheme leanMultisig's
+   BASE=8, TARGET_SUM=200, LOG_LIFETIME=32), the scheme leanVM's
    mainnet ships. sign / verify by default; opt-in keygen via
    `--include-keygen`.
-2. **leanMultisig aggregation** at `LOG_INV_RATE_PROD=2` — flat
+2. **leanVM aggregation** at `LOG_INV_RATE_PROD=2` — flat
    aggregation over 125 / 250 / 500 / 1000 sigs, plus tree aggregation
    with fan-in 2 / 4 / 8 over 125 / 250 / 500-sig leaves. 13 aggregate
    variants total, all run by default.
@@ -138,7 +138,7 @@ leanBench/
 │  ├─ sysinfo.py                 CPU / RAM / OS detection + fingerprint
 │  └─ sampler.py                 psutil-based CPU/memory polling
 ├─ workloads/                    Rust binary, one subcommand per workload → JSON stdout
-│  ├─ Cargo.toml                 pins leanSig + leanMultisig SHAs
+│  ├─ Cargo.toml                 pins leanSig + leanVM SHAs
 │  ├─ build.rs                   bakes the pinned SHAs into the binary
 │  └─ src/
 │     ├─ main.rs                 workload dispatch + per-sample timing
@@ -232,8 +232,11 @@ specifically for benchmark VMs.
 
 ## Reproducibility notes
 
-- SHAs of leanSig and leanMultisig are pinned in `Cargo.toml` and baked
-  into the runner binary by `build.rs` — the output JSON records them.
+- SHAs of leanSig and leanVM are pinned in `Cargo.toml` and baked into
+  the runner binary by `build.rs` — the output JSON records them.
+  Result-file keys still use the historical `leanmultisig_sha` /
+  `leanmultisig_branch` names so old runs keep deserializing through one
+  parser path. UI labels say "leanVM".
 - Runner uses a deterministic seed (`--seed`, default `0xC0FFEE`) for all
   RNG draws — keygen entropy, message generation, and per-iteration key
   variation. Two machines running the same SHA with the same seed operate

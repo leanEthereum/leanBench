@@ -39,7 +39,7 @@ class ResourceSampler:
                 cpu = self._proc.cpu_percent(interval=None)
                 rss = self._proc.memory_info().rss
                 # Include children's footprint too — cargo spawns rustc/linker/
-                # leanMultisig helpers that matter.
+                # leanVM helpers that matter.
                 for child in self._proc.children(recursive=True):
                     try:
                         cpu += child.cpu_percent(interval=None)

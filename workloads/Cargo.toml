@@ -22,15 +22,21 @@ postcard = { version = "1.1", features = ["alloc"] }
 # (informational, baked into the binary by build.rs for UI display)
 # lives in [package.metadata.bench-pins] below. Bump them together.
 #
-# leanSig: tracks whatever leanMultisig depends on transitively.
-# leanMultisig devnet5 declares `leansig = { git = "...", branch = "devnet4" }`
-# — match the spec exactly so cargo dedups instead of pulling two leansig
-# copies with incompatible trait identities.
+# leanSig: tracks whatever leanVM depends on transitively. leanVM devnet5
+# declares `leansig = { git = "...", branch = "devnet4" }` — match the spec
+# exactly so cargo dedups instead of pulling two leansig copies with
+# incompatible trait identities.
 leansig = { git = "https://github.com/leanEthereum/leanSig", branch = "devnet4" }
 
-# leanMultisig devnet5 — pinned to the merged "add benchmark drivers for
-# split / merge_split_and_original / merge_split_and_leaves" commit so the
-# new aggregate.split_* / aggregate.merge_split_* workloads compile.
+# leanVM devnet5 — pinned to the merged "add benchmark drivers for split /
+# merge_split_and_original / merge_split_and_leaves" commit so the new
+# aggregate.split_* / aggregate.merge_split_* workloads compile.
+#
+# The repo was renamed from leanMultisig to leanVM upstream (2026-06).
+# GitHub 301-redirects git ops for the old URL, so the legacy URL still
+# resolves; it also keeps cargo's checkout dir basename as `leanmultisig-*`,
+# which scripts/cloud/remote_bench.py greps for. Flip the URL and that
+# matcher together on a deliberate hygiene pass.
 leansig_wrapper = { git = "https://github.com/leanEthereum/leanMultisig.git", rev = "6b2fa039" }
 rec_aggregation = { git = "https://github.com/leanEthereum/leanMultisig.git", rev = "6b2fa039" }
 
@@ -38,6 +44,10 @@ rec_aggregation = { git = "https://github.com/leanEthereum/leanMultisig.git", re
 # ignores this section; build.rs reads it and bakes the values into
 # the runner binary so result files (and the site) can show which
 # upstream branch each run was tracking.
+#
+# `leanmultisig-branch` is kept as the key name (rather than
+# `leanvm-branch`) because it flows into the result-file JSON schema —
+# see workloads/src/main.rs.
 [package.metadata.bench-pins]
 leansig-branch = "devnet4"
 leanmultisig-branch = "devnet5"
@@ -55,5 +65,5 @@ debug = 1
 # leansig = { path = "../../leanSig" }
 #
 # [patch."https://github.com/leanEthereum/leanMultisig.git"]
-# leansig_wrapper = { path = "../../leanMultisig/crates/leansig_wrapper" }
-# rec_aggregation = { path = "../../leanMultisig/crates/rec_aggregation" }
+# leansig_wrapper = { path = "../../leanVM/crates/leansig_wrapper" }
+# rec_aggregation = { path = "../../leanVM/crates/rec_aggregation" }

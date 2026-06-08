@@ -6,8 +6,8 @@ use anyhow::Result;
 use crate::{make_record, time_loop, CommonArgs, Record};
 
 pub mod xmss_wl {
-    // GeneralizedXMSS at LOG_LIFETIME=32 — the variant leanMultisig's
-    // mainnet ships. Mirrors leanSpec's PROD_CONFIG (DIMENSION=46,
+    // GeneralizedXMSS at LOG_LIFETIME=32 — the variant leanVM's mainnet
+    // ships. Mirrors leanSpec's PROD_CONFIG (DIMENSION=46,
     // BASE=8, TARGET_SUM=200, LOG_LIFETIME=32) — see
     // workspace/leanSpec/src/lean_spec/subspecs/xmss/constants.py.
     use super::*;
@@ -114,7 +114,7 @@ pub mod aggregate {
     /// `poseidons`, `dots`, `n_xmss` per node per iteration are all
     /// recoverable from the result file.
     ///
-    /// `silent=true` suppresses leanMultisig's ANSI render so the only thing
+    /// `silent=true` suppresses leanVM's ANSI render so the only thing
     /// the runner prints is its own one-line JSON record.
     fn run_loop(args: &CommonArgs, topology: &AggregationTopology)
         -> (Vec<u128>, Vec<ProofSizeEntry>, Vec<BenchmarkReport>)
