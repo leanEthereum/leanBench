@@ -124,7 +124,7 @@ pub mod aggregate {
         let mut reports: Vec<BenchmarkReport> = Vec::with_capacity(args.samples);
         for i in 0..(args.samples + args.warmup) {
             let t = std::time::Instant::now();
-            let report = run_aggregation_benchmark(topology, false, true);
+            let report = run_aggregation_benchmark(topology, false, true, 1);
             if i >= args.warmup {
                 samples.push(t.elapsed().as_nanos());
                 if proof_sizes.is_empty() {

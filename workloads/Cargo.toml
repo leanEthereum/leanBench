@@ -28,17 +28,15 @@ postcard = { version = "1.1", features = ["alloc"] }
 # incompatible trait identities.
 leansig = { git = "https://github.com/leanEthereum/leanSig", branch = "devnet4" }
 
-# leanVM devnet5 — pinned to the merged "add benchmark drivers for split /
-# merge_split_and_original / merge_split_and_leaves" commit so the new
-# aggregate.split_* / aggregate.merge_split_* workloads compile.
+# leanVM devnet5 — latest head at time of this sweep.
 #
 # The repo was renamed from leanMultisig to leanVM upstream (2026-06).
 # GitHub 301-redirects git ops for the old URL, so the legacy URL still
 # resolves; it also keeps cargo's checkout dir basename as `leanmultisig-*`,
 # which scripts/cloud/remote_bench.py greps for. Flip the URL and that
 # matcher together on a deliberate hygiene pass.
-leansig_wrapper = { git = "https://github.com/leanEthereum/leanMultisig.git", rev = "6b2fa039" }
-rec_aggregation = { git = "https://github.com/leanEthereum/leanMultisig.git", rev = "6b2fa039" }
+leansig_wrapper = { git = "https://github.com/leanEthereum/leanMultisig.git", rev = "b00d6ba3" }
+rec_aggregation = { git = "https://github.com/leanEthereum/leanMultisig.git", rev = "b00d6ba3" }
 
 # Branch names corresponding to the rev pins above. Cargo itself
 # ignores this section; build.rs reads it and bakes the values into
