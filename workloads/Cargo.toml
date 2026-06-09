@@ -35,8 +35,8 @@ leansig = { git = "https://github.com/leanEthereum/leanSig", branch = "devnet4" 
 # resolves; it also keeps cargo's checkout dir basename as `leanmultisig-*`,
 # which scripts/cloud/remote_bench.py greps for. Flip the URL and that
 # matcher together on a deliberate hygiene pass.
-leansig_wrapper = { git = "https://github.com/leanEthereum/leanMultisig.git", rev = "b00d6ba3" }
-rec_aggregation = { git = "https://github.com/leanEthereum/leanMultisig.git", rev = "b00d6ba3" }
+leansig_wrapper = { git = "https://github.com/leanEthereum/leanMultisig.git", rev = "e2592df4" }
+rec_aggregation = { git = "https://github.com/leanEthereum/leanMultisig.git", rev = "e2592df4" }
 
 # Branch names corresponding to the rev pins above. Cargo itself
 # ignores this section; build.rs reads it and bakes the values into
