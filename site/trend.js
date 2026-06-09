@@ -26,6 +26,7 @@ let trendIndexData = null;
 let trendCharts = []; // one per workload — destroyed/rebuilt on machine change
 let trendMachines = []; // closed over by helpers below for the proof-size lookup
 let trendMarkings = []; // arbitrary annotations from site/trend-markings.json
+let trendActiveLeanvmBranch = null; // null = any
 
 // Chart.js plugin: draw a faded dashed vertical line + outlined numbered
 // badge in the top padding (off the plot grid) at each marking's
@@ -98,35 +99,102 @@ async function renderTrendPage() {
     return;
   }
 
-  // Populate the machine dropdown — sort by logical_cores desc so the fastest
-  // box is the default. Only include machines that have ≥2 combos worth of
-  // data (otherwise there's nothing to chart).
+  // Sort machines by logical_cores desc so the fastest box is the default.
+  // Cache the full machine list (not just eligibles) so the proof-size lookup
+  // can fall back to any machine that recorded proof_kib_root for a combo —
+  // proof size is deterministic per topology, no need to restrict to eligibles.
   const machines = [...(trendIndexData.machines || [])].sort((a, b) =>
     (b.logical_cores || 0) - (a.logical_cores || 0));
-  const eligible = machines.filter((m) => {
+  trendMachines = machines;
+
+  trendActiveLeanvmBranch = new URLSearchParams(location.search).get("leanmultisig_branch") || null;
+  setupTrendBranchFilter(combos, machines);
+  applyTrendFilter(combos, machines);
+}
+
+function setupTrendBranchFilter(allCombos, allMachines) {
+  const select = document.querySelector("#branch-filter-leanvm");
+  if (!select) return;
+  const branches = [...new Set(allCombos.map((c) => c.leanmultisig_branch).filter(Boolean))].sort();
+  select.innerHTML = "";
+  select.appendChild(new Option("leanvm (any)", ""));
+  for (const v of branches) {
+    select.appendChild(new Option(`leanvm ${v}`, v, false, v === trendActiveLeanvmBranch));
+  }
+  select.onchange = () => {
+    trendActiveLeanvmBranch = select.value || null;
+    syncTrendBranchToUrl();
+    applyTrendFilter(allCombos, allMachines);
+  };
+}
+
+function syncTrendBranchToUrl() {
+  const params = new URLSearchParams(location.search);
+  if (trendActiveLeanvmBranch) params.set("leanmultisig_branch", trendActiveLeanvmBranch);
+  else params.delete("leanmultisig_branch");
+  const search = params.toString();
+  history.replaceState(null, "", location.pathname + (search ? "?" + search : "") + location.hash);
+}
+
+// Apply the current branch filter to the combo list, recompute machine
+// eligibility against the filtered combos, repopulate the machine dropdown,
+// and trigger the chart / table re-render. Called on load and on filter
+// change.
+function applyTrendFilter(allCombos, allMachines) {
+  const chartSec = document.querySelector("#trend-chart-section");
+  const tableSec = document.querySelector("#trend-table-section");
+  const combos = trendActiveLeanvmBranch
+    ? allCombos.filter((c) => c.leanmultisig_branch === trendActiveLeanvmBranch)
+    : allCombos;
+
+  if (combos.length < 2) {
+    chartSec.innerHTML = "<p>Fewer than 2 combos in this branch scope — nothing to compare across.</p>";
+    tableSec.style.display = "none";
+    return;
+  }
+
+  // A machine is eligible if it has runs on ≥2 combos *within* the current
+  // filter. Counting unique (leansig_sha, leanmultisig_sha) pairs that
+  // appear in both the machine's runs and the filtered combo set.
+  const comboKeys = new Set(combos.map((c) => `${c.leansig_sha}|${c.leanmultisig_sha}`));
+  const eligible = allMachines.filter((m) => {
     const seen = new Set();
     for (const r of m.runs || []) {
-      seen.add(`${r.git_shas.leansig_sha}|${r.git_shas.leanmultisig_sha}`);
+      const k = `${r.git_shas.leansig_sha}|${r.git_shas.leanmultisig_sha}`;
+      if (comboKeys.has(k)) seen.add(k);
     }
     return seen.size >= 2;
   });
   if (!eligible.length) {
-    document.querySelector("#trend-chart-section").innerHTML =
-      "<p>No machine has data on more than one combo yet.</p>";
-    document.querySelector("#trend-table-section").style.display = "none";
+    chartSec.innerHTML = "<p>No machine has data on more than one combo in this branch scope.</p>";
+    tableSec.style.display = "none";
     return;
   }
 
+  // Sections may have been hidden by a previous empty-scope render.
+  chartSec.style.display = "";
+  tableSec.style.display = "";
+  // Note: applyTrendFilter re-rendered chartSec.innerHTML to a message in the
+  // empty-scope branches above; on the happy path we need to restore the
+  // chart container that renderTrendChart writes into.
+  if (!document.querySelector("#trend-charts-grid")) {
+    chartSec.innerHTML = `
+      <h2>Workload means across combos</h2>
+      <p class="section-note">One chart per headline workload — solid line is wall-clock (left axis, ms, machine-dependent); dashed line is published proof size (right axis, KiB, machine-independent). xmss.sign has no published proof so it's timing-only.</p>
+      <div id="trend-charts-grid"></div>`;
+  }
+
+  // Repopulate the machine dropdown, preserving the previous pick when still
+  // eligible. `onchange` is idempotent (overwrites prior handler), so re-runs
+  // don't stack listeners.
   const select = document.querySelector("#trend-machine");
+  const prev = select.value;
+  select.innerHTML = "";
   for (const m of eligible) {
     select.appendChild(el("option", { value: m.fingerprint }, m.label || m.fingerprint));
   }
-  select.value = eligible[0].fingerprint;
-  // Cache the full machine list (not just eligible) so the proof-size lookup
-  // can fall back to any machine that recorded proof_kib_root for a combo —
-  // proof size is deterministic per topology, no need to restrict to eligibles.
-  trendMachines = machines;
-  select.addEventListener("change", () => recomputeTrend(eligible, combos));
+  select.value = eligible.some((m) => m.fingerprint === prev) ? prev : eligible[0].fingerprint;
+  select.onchange = () => recomputeTrend(eligible, combos);
   recomputeTrend(eligible, combos);
 }
 
