@@ -107,6 +107,11 @@ const chartTheme = () => {
 // most-recent combo (sorted server-side).
 let indexData = null;
 let activeCombo = null;
+// Branch filter — narrows the combo dropdown to combos on the chosen
+// leanVM branch (`null` = any branch). leanVM is the main switcher;
+// leanSig branch lives inside the combo dropdown options instead of its
+// own filter. Combo selection (SHA pair) stays orthogonal.
+let activeLeanvmBranch = null;
 
 async function renderIndex() {
   try {
@@ -119,17 +124,21 @@ async function renderIndex() {
   }
 
   const combos = indexData.combos || [];
+  activeLeanvmBranch = leanvmBranchFromUrl();
+  const filtered = filterCombosByBranch(combos, activeLeanvmBranch);
   // Restore last-picked combo from URL (`?leansig=<sha>&leanmultisig=<sha>`)
   // so a refresh keeps the user's selection. Falls back to most-recent combo
   // when the URL has no params; *warns* (rather than silently falling back)
   // when the URL had params but no combo matches — silent fallback can mask a
-  // stale link or a deleted combo.
-  const pick = comboFromUrl(combos);
+  // stale link or a deleted combo. Branch filter is applied first so the
+  // fallback respects the chosen branch scope.
+  const pick = comboFromUrl(filtered);
   if (pick.requested && !pick.found) {
     showComboMissingWarning(pick.requested);
   }
-  activeCombo = pick.found || combos[0] || null;
-  renderComboFilter(combos);
+  activeCombo = pick.found || filtered[0] || null;
+  renderBranchFilter(combos);
+  renderComboFilter(filtered);
   rerenderIndexForCombo();
 }
 
@@ -144,11 +153,28 @@ function comboFromUrl(combos) {
   return { requested: { leansig: ls, leanmultisig: lm }, found };
 }
 
+function leanvmBranchFromUrl() {
+  return new URLSearchParams(location.search).get("leanmultisig_branch") || null;
+}
+
+function filterCombosByBranch(combos, branch) {
+  return branch ? combos.filter((c) => c.leanmultisig_branch === branch) : combos;
+}
+
+function syncBranchToUrl() {
+  const params = new URLSearchParams(location.search);
+  if (activeLeanvmBranch) params.set("leanmultisig_branch", activeLeanvmBranch);
+  else params.delete("leanmultisig_branch");
+  const search = params.toString();
+  const url = location.pathname + (search ? "?" + search : "") + location.hash;
+  history.replaceState(null, "", url);
+}
+
 function showComboMissingWarning(requested) {
   const filter = document.querySelector("#filter");
   if (!filter || filter.querySelector(".combo-warning")) return;
   const warn = el("div", { class: "combo-warning" },
-    `Requested combo (leansig ${requested.leansig} · leanmultisig ${requested.leanmultisig}) `
+    `Requested combo (leanvm ${requested.leanmultisig} · leansig ${requested.leansig}) `
     + `is not in the index — showing the most-recent combo instead. Pick another from the dropdown to update the URL.`,
   );
   filter.insertBefore(warn, filter.firstChild);
@@ -189,22 +215,58 @@ function filteredMachines(machines, combo) {
     .filter((m) => m.runs.length > 0);
 }
 
+// Populate the leanVM branch <select> from the full combo list (so all
+// branches stay reachable even when the current filter narrows the combo
+// dropdown) and re-render the combo dropdown when it changes.
+function renderBranchFilter(allCombos) {
+  const select = document.querySelector("#branch-filter-leanvm");
+  const branches = [...new Set(allCombos.map((c) => c.leanmultisig_branch).filter(Boolean))].sort();
+  select.innerHTML = "";
+  select.appendChild(new Option("leanvm (any)", ""));
+  for (const v of branches) {
+    select.appendChild(new Option(`leanvm ${v}`, v, false, v === activeLeanvmBranch));
+  }
+  select.onchange = () => { activeLeanvmBranch = select.value || null; onBranchFilterChange(); };
+}
+
+function onBranchFilterChange() {
+  syncBranchToUrl();
+  const filtered = filterCombosByBranch(indexData.combos || [], activeLeanvmBranch);
+  // Stay on the active combo if it still matches; otherwise jump to the
+  // most-recent combo within the new filter scope. Silent — UX assumption
+  // is that picking a branch is a deliberate "show me runs on this branch"
+  // gesture, so quietly advancing the combo selection is the right behavior.
+  if (!filtered.some((c) => sameCombo(c, activeCombo))) {
+    activeCombo = filtered[0] || null;
+    syncComboToUrl(activeCombo);
+    document.querySelector(".combo-warning")?.remove();
+  }
+  renderComboFilter(filtered);
+  rerenderIndexForCombo();
+}
+
 function renderComboFilter(combos) {
   const details = document.querySelector("#combo-filter");
   const label   = details.querySelector(".combo-label");
   const menu    = document.querySelector("#combo-menu");
 
-  // Click outside to close.
-  document.addEventListener("click", (e) => {
-    if (details.open && !details.contains(e.target)) details.open = false;
-  });
+  // Click outside to close. Guarded so re-renders (e.g. after a branch
+  // filter change) don't stack the listener.
+  if (!details.dataset.outsideClickBound) {
+    document.addEventListener("click", (e) => {
+      if (details.open && !details.contains(e.target)) details.open = false;
+    });
+    details.dataset.outsideClickBound = "1";
+  }
 
   if (!combos.length) {
-    label.textContent = "no runs yet";
+    label.textContent = activeLeanvmBranch ? "no combos on this branch" : "no runs yet";
     details.open = false;
     details.style.pointerEvents = "none";
+    menu.innerHTML = "";
     return;
   }
+  details.style.pointerEvents = "";
 
   const updateLabel = () => {
     label.innerHTML = "";
@@ -242,15 +304,15 @@ function comboShortLabel(c, withTime = true) {
   const ls = `leansig ${comboRef(c.leansig_branch, c.leansig_sha)}`;
   const lm = `leanvm ${comboRef(c.leanmultisig_branch, c.leanmultisig_sha)}`;
   return withTime
-    ? `${ls} · ${lm}  —  ${fmtRelative(c.latest_run_ts)}`
-    : `${ls} · ${lm}`;
+    ? `${lm} · ${ls}  —  ${fmtRelative(c.latest_run_ts)}`
+    : `${lm} · ${ls}`;
 }
 
 function comboFullLabel(c) {
   if (!c) return "no combo";
   const ls = `leansig ${comboRef(c.leansig_branch, c.leansig_sha, /*fullSha=*/true)}`;
   const lm = `leanvm ${comboRef(c.leanmultisig_branch, c.leanmultisig_sha, /*fullSha=*/true)}`;
-  return `${ls} · ${lm}`;
+  return `${lm} · ${ls}`;
 }
 
 // Render a ref as `<branch>@<sha>` when both are known, else fall back
@@ -271,10 +333,10 @@ function shortSha(s) { return s && s.length >= 8 ? s.slice(0, 8) : (s || "—");
 function comboLabelDom(c, withTime = true) {
   const frag = document.createDocumentFragment();
   if (!c) { frag.appendChild(document.createTextNode("no combo")); return frag; }
-  frag.appendChild(document.createTextNode("leansig "));
-  frag.appendChild(repoRefLink("leanSig", c.leansig_branch, c.leansig_sha));
-  frag.appendChild(document.createTextNode(" · leanvm "));
+  frag.appendChild(document.createTextNode("leanvm "));
   frag.appendChild(repoRefLink("leanVM", c.leanmultisig_branch, c.leanmultisig_sha));
+  frag.appendChild(document.createTextNode(" · leansig "));
+  frag.appendChild(repoRefLink("leanSig", c.leansig_branch, c.leansig_sha));
   if (withTime) {
     frag.appendChild(document.createTextNode(`  —  ${fmtRelative(c.latest_run_ts)}`));
   }

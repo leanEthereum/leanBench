@@ -98,7 +98,12 @@ h2 {
   flex-wrap: wrap;
   gap: 12px;
 }
-.filter-row .nav-link { margin-left: auto; }
+.header-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.header-row .nav-links { margin-left: auto; }
 select.filter-machine {
   font-family: var(--mono);
   font-size: 12px;
@@ -596,18 +601,24 @@ select.filter-machine:hover { border-color: var(--accent); }
 }
 .topo-expand-link:hover { text-decoration: none; }
 .nav-link {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-family: var(--mono);
   font-size: 12px;
-  padding: 6px 12px;
-  background: var(--accent-soft);
-  color: var(--ink);
-  border: 1px solid var(--border);
-  border-radius: 6px;
+  color: var(--accent);
   text-decoration: none;
-  vertical-align: middle;
+  padding: 4px 2px;
+  border-bottom: 1px solid transparent;
+  transition: border-color 140ms ease;
 }
-.nav-link:hover { border-color: var(--accent); }
+.nav-link::after {
+  content: "→";
+  display: inline-block;
+  transition: transform 160ms ease;
+}
+.nav-link:hover { border-bottom-color: var(--accent); }
+.nav-link:hover::after { transform: translateX(3px); }
 
 /* Trend page */
 .trend-machine-label {
@@ -654,7 +665,7 @@ select.filter-machine:hover { border-color: var(--accent); }
 .trend-table td.trend-name a { color: var(--ink); text-decoration: none; }
 .trend-table td.trend-name a:hover { color: var(--accent); }
 
-/* Group adjacent nav buttons in the filter row */
+/* Group adjacent nav links in the header row */
 .nav-links {
   display: inline-flex;
   align-items: center;

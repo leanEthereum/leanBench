@@ -10,15 +10,22 @@
 </head>
 <body>
   <header>
-    <div class="container">
-      <h1><a href="index.html" class="home-link">leanBench</a></h1>
-      <p class="tagline">leanSig &amp; leanVM performance across hardware</p>
+    <div class="container header-row">
+      <div class="header-title">
+        <h1><a href="index.html" class="home-link">leanBench</a></h1>
+        <p class="tagline">leanSig &amp; leanVM performance across hardware</p>
+      </div>
+      <span class="nav-links">
+        <a href="trend.html" class="nav-link">trend</a>
+        <a href="topology.html" class="nav-link">topology explorer</a>
+      </span>
     </div>
   </header>
 
   <main class="container">
     <section id="filter">
       <div class="filter-row">
+        <select id="branch-filter-leanvm" class="filter-machine" title="Filter combos by leanVM branch"></select>
         <details class="combo-filter" id="combo-filter">
           <summary>
             <span class="combo-label">loading…</span>
@@ -26,10 +33,6 @@
           </summary>
           <div class="combo-menu" id="combo-menu"></div>
         </details>
-        <span class="nav-links">
-          <a href="trend.html" class="nav-link">trend →</a>
-          <a href="topology.html" class="nav-link">topology explorer →</a>
-        </span>
       </div>
     </section>
 
