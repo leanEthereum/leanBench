@@ -10,15 +10,21 @@
 </head>
 <body data-page="topology">
   <header>
-    <div class="container">
-      <h1>Topology Explorer</h1>
-      <p class="tagline">10k+ signature aggregation feasibility, calibrated against leanBench measurements</p>
+    <div class="container header-row">
+      <div class="header-title">
+        <h1>Topology Explorer</h1>
+        <p class="tagline">10k+ signature aggregation feasibility, calibrated against leanBench measurements</p>
+      </div>
+      <span class="nav-links">
+        <a href="index.html" class="nav-link nav-link-back">back to bench</a>
+      </span>
     </div>
   </header>
 
   <main class="container">
     <section id="filter">
       <div class="filter-row">
+        <select id="branch-filter-leanvm" class="filter-machine" title="Filter combos by leanVM branch"></select>
         <details class="combo-filter" id="combo-filter">
           <summary>
             <span class="combo-label">loading…</span>
@@ -27,7 +33,6 @@
           <div class="combo-menu" id="combo-menu"></div>
         </details>
         <select id="sim-machine" class="filter-machine" title="Target machine"></select>
-        <a href="index.html" class="nav-link">← back to bench</a>
       </div>
     </section>
 

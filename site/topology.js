@@ -15,6 +15,7 @@ if (document.body.dataset.page === "topology") renderTopologyPage();
 
 let topoIndexData = null;
 let topoActiveCombo = null;
+let topoActiveLeanvmBranch = null; // null = any
 let topoMachines = []; // filtered to active combo
 
 // Sort state. `dir` is 1 for ascending, -1 for descending. Clicking a sorted
@@ -46,11 +47,13 @@ async function renderTopologyPage() {
 
   const combos = topoIndexData.combos || [];
   const params = new URLSearchParams(location.search);
+  topoActiveLeanvmBranch = params.get("leanmultisig_branch") || null;
+  const filtered = filterTopoCombosByBranch(combos, topoActiveLeanvmBranch);
   const ls = params.get("leansig");
   const lm = params.get("leanmultisig");
   topoActiveCombo = (ls && lm
-    ? combos.find((c) => c.leansig_sha.startsWith(ls) && c.leanmultisig_sha.startsWith(lm))
-    : null) || combos[0];
+    ? filtered.find((c) => c.leansig_sha.startsWith(ls) && c.leanmultisig_sha.startsWith(lm))
+    : null) || filtered[0] || combos[0];
 
   if (!topoActiveCombo) {
     document.querySelector("#topology-results").innerHTML =
@@ -58,7 +61,8 @@ async function renderTopologyPage() {
     return;
   }
 
-  setupComboFilter(combos);
+  setupBranchFilter(combos);
+  setupComboFilter(filtered.length ? filtered : combos);
   setupInputHandlers();
   applyActiveCombo();
   setupSimulator();
@@ -108,23 +112,94 @@ function deriveMachinesForCombo(combo) {
       || (a.label || "").localeCompare(b.label || ""));
 }
 
+// Narrow the combo list to a given leanVM branch (`null` = no filter).
+function filterTopoCombosByBranch(combos, branch) {
+  return branch ? combos.filter((c) => c.leanmultisig_branch === branch) : combos;
+}
+
+function syncTopoBranchToUrl() {
+  const params = new URLSearchParams(location.search);
+  if (topoActiveLeanvmBranch) params.set("leanmultisig_branch", topoActiveLeanvmBranch);
+  else params.delete("leanmultisig_branch");
+  const search = params.toString();
+  history.replaceState(null, "", location.pathname + (search ? "?" + search : "") + location.hash);
+}
+
+// Populate the leanVM branch <select> from the full combo list, so all
+// branches stay reachable even when the current filter narrows the combo
+// dropdown.
+function setupBranchFilter(allCombos) {
+  const select = document.querySelector("#branch-filter-leanvm");
+  if (!select) return;
+  const branches = [...new Set(allCombos.map((c) => c.leanmultisig_branch).filter(Boolean))].sort();
+  select.innerHTML = "";
+  select.appendChild(new Option("leanvm (any)", ""));
+  for (const v of branches) {
+    select.appendChild(new Option(`leanvm ${v}`, v, false, v === topoActiveLeanvmBranch));
+  }
+  select.onchange = () => {
+    topoActiveLeanvmBranch = select.value || null;
+    onTopoBranchFilterChange(allCombos);
+  };
+}
+
+function onTopoBranchFilterChange(allCombos) {
+  syncTopoBranchToUrl();
+  const filtered = filterTopoCombosByBranch(allCombos, topoActiveLeanvmBranch);
+  // Empty branch scope: leave topoActiveCombo (and the charts) alone — flipping
+  // back to "any" restores the state. Showing the dropdown summary as
+  // "no combos on this branch" gives the user the signal to recover.
+  if (!filtered.length) {
+    populateTopoComboMenu([]);
+    return;
+  }
+  // If the current active combo falls outside the new scope, advance to the
+  // most-recent matching combo and refit the cost model.
+  const stillMatches = filtered.some((c) =>
+    c.leansig_sha === topoActiveCombo.leansig_sha
+    && c.leanmultisig_sha === topoActiveCombo.leanmultisig_sha);
+  if (!stillMatches) {
+    topoActiveCombo = filtered[0];
+    const params = new URLSearchParams(location.search);
+    params.set("leansig", shortSha(topoActiveCombo.leansig_sha));
+    params.set("leanmultisig", shortSha(topoActiveCombo.leanmultisig_sha));
+    history.replaceState(null, "", location.pathname + "?" + params.toString());
+    applyActiveCombo();
+  }
+  populateTopoComboMenu(filtered);
+}
+
 // Render the combo-filter dropdown using the same details/menu pattern as
 // the index page. Picking a combo refits the cost model + repopulates the
 // machine dropdown without reloading the page.
 function setupComboFilter(combos) {
   const details = document.querySelector("#combo-filter");
+
+  // Outside-click guarded so re-renders (e.g. after a branch filter change)
+  // don't stack the listener.
+  if (!details.dataset.outsideClickBound) {
+    document.addEventListener("click", (e) => {
+      if (details.open && !details.contains(e.target)) details.open = false;
+    });
+    details.dataset.outsideClickBound = "1";
+  }
+
+  populateTopoComboMenu(combos);
+}
+
+function populateTopoComboMenu(combos) {
+  const details = document.querySelector("#combo-filter");
   const label   = details.querySelector(".combo-label");
   const menu    = document.querySelector("#combo-menu");
 
-  document.addEventListener("click", (e) => {
-    if (details.open && !details.contains(e.target)) details.open = false;
-  });
-
   if (!combos.length) {
-    label.textContent = "no runs yet";
+    label.textContent = topoActiveLeanvmBranch ? "no combos on this branch" : "no runs yet";
+    details.open = false;
     details.style.pointerEvents = "none";
+    menu.innerHTML = "";
     return;
   }
+  details.style.pointerEvents = "";
 
   const updateLabel = () => {
     label.innerHTML = "";
@@ -133,6 +208,7 @@ function setupComboFilter(combos) {
   };
   updateLabel();
 
+  menu.innerHTML = "";
   for (const c of combos) {
     const active = c.leansig_sha === topoActiveCombo.leansig_sha
                 && c.leanmultisig_sha === topoActiveCombo.leanmultisig_sha;

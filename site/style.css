@@ -619,6 +619,15 @@ select.filter-machine:hover { border-color: var(--accent); }
 }
 .nav-link:hover { border-bottom-color: var(--accent); }
 .nav-link:hover::after { transform: translateX(3px); }
+/* Back-direction variant — arrow on the left, slides left on hover. */
+.nav-link-back::after { content: none; }
+.nav-link-back::before {
+  content: "←";
+  display: inline-block;
+  margin-right: 6px;
+  transition: transform 160ms ease;
+}
+.nav-link-back:hover::before { transform: translateX(-3px); }
 
 /* Trend page */
 .trend-machine-label {
