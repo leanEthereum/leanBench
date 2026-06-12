@@ -22,21 +22,21 @@ postcard = { version = "1.1", features = ["alloc"] }
 # (informational, baked into the binary by build.rs for UI display)
 # lives in [package.metadata.bench-pins] below. Bump them together.
 #
-# leanSig: tracks whatever leanVM depends on transitively. leanVM devnet5
-# declares `leansig = { git = "...", branch = "devnet4" }` — match the spec
+# leanSig: tracks whatever leanVM depends on transitively. leanVM devnet4
+# declares `leansig = { git = "..." }` (default branch) — match the spec
 # exactly so cargo dedups instead of pulling two leansig copies with
 # incompatible trait identities.
-leansig = { git = "https://github.com/leanEthereum/leanSig", branch = "devnet4" }
+leansig = { git = "https://github.com/leanEthereum/leanSig" }
 
-# leanVM devnet5 — latest head at time of this sweep.
+# leanVM devnet4 — latest head at time of this sweep.
 #
 # The repo was renamed from leanMultisig to leanVM upstream (2026-06).
 # GitHub 301-redirects git ops for the old URL, so the legacy URL still
 # resolves; it also keeps cargo's checkout dir basename as `leanmultisig-*`,
 # which scripts/cloud/remote_bench.py greps for. Flip the URL and that
 # matcher together on a deliberate hygiene pass.
-leansig_wrapper = { git = "https://github.com/leanEthereum/leanMultisig.git", rev = "e2592df4" }
-rec_aggregation = { git = "https://github.com/leanEthereum/leanMultisig.git", rev = "e2592df4" }
+leansig_wrapper = { git = "https://github.com/leanEthereum/leanMultisig.git", rev = "2498896c" }
+rec_aggregation = { git = "https://github.com/leanEthereum/leanMultisig.git", rev = "2498896c" }
 
 # Branch names corresponding to the rev pins above. Cargo itself
 # ignores this section; build.rs reads it and bakes the values into
@@ -47,8 +47,8 @@ rec_aggregation = { git = "https://github.com/leanEthereum/leanMultisig.git", re
 # `leanvm-branch`) because it flows into the result-file JSON schema —
 # see workloads/src/main.rs.
 [package.metadata.bench-pins]
-leansig-branch = "devnet4"
-leanmultisig-branch = "devnet5"
+leansig-branch = "main"
+leanmultisig-branch = "devnet4"
 
 [profile.release]
 lto = "thin"
