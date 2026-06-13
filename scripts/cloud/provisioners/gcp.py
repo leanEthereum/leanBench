@@ -72,6 +72,15 @@ class GCPProvisioner:
         # is opened; the VM is ephemeral and has no service account, so the
         # public IP's blast radius is minimal. If you'd rather keep
         # `--no-address`, set up Cloud NAT on your VPC and re-enable that flag.
+        # Spot pricing for ~60-80% off VM-hour cost. Termination-action=DELETE
+        # makes a preempted VM self-cleanup so `destroy()` doesn't strand it
+        # (and so an orphaned VM never silently bills if the orchestrator
+        # crashes between create and destroy). The tradeoff: GCP can reclaim
+        # the VM at any time, losing that machine's bench result for the run.
+        args += [
+            "--provisioning-model=SPOT",
+            "--instance-termination-action=DELETE",
+        ]
         self._gcloud(*args, check=True)
         return Instance(name=spec.name, data={"zone": self.zone})
 
@@ -154,10 +163,30 @@ class GCPProvisioner:
         )
 
     def destroy(self, inst: Instance) -> None:
-        self._gcloud(
+        # Tolerate the VM already being gone or going. Spot preemption with
+        # `--instance-termination-action=DELETE` makes the VM self-delete
+        # before we get here, and depending on timing gcloud surfaces this
+        # as either "not found" (already gone) or "operation in progress" /
+        # "being deleted" (GCP is mid-tearing-it-down). All three end with
+        # the VM gone, so they're no-op successes from our perspective.
+        r = self._gcloud(
             "compute", "instances", "delete", inst.name,
             "--zone", self.zone, "--quiet",
-            check=True,
+            check=False, quiet=True,
+        )
+        if r.returncode == 0:
+            return
+        stderr = (r.stderr or "").lower()
+        gone_markers = (
+            "not found", "was not found",
+            "being deleted", "already deleted",
+            "operation in progress",
+        )
+        if any(m in stderr for m in gone_markers):
+            return
+        raise subprocess.CalledProcessError(
+            r.returncode, ["gcloud", "compute", "instances", "delete", inst.name],
+            output=r.stdout, stderr=r.stderr,
         )
 
     def _env(self) -> dict[str, str]:

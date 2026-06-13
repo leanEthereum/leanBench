@@ -88,6 +88,12 @@ and push to this repo to share your results publicly. The VM is destroyed
 in a `try/finally`, including on Ctrl-C; orphans are tagged
 `lean-bench=true` so they're easy to spot.
 
+VMs are provisioned as **Spot** (`--provisioning-model=SPOT`) for ~60–80% off
+list price. GCP can reclaim a Spot VM at any time — if a machine gets
+preempted mid-bench, its result is lost for that run. The VM
+self-deletes on preemption (`--instance-termination-action=DELETE`) so no
+manual cleanup is needed.
+
 ## Preview locally before pushing
 
 ```bash
