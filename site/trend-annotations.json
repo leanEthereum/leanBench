@@ -38,5 +38,10 @@
     "from_leansig_sha": "n/a",
     "from_leanmultisig_sha": "5b9f3b93",
     "label": "leanVM: bus / logup / zerocheck refactor — bytecode + memory + precompile lookups merged into a shared BusInteraction (#228); logup-bus encoding cleaned up; logup/zerocheck drop the eta/beta challenges, reuse powers of alpha as the RLC across all 3 AIR tables."
+  },
+  {
+    "from_leansig_sha": "n/a",
+    "from_leanmultisig_sha": "9d53d2db",
+    "label": "leanVM: recursion table ordering (sorted by decreasing height when stacked — the EXECUTION table no longer needs to be the biggest); dynamic_unroll removed (#230)."
   }
 ]
