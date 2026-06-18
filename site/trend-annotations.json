@@ -23,5 +23,10 @@
     "from_leansig_sha": "n/a",
     "from_leanmultisig_sha": "b71994cf",
     "label": "leanVM: recursion program — expand_from_univariate_ext optimized via match_range + unroll."
+  },
+  {
+    "from_leansig_sha": "n/a",
+    "from_leanmultisig_sha": "8fbe00b5",
+    "label": "leanVM: fiat-shamir switches to a duplex sponge (#223)."
   }
 ]
