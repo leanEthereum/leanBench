@@ -18,5 +18,10 @@
     "from_leansig_sha": "n/a",
     "from_leanmultisig_sha": "c868330c",
     "label": "leanVM: SIMD packing for Powers (Plonky3 #1639 mirror); logup-GKR fix for packing_width=1 (no-SIMD path); grinding-cycle reduction in recursion."
+  },
+  {
+    "from_leansig_sha": "n/a",
+    "from_leanmultisig_sha": "b71994cf",
+    "label": "leanVM: recursion program — expand_from_univariate_ext optimized via match_range + unroll."
   }
 ]
