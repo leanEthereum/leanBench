@@ -671,7 +671,7 @@ select.filter-machine:hover { border-color: var(--accent); }
 }
 
 /* Annotations legend — one row per numbered badge that appears above charts. */
-.trend-markings-legend {
+.trend-annotations-legend {
   margin-top: 24px;
   padding: 16px;
   background: var(--panel);
@@ -679,7 +679,7 @@ select.filter-machine:hover { border-color: var(--accent); }
   border-radius: 8px;
   font-size: 13px;
 }
-.trend-markings-legend h3 {
+.trend-annotations-legend h3 {
   margin: 0 0 12px;
   font-size: 12px;
   font-weight: 600;
@@ -687,17 +687,17 @@ select.filter-machine:hover { border-color: var(--accent); }
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
-.trend-markings-legend .marking-row {
+.trend-annotations-legend .annotation-row {
   display: grid;
   grid-template-columns: auto auto 1fr;
   align-items: center;
   gap: 12px;
   padding: 6px 0;
 }
-.trend-markings-legend .marking-row + .marking-row {
+.trend-annotations-legend .annotation-row + .annotation-row {
   border-top: 1px solid var(--border);
 }
-.trend-markings-legend .marking-badge {
+.trend-annotations-legend .annotation-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -712,19 +712,19 @@ select.filter-machine:hover { border-color: var(--accent); }
   line-height: 1;
   opacity: 0.5;
 }
-.trend-markings-legend .marking-combo {
+.trend-annotations-legend .annotation-combo {
   font-family: var(--mono);
   font-size: 12px;
   color: var(--ink-soft);
   white-space: nowrap;
 }
-.trend-markings-legend .marking-label {
+.trend-annotations-legend .annotation-label {
   color: var(--ink);
 }
-.trend-markings-legend .marking-row-flash {
-  animation: marking-flash 1.5s ease-out;
+.trend-annotations-legend .annotation-row-flash {
+  animation: annotation-flash 1.5s ease-out;
 }
-@keyframes marking-flash {
+@keyframes annotation-flash {
   0%   { background: var(--accent-soft); }
   100% { background: transparent; }
 }

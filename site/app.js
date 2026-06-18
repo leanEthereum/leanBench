@@ -1173,10 +1173,10 @@ function renderMachineCard(m) {
 // Chart.js plugin: numbered badge + dashed vertical line at marked combo
 // positions. Badge sits in the top padding (above the plot grid). The
 // number keys into the Annotations legend below the chart grid.
-const indexMarkingsPlugin = {
-  id: "index-markings",
+const indexAnnotationsPlugin = {
+  id: "index-annotations",
   afterDatasetsDraw(chart, _args, opts) {
-    if (!opts || !opts.markings || !opts.markings.length) return;
+    if (!opts || !opts.annotations || !opts.annotations.length) return;
     const ctx = chart.ctx;
     const x = chart.scales.x;
     const y = chart.scales.y;
@@ -1185,7 +1185,7 @@ const indexMarkingsPlugin = {
     const grey = getComputedStyle(document.body)
       .getPropertyValue("--ink-faint").trim() || "#888";
     ctx.save();
-    for (const m of opts.markings) {
+    for (const m of opts.annotations) {
       const px = x.getPixelForValue(m.x);
       if (!Number.isFinite(px)) continue;
       ctx.strokeStyle = "rgba(128,128,128,0.3)";
@@ -1211,9 +1211,9 @@ const indexMarkingsPlugin = {
     ctx.restore();
   },
 };
-if (typeof Chart !== "undefined") Chart.register(indexMarkingsPlugin);
+if (typeof Chart !== "undefined") Chart.register(indexAnnotationsPlugin);
 
-let indexMarkings = []; // loaded from trend-markings.json on first render
+let indexAnnotations = []; // loaded from trend-annotations.json on first render
 
 // --- index page: workload progression across combos ------------------
 //
@@ -1269,11 +1269,11 @@ async function renderIndex() {
        site will populate.</p>`;
     return;
   }
-  // Annotations are editable from site/trend-markings.json without touching
-  // code. Missing or malformed file → just render no markings.
+  // Annotations are editable from site/trend-annotations.json without touching
+  // code. Missing or malformed file → just render no annotations.
   try {
-    const r = await fetch("trend-markings.json");
-    if (r.ok) indexMarkings = await r.json();
+    const r = await fetch("trend-annotations.json");
+    if (r.ok) indexAnnotations = await r.json();
   } catch (e) { /* ignore */ }
 
   const combos = data.combos || [];
@@ -1378,10 +1378,10 @@ function recomputeBranchTrends(machines, combos) {
   }
   const branchNames = Object.keys(byBranch).sort();
 
-  // Marking resolution scope: visible combos only. A marking whose combo
+  // Annotation resolution scope: visible combos only. An annotation whose combo
   // isn't in the current filter just doesn't render.
   const visibleCombos = filtered;
-  const resolvedMarkings = (indexMarkings || [])
+  const resolvedAnnotations = (indexAnnotations || [])
     .map((m) => {
       const combo = visibleCombos.find((c) =>
         c.leansig_sha && c.leanmultisig_sha
@@ -1394,16 +1394,16 @@ function recomputeBranchTrends(machines, combos) {
     .sort((a, b) => a.x - b.x)
     .map((m, i) => ({ ...m, number: i + 1 }));
 
-  renderBranchTrendCharts(machine, byBranch, branchNames, best, resolvedMarkings);
+  renderBranchTrendCharts(machine, byBranch, branchNames, best, resolvedAnnotations);
 }
 
-function renderBranchTrendCharts(machine, byBranch, branchNames, best, resolvedMarkings) {
+function renderBranchTrendCharts(machine, byBranch, branchNames, best, resolvedAnnotations) {
   const container = document.querySelector("#branch-trend-grid");
   for (const c of indexBranchCharts) c.destroy();
   indexBranchCharts = [];
   container.innerHTML = "";
   // Clear any prior annotations legend on machine / filter change.
-  document.querySelector("#index-markings-legend")?.remove();
+  document.querySelector("#index-annotations-legend")?.remove();
 
   // Lazily create one section per category as charts arrive; keeps the
   // section ordering deterministic via INDEX_GROUP_ORDER.
@@ -1484,8 +1484,8 @@ function renderBranchTrendCharts(machine, byBranch, branchNames, best, resolvedM
           maintainAspectRatio: false,
           parsing: false,
           // Reserve space above the plot for the annotations badge row
-          // (only when at least one marking lands on this chart).
-          layout: { padding: { top: resolvedMarkings.length ? 18 : 0 } },
+          // (only when at least one annotation lands on this chart).
+          layout: { padding: { top: resolvedAnnotations.length ? 18 : 0 } },
           plugins: {
             legend: {
               display: showLegend,
@@ -1506,7 +1506,7 @@ function renderBranchTrendCharts(machine, byBranch, branchNames, best, resolvedM
                 },
               },
             },
-            "index-markings": { markings: resolvedMarkings },
+            "index-annotations": { annotations: resolvedAnnotations },
           },
           scales: {
             x: {
@@ -1527,8 +1527,8 @@ function renderBranchTrendCharts(machine, byBranch, branchNames, best, resolvedM
       indexBranchCharts.push(chart);
 
       // Click halo around each badge → scroll the matching legend row
-      // into view and flash it. Geometry mirrors indexMarkingsPlugin.
-      if (resolvedMarkings.length) {
+      // into view and flash it. Geometry mirrors indexAnnotationsPlugin.
+      if (resolvedAnnotations.length) {
         const BADGE_R = 5;
         const HIT_R = BADGE_R + 3;
         const badgeHit = (e) => {
@@ -1538,7 +1538,7 @@ function renderBranchTrendCharts(machine, byBranch, branchNames, best, resolvedM
           const xs = chart.scales.x;
           const ys = chart.scales.y;
           const badgeCY = ys.top - BADGE_R - 6;
-          for (const m of resolvedMarkings) {
+          for (const m of resolvedAnnotations) {
             const badgeCX = xs.getPixelForValue(m.x);
             const dx = cx - badgeCX;
             const dy = cy - badgeCY;
@@ -1549,14 +1549,14 @@ function renderBranchTrendCharts(machine, byBranch, branchNames, best, resolvedM
         canvas.addEventListener("click", (e) => {
           const m = badgeHit(e);
           if (!m) return;
-          const row = document.getElementById(`marking-${m.number}`);
+          const row = document.getElementById(`annotation-${m.number}`);
           if (!row) return;
           row.scrollIntoView({ behavior: "smooth", block: "center" });
-          row.classList.remove("marking-row-flash");
+          row.classList.remove("annotation-row-flash");
           // Force reflow so the animation restarts on a repeat click.
           // eslint-disable-next-line no-unused-expressions
           row.offsetWidth;
-          row.classList.add("marking-row-flash");
+          row.classList.add("annotation-row-flash");
         });
         canvas.addEventListener("mousemove", (e) => {
           canvas.style.cursor = badgeHit(e) ? "pointer" : "";
@@ -1569,17 +1569,17 @@ function renderBranchTrendCharts(machine, byBranch, branchNames, best, resolvedM
     return;
   }
 
-  // Legend rows live below the chart grid, ids = marking-<number> so
+  // Legend rows live below the chart grid, ids = annotation-<number> so
   // badge clicks scroll the matching row into view.
-  if (resolvedMarkings.length) {
-    const legend = el("div", { id: "index-markings-legend", class: "trend-markings-legend" });
+  if (resolvedAnnotations.length) {
+    const legend = el("div", { id: "index-annotations-legend", class: "trend-annotations-legend" });
     legend.appendChild(el("h3", { text: "Annotations" }));
-    for (const m of resolvedMarkings) {
-      const row = el("div", { id: `marking-${m.number}`, class: "marking-row" });
-      row.appendChild(el("span", { class: "marking-badge", text: String(m.number) }));
-      row.appendChild(el("span", { class: "marking-combo" },
+    for (const m of resolvedAnnotations) {
+      const row = el("div", { id: `annotation-${m.number}`, class: "annotation-row" });
+      row.appendChild(el("span", { class: "annotation-badge", text: String(m.number) }));
+      row.appendChild(el("span", { class: "annotation-combo" },
         comboLabelDom(m.combo, /*withTime=*/false)));
-      row.appendChild(el("span", { class: "marking-label", text: m.label }));
+      row.appendChild(el("span", { class: "annotation-label", text: m.label }));
       legend.appendChild(row);
     }
     container.parentNode.appendChild(legend);

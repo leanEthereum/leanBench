@@ -167,7 +167,7 @@ leanBench/
 │  ├─ run.html                   combo overview — cross-machine comparison, proof sizes, scaling on c4
 │  ├─ result.html                per-result-file detail with per-workload charts
 │  ├─ topology.html              aggregation-topology feasibility explorer
-│  ├─ trend-markings.json        annotations layered on the front page's per-branch charts
+│  ├─ trend-annotations.json     annotations layered on the front page's per-branch charts
 │  ├─ app.js / topology.js
 │  ├─ style.css
 │  └─ vendor/                    chart.umd.min.js (no CDN dependency)
