@@ -18,6 +18,10 @@
     "git_shas": {
       "leanmultisig_sha": "c09c85ab089f40ca081c3c07c3625490f39026c7",
       "leansig_sha": "16c660e93c60240de113fdca6be7455d6d7721a1"
+    },
+    "branches": {
+      "leanmultisig_branch": "devnet5",
+      "leansig_branch": "devnet4"
     }
   },
   "workloads": [
