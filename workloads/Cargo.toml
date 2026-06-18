@@ -9,6 +9,15 @@ resolver = "2"
 name = "lean-bench-workloads"
 path = "src/main.rs"
 
+[features]
+# api-leansig is the devnet4 / devnet5-era API path (LeanSigScheme via
+# `leansig_wrapper`, plus a transitively-pulled `leansig`). api-xmss is
+# the main-era path (free-function `xmss_*` from the local `xmss` crate;
+# no leansig dep). Mutually exclusive — pick exactly one.
+default = ["api-leansig"]
+api-leansig = ["dep:leansig", "dep:leansig_wrapper", "dep:rec_aggregation"]
+api-xmss = ["dep:xmss", "dep:rec_aggregation_main"]
+
 [dependencies]
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
@@ -17,38 +26,27 @@ anyhow = "1.0"
 rand = "0.10"
 postcard = { version = "1.1", features = ["alloc"] }
 
-# Pinned upstream refs. Bump deliberately. Each dep is locked to a
-# specific rev for reproducibility; the corresponding branch name
-# (informational, baked into the binary by build.rs for UI display)
-# lives in [package.metadata.bench-pins] below. Bump them together.
-#
-# leanSig: tracks whatever leanVM depends on transitively. leanVM devnet4
-# declares `leansig = { git = "..." }` (default branch) — match the spec
-# exactly so cargo dedups instead of pulling two leansig copies with
-# incompatible trait identities.
-leansig = { git = "https://github.com/leanEthereum/leanSig" }
+# api-leansig deps. Bump the devnet rev in [package.metadata.bench-pins.api-leansig]
+# alongside the SHA below when moving the canonical devnet target.
+leansig = { git = "https://github.com/leanEthereum/leanSig", optional = true }
+leansig_wrapper = { git = "https://github.com/leanEthereum/leanMultisig.git", rev = "2498896c", optional = true }
+rec_aggregation = { git = "https://github.com/leanEthereum/leanMultisig.git", rev = "2498896c", optional = true }
 
-# leanVM devnet4 — latest head at time of this sweep.
-#
-# The repo was renamed from leanMultisig to leanVM upstream (2026-06).
-# GitHub 301-redirects git ops for the old URL, so the legacy URL still
-# resolves; it also keeps cargo's checkout dir basename as `leanmultisig-*`,
-# which scripts/cloud/remote_bench.py greps for. Flip the URL and that
-# matcher together on a deliberate hygiene pass.
-leansig_wrapper = { git = "https://github.com/leanEthereum/leanMultisig.git", rev = "2498896c" }
-rec_aggregation = { git = "https://github.com/leanEthereum/leanMultisig.git", rev = "2498896c" }
+# api-xmss deps. The `rec_aggregation` package name collides with the
+# api-leansig pin above, so we alias the main-era one as `rec_aggregation_main`
+# via `package = "rec_aggregation"`; only one of the two is active per build.
+xmss = { git = "https://github.com/leanEthereum/leanMultisig.git", rev = "3b246355", package = "xmss", optional = true }
+rec_aggregation_main = { git = "https://github.com/leanEthereum/leanMultisig.git", rev = "3b246355", package = "rec_aggregation", optional = true }
 
-# Branch names corresponding to the rev pins above. Cargo itself
-# ignores this section; build.rs reads it and bakes the values into
-# the runner binary so result files (and the site) can show which
-# upstream branch each run was tracking.
-#
-# `leanmultisig-branch` is kept as the key name (rather than
-# `leanvm-branch`) because it flows into the result-file JSON schema —
-# see workloads/src/main.rs.
-[package.metadata.bench-pins]
+# Branch names per feature mode — informational, baked into the binary
+# by build.rs for UI display. Cargo ignores [package.metadata].
+[package.metadata.bench-pins.api-leansig]
 leansig-branch = "main"
 leanmultisig-branch = "devnet4"
+
+[package.metadata.bench-pins.api-xmss]
+leansig-branch = "n/a"
+leanmultisig-branch = "main"
 
 [profile.release]
 lto = "thin"

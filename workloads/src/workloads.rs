@@ -10,82 +10,177 @@ pub mod xmss_wl {
     // ships. Mirrors leanSpec's PROD_CONFIG (DIMENSION=46,
     // BASE=8, TARGET_SUM=200, LOG_LIFETIME=32) — see
     // workspace/leanSpec/src/lean_spec/subspecs/xmss/constants.py.
-    use super::*;
-    use ::leansig::serialization::Serializable;
-    use ::leansig::signature::SignatureScheme;
-    use ::leansig_wrapper::{LeanSigScheme as Scheme, LOG_LIFETIME, MESSAGE_LENGTH};
-    use ::rec_aggregation::signatures_cache::BENCHMARK_SLOT;
-    use rand::{rngs::StdRng, RngExt, SeedableRng};
+    //
+    // Two API surfaces, swapped by feature: api-leansig uses
+    // `leansig_wrapper::LeanSigScheme` (devnet4 / devnet5); api-xmss uses
+    // the free `xmss_*` functions from the local `xmss` crate (main).
 
-    pub fn keygen(args: &CommonArgs) -> Result<Record> {
-        // Activate only one epoch — keygen scales linearly in epoch
-        // count and lifetime 2^32 is infeasible to materialize in full.
-        let mut samples = Vec::with_capacity(args.samples);
-        for i in 0..(args.samples + args.warmup) {
-            let mut rng = StdRng::seed_from_u64(args.seed ^ i as u64);
-            let t = std::time::Instant::now();
-            let _ = Scheme::key_gen(&mut rng, BENCHMARK_SLOT as usize, 1);
-            if i >= args.warmup {
-                samples.push(t.elapsed().as_nanos());
+    #[cfg(feature = "api-leansig")]
+    mod imp {
+        use super::super::*;
+        use ::leansig::serialization::Serializable;
+        use ::leansig::signature::SignatureScheme;
+        use ::leansig_wrapper::{LeanSigScheme as Scheme, LOG_LIFETIME, MESSAGE_LENGTH};
+        use ::rec_aggregation::signatures_cache::BENCHMARK_SLOT;
+        use rand::{rngs::StdRng, RngExt, SeedableRng};
+
+        pub fn keygen(args: &CommonArgs) -> Result<Record> {
+            // Activate only one epoch — keygen scales linearly in epoch
+            // count and lifetime 2^32 is infeasible to materialize in full.
+            let mut samples = Vec::with_capacity(args.samples);
+            for i in 0..(args.samples + args.warmup) {
+                let mut rng = StdRng::seed_from_u64(args.seed ^ i as u64);
+                let t = std::time::Instant::now();
+                let _ = Scheme::key_gen(&mut rng, BENCHMARK_SLOT as usize, 1);
+                if i >= args.warmup {
+                    samples.push(t.elapsed().as_nanos());
+                }
             }
+            Ok(make_record(
+                "xmss.keygen",
+                samples,
+                args.warmup,
+                serde_json::json!({ "log_lifetime": LOG_LIFETIME, "num_active_epochs": 1 }),
+            ))
         }
-        Ok(make_record(
-            "xmss.keygen",
-            samples,
-            args.warmup,
-            serde_json::json!({ "log_lifetime": LOG_LIFETIME, "num_active_epochs": 1 }),
-        ))
+
+        pub fn sign(args: &CommonArgs) -> Result<Record> {
+            let mut rng = StdRng::seed_from_u64(args.seed);
+            let (_pk, sk) = Scheme::key_gen(&mut rng, BENCHMARK_SLOT as usize, 1);
+            let msg: [u8; MESSAGE_LENGTH] = rng.random();
+
+            let samples = time_loop(args, || {
+                let _ = Scheme::sign(&sk, BENCHMARK_SLOT, &msg).expect("sign");
+            });
+            let sig = Scheme::sign(&sk, BENCHMARK_SLOT, &msg).expect("sign");
+            let sig_bytes = sig.to_bytes().len();
+            Ok(make_record(
+                "xmss.sign",
+                samples,
+                args.warmup,
+                serde_json::json!({
+                    "log_lifetime": LOG_LIFETIME,
+                    "message_bytes": MESSAGE_LENGTH,
+                    "signature_bytes": sig_bytes,
+                }),
+            ))
+        }
+
+        pub fn verify(args: &CommonArgs) -> Result<Record> {
+            let mut rng = StdRng::seed_from_u64(args.seed);
+            let (pk, sk) = Scheme::key_gen(&mut rng, BENCHMARK_SLOT as usize, 1);
+            let msg: [u8; MESSAGE_LENGTH] = rng.random();
+            let sig = Scheme::sign(&sk, BENCHMARK_SLOT, &msg).expect("sign");
+
+            let samples = time_loop(args, || {
+                assert!(Scheme::verify(&pk, BENCHMARK_SLOT, &msg, &sig));
+            });
+            let sig_bytes = sig.to_bytes().len();
+            Ok(make_record(
+                "xmss.verify",
+                samples,
+                args.warmup,
+                serde_json::json!({
+                    "log_lifetime": LOG_LIFETIME,
+                    "signature_bytes": sig_bytes,
+                }),
+            ))
+        }
     }
 
-    pub fn sign(args: &CommonArgs) -> Result<Record> {
-        let mut rng = StdRng::seed_from_u64(args.seed);
-        let (_pk, sk) = Scheme::key_gen(&mut rng, BENCHMARK_SLOT as usize, 1);
-        let msg: [u8; MESSAGE_LENGTH] = rng.random();
+    #[cfg(feature = "api-xmss")]
+    mod imp {
+        use super::super::*;
+        use ::xmss::signers_cache::{message_for_benchmark, BENCHMARK_SLOT};
+        use ::xmss::{xmss_key_gen, xmss_sign, xmss_verify, LOG_LIFETIME, MESSAGE_LEN_FE};
+        use rand::{rngs::StdRng, SeedableRng};
 
-        let samples = time_loop(args, || {
-            let _ = Scheme::sign(&sk, BENCHMARK_SLOT, &msg).expect("sign");
-        });
-        let sig = Scheme::sign(&sk, BENCHMARK_SLOT, &msg).expect("sign");
-        let sig_bytes = sig.to_bytes().len();
-        Ok(make_record(
-            "xmss.sign",
-            samples,
-            args.warmup,
-            serde_json::json!({
-                "log_lifetime": LOG_LIFETIME,
-                "message_bytes": MESSAGE_LENGTH,
-                "signature_bytes": sig_bytes,
-            }),
-        ))
+        // KoalaBear field elements serialize to 4 bytes on the wire,
+        // mirroring how the on-chain payload counts message length.
+        const F_BYTE_SIZE: usize = 4;
+
+        fn seed_from(args: &CommonArgs, i: u64) -> [u8; 32] {
+            let mut seed = [0u8; 32];
+            seed[..8].copy_from_slice(&(args.seed ^ i).to_le_bytes());
+            seed
+        }
+
+        pub fn keygen(args: &CommonArgs) -> Result<Record> {
+            // Activate only one epoch — keygen scales linearly in epoch
+            // count and lifetime 2^32 is infeasible to materialize in full.
+            let mut samples = Vec::with_capacity(args.samples);
+            for i in 0..(args.samples + args.warmup) {
+                let seed = seed_from(args, i as u64);
+                let t = std::time::Instant::now();
+                let _ = xmss_key_gen(seed, BENCHMARK_SLOT, BENCHMARK_SLOT, false)
+                    .expect("keygen");
+                if i >= args.warmup {
+                    samples.push(t.elapsed().as_nanos());
+                }
+            }
+            Ok(make_record(
+                "xmss.keygen",
+                samples,
+                args.warmup,
+                serde_json::json!({ "log_lifetime": LOG_LIFETIME, "num_active_epochs": 1 }),
+            ))
+        }
+
+        pub fn sign(args: &CommonArgs) -> Result<Record> {
+            let mut rng = StdRng::seed_from_u64(args.seed);
+            let (sk, _pk) = xmss_key_gen(seed_from(args, 0), BENCHMARK_SLOT, BENCHMARK_SLOT, false)
+                .expect("keygen");
+            let msg = message_for_benchmark();
+
+            let samples = time_loop(args, || {
+                let _ = xmss_sign(&mut rng, &sk, &msg, BENCHMARK_SLOT).expect("sign");
+            });
+            let sig = xmss_sign(&mut rng, &sk, &msg, BENCHMARK_SLOT).expect("sign");
+            let sig_bytes = postcard::to_allocvec(&sig).expect("sig serialize").len();
+            Ok(make_record(
+                "xmss.sign",
+                samples,
+                args.warmup,
+                serde_json::json!({
+                    "log_lifetime": LOG_LIFETIME,
+                    "message_bytes": MESSAGE_LEN_FE * F_BYTE_SIZE,
+                    "signature_bytes": sig_bytes,
+                }),
+            ))
+        }
+
+        pub fn verify(args: &CommonArgs) -> Result<Record> {
+            let mut rng = StdRng::seed_from_u64(args.seed);
+            let (sk, pk) = xmss_key_gen(seed_from(args, 0), BENCHMARK_SLOT, BENCHMARK_SLOT, false)
+                .expect("keygen");
+            let msg = message_for_benchmark();
+            let sig = xmss_sign(&mut rng, &sk, &msg, BENCHMARK_SLOT).expect("sign");
+
+            let samples = time_loop(args, || {
+                xmss_verify(&pk, &msg, &sig, BENCHMARK_SLOT).expect("verify");
+            });
+            let sig_bytes = postcard::to_allocvec(&sig).expect("sig serialize").len();
+            Ok(make_record(
+                "xmss.verify",
+                samples,
+                args.warmup,
+                serde_json::json!({
+                    "log_lifetime": LOG_LIFETIME,
+                    "signature_bytes": sig_bytes,
+                }),
+            ))
+        }
     }
 
-    pub fn verify(args: &CommonArgs) -> Result<Record> {
-        let mut rng = StdRng::seed_from_u64(args.seed);
-        let (pk, sk) = Scheme::key_gen(&mut rng, BENCHMARK_SLOT as usize, 1);
-        let msg: [u8; MESSAGE_LENGTH] = rng.random();
-        let sig = Scheme::sign(&sk, BENCHMARK_SLOT, &msg).expect("sign");
-
-        let samples = time_loop(args, || {
-            assert!(Scheme::verify(&pk, BENCHMARK_SLOT, &msg, &sig));
-        });
-        let sig_bytes = sig.to_bytes().len();
-        Ok(make_record(
-            "xmss.verify",
-            samples,
-            args.warmup,
-            serde_json::json!({
-                "log_lifetime": LOG_LIFETIME,
-                "signature_bytes": sig_bytes,
-            }),
-        ))
-    }
+    pub use imp::*;
 }
 
 pub mod aggregate {
     use super::*;
+    #[cfg(feature = "api-leansig")]
     use ::rec_aggregation::benchmark::{run_aggregation_benchmark, AggregationTopology, BenchmarkReport};
-
-    const LOG_INV_RATE: usize = 2;
+    #[cfg(feature = "api-xmss")]
+    use ::rec_aggregation_main::benchmark::{run_aggregation_benchmark, AggregationTopology, BenchmarkReport};
 
     /// Per-node entry for the JSON `proof_kib_by_path` field.
     /// `path = []` is the root; deeper paths are the children/leaves.
@@ -206,12 +301,16 @@ pub mod aggregate {
         ))
     }
 
+    // split / merge_split_* runners exist only on devnet5 (api-leansig with a
+    // devnet5 pin) — both devnet4 and main expose only run_aggregation_benchmark.
+    // Stubbed here so the runner binary compiles regardless of which pin is in
+    // play; the Python orchestrator gates these out of the default workload set.
     pub fn split_r2(_args: &CommonArgs, _per_component: usize, _n_components: usize) -> Result<Record> {
-        anyhow::bail!("split workload not available on leanVM devnet4")
+        anyhow::bail!("split workload not available on this leanVM pin")
     }
 
     pub fn merge_split_and_original_r2(_args: &CommonArgs, _per_component: usize, _n_components: usize) -> Result<Record> {
-        anyhow::bail!("merge_split_and_original workload not available on leanVM devnet4")
+        anyhow::bail!("merge_split_and_original workload not available on this leanVM pin")
     }
 
     pub fn merge_split_and_leaves_r2(
@@ -220,6 +319,6 @@ pub mod aggregate {
         _n_components: usize,
         _n_new_leaves: usize,
     ) -> Result<Record> {
-        anyhow::bail!("merge_split_and_leaves workload not available on leanVM devnet4")
+        anyhow::bail!("merge_split_and_leaves workload not available on this leanVM pin")
     }
 }

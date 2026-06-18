@@ -92,6 +92,10 @@ def parse_args():
                          "semantics if you list them explicitly.")
     ap.add_argument("--notes", default="",
                     help="Free-form note attached to the run record")
+    ap.add_argument("--features", default=None,
+                    help="cargo feature(s) for the runner build (comma-separated). "
+                         "Pick one API mode: 'api-leansig' (devnet4 / devnet5 leanVM) or "
+                         "'api-xmss' (main leanVM). Default uses Cargo.toml's default feature.")
     return ap.parse_args()
 
 
@@ -109,7 +113,7 @@ def select_workloads(args) -> list[Workload]:
 RUST_DIR = ROOT / "workloads"
 
 
-def build_runner() -> Path:
+def build_runner(features: str | None = None) -> Path:
     """Build the Rust workload binary in release mode.
 
     Sets `RUSTFLAGS=-C target-cpu=native` in the subprocess env so deps
@@ -122,15 +126,18 @@ def build_runner() -> Path:
     leanVM itself sets the same flag in its workspace `.cargo/config.toml`
     — that config doesn't apply when leanVM is consumed as a git dep, so
     we set it here instead.
+
+    `features` selects the API mode. When set, the default feature is
+    suppressed (`--no-default-features`) so the caller's choice is the
+    only one active.
     """
     print("Building lean-bench-workloads (release)...", flush=True)
     env = {**os.environ, "RUSTFLAGS": "-C target-cpu=native"}
-    r = subprocess.run(
-        ["cargo", "build", "--release", "--bin", "lean-bench-workloads",
-         "--manifest-path", str(RUST_DIR / "Cargo.toml")],
-        cwd=ROOT,
-        env=env,
-    )
+    cargo_args = ["cargo", "build", "--release", "--bin", "lean-bench-workloads",
+                  "--manifest-path", str(RUST_DIR / "Cargo.toml")]
+    if features:
+        cargo_args += ["--no-default-features", "--features", features]
+    r = subprocess.run(cargo_args, cwd=ROOT, env=env)
     if r.returncode != 0:
         sys.exit("cargo build failed")
     return RUST_DIR / "target" / "release" / "lean-bench-workloads"
@@ -221,7 +228,7 @@ def _summarize(samples: list[int]) -> dict:
 
 def main():
     args = parse_args()
-    binary = build_runner()
+    binary = build_runner(features=args.features)
 
     machine = sysinfo.capture()
     label = args.label or sysinfo.auto_label()
