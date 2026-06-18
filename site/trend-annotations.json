@@ -28,5 +28,10 @@
     "from_leansig_sha": "n/a",
     "from_leanmultisig_sha": "8fbe00b5",
     "label": "leanVM: fiat-shamir switches to a duplex sponge (#223)."
+  },
+  {
+    "from_leansig_sha": "n/a",
+    "from_leanmultisig_sha": "e51d4c25",
+    "label": "leanVM: recursion program — more efficient multilinear-prefixes computation (~10% cycles saved per recursion)."
   }
 ]
