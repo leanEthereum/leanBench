@@ -1,0 +1,6703 @@
+{
+  "run_id": "2026-06-18T09-56-44Z__934230ae43",
+  "timestamp": "2026-06-18T09:56:44.538924+00:00",
+  "machine": {
+    "fingerprint": "934230ae43",
+    "cpu_model": "INTEL(R) XEON(R) PLATINUM 8581C CPU @ 2.30GHz",
+    "cpu_arch": "x86_64",
+    "physical_cores": 2,
+    "logical_cores": 4,
+    "memory_gb": 14.6,
+    "os": "Linux 6.17.0-1018-gcp",
+    "kernel": "#19~24.04.1-Ubuntu SMP Tue May 26 23:20:44 UTC 2026",
+    "label": "c4-standard-4"
+  },
+  "toolchain": {
+    "rustc": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+    "git_shas": {
+      "leansig_sha": "n/a",
+      "leanmultisig_sha": "a82c65ee"
+    },
+    "branches": {
+      "leansig_branch": "n/a",
+      "leanmultisig_branch": "devnet5"
+    }
+  },
+  "workloads": [
+    {
+      "name": "aggregate.flat_125_r2",
+      "unit": "ns",
+      "samples_ns": [
+        1236857789,
+        1171810547,
+        1201618399,
+        1174807159,
+        1155504957,
+        1157739783,
+        1159128821,
+        1159497057,
+        1153399130,
+        1199198492
+      ],
+      "timing": {
+        "n": 10,
+        "mean_ns": 1176956213,
+        "stddev_ns": 27343980,
+        "min_ns": 1153399130,
+        "p5_ns": 1153399130,
+        "p50_ns": 1171810547,
+        "p95_ns": 1201618399,
+        "max_ns": 1236857789
+      },
+      "resources": {
+        "cpu_percent": {
+          "mean": 353.7,
+          "peak": 410.9
+        },
+        "rss_bytes": {
+          "mean": 522471990,
+          "peak": 1597657088
+        },
+        "n_samples": 387,
+        "interval_ms": 100
+      },
+      "meta": {
+        "log_inv_rate": 2,
+        "proof_kib_by_path": [
+          {
+            "depth": 0,
+            "kib": 186,
+            "path": []
+          }
+        ],
+        "proof_kib_leaf": 186,
+        "proof_kib_root": 186,
+        "raw_xmss": 125,
+        "reports": [
+          {
+            "nodes": [
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 81232,
+                  "dots": 2506,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 186,
+                  "time_secs": 1.206693084
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 81232,
+                  "dots": 2506,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 186,
+                  "time_secs": 1.142210464
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 81232,
+                  "dots": 2506,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 186,
+                  "time_secs": 1.171946566
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 81232,
+                  "dots": 2506,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 186,
+                  "time_secs": 1.145118863
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 81232,
+                  "dots": 2506,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.125769038
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 81232,
+                  "dots": 2506,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 186,
+                  "time_secs": 1.127615868
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 81232,
+                  "dots": 2506,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.128605944
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 81232,
+                  "dots": 2506,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.12964259
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 81232,
+                  "dots": 2506,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.12358079
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 81232,
+                  "dots": 2506,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 184,
+                  "time_secs": 1.1698116729999999
+                }
+              }
+            ]
+          }
+        ],
+        "topology": "flat"
+      }
+    },
+    {
+      "name": "aggregate.flat_250_r2",
+      "unit": "ns",
+      "samples_ns": [
+        2169194597,
+        2159395338,
+        2174297493,
+        2165520330,
+        2209267220,
+        2195075548,
+        2195941216,
+        2174733598,
+        2217078686,
+        2206475317
+      ],
+      "timing": {
+        "n": 10,
+        "mean_ns": 2186697934,
+        "stddev_ns": 20483966,
+        "min_ns": 2159395338,
+        "p5_ns": 2159395338,
+        "p50_ns": 2195075548,
+        "p95_ns": 2209267220,
+        "max_ns": 2217078686
+      },
+      "resources": {
+        "cpu_percent": {
+          "mean": 327.9,
+          "peak": 412.0
+        },
+        "rss_bytes": {
+          "mean": 1367451816,
+          "peak": 2175713280
+        },
+        "n_samples": 279,
+        "interval_ms": 100
+      },
+      "meta": {
+        "log_inv_rate": 2,
+        "proof_kib_by_path": [
+          {
+            "depth": 0,
+            "kib": 194,
+            "path": []
+          }
+        ],
+        "proof_kib_leaf": 194,
+        "proof_kib_root": 194,
+        "raw_xmss": 250,
+        "reports": [
+          {
+            "nodes": [
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 161417,
+                  "dots": 5004,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.137439981
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 161417,
+                  "dots": 5004,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.12871361
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 161417,
+                  "dots": 5004,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.143699662
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 161417,
+                  "dots": 5004,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.134427255
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 161417,
+                  "dots": 5004,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.178848854
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 161417,
+                  "dots": 5004,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 195,
+                  "time_secs": 2.162690385
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 161417,
+                  "dots": 5004,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.165396568
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 161417,
+                  "dots": 5004,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 192,
+                  "time_secs": 2.144123446
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 161417,
+                  "dots": 5004,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.186675995
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 161417,
+                  "dots": 5004,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 193,
+                  "time_secs": 2.171371412
+                }
+              }
+            ]
+          }
+        ],
+        "topology": "flat"
+      }
+    },
+    {
+      "name": "aggregate.flat_500_r2",
+      "unit": "ns",
+      "samples_ns": [
+        4488523629,
+        4348180751,
+        4306165087,
+        4300732401,
+        4361432120,
+        4432047400,
+        4405184835,
+        4326723696,
+        4366282827,
+        4368652336
+      ],
+      "timing": {
+        "n": 10,
+        "mean_ns": 4370392508,
+        "stddev_ns": 58161670,
+        "min_ns": 4300732401,
+        "p5_ns": 4300732401,
+        "p50_ns": 4366282827,
+        "p95_ns": 4432047400,
+        "max_ns": 4488523629
+      },
+      "resources": {
+        "cpu_percent": {
+          "mean": 348.1,
+          "peak": 408.3
+        },
+        "rss_bytes": {
+          "mean": 1684192345,
+          "peak": 3305086976
+        },
+        "n_samples": 513,
+        "interval_ms": 100
+      },
+      "meta": {
+        "log_inv_rate": 2,
+        "proof_kib_by_path": [
+          {
+            "depth": 0,
+            "kib": 205,
+            "path": []
+          }
+        ],
+        "proof_kib_leaf": 205,
+        "proof_kib_root": 205,
+        "raw_xmss": 500,
+        "reports": [
+          {
+            "nodes": [
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 321706,
+                  "dots": 9947,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 205,
+                  "time_secs": 4.456172304
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 321706,
+                  "dots": 9947,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 207,
+                  "time_secs": 4.315095701
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 321706,
+                  "dots": 9947,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 206,
+                  "time_secs": 4.273176445
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 321706,
+                  "dots": 9947,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 205,
+                  "time_secs": 4.267950884
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 321706,
+                  "dots": 9947,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 205,
+                  "time_secs": 4.328726126
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 321706,
+                  "dots": 9947,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 206,
+                  "time_secs": 4.398719264
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 321706,
+                  "dots": 9947,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 206,
+                  "time_secs": 4.372664947
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 321706,
+                  "dots": 9947,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 206,
+                  "time_secs": 4.2941018490000005
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 321706,
+                  "dots": 9947,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 206,
+                  "time_secs": 4.33376821
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 321706,
+                  "dots": 9947,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 206,
+                  "time_secs": 4.336070613
+                }
+              }
+            ]
+          }
+        ],
+        "topology": "flat"
+      }
+    },
+    {
+      "name": "aggregate.flat_1000_r2",
+      "unit": "ns",
+      "samples_ns": [
+        8883049840,
+        8934032681,
+        9271673644,
+        8973709813,
+        8864482429,
+        8981977727,
+        8858631553,
+        8902500652,
+        8817653274,
+        8924292325
+      ],
+      "timing": {
+        "n": 10,
+        "mean_ns": 8941200393,
+        "stddev_ns": 126980220,
+        "min_ns": 8817653274,
+        "p5_ns": 8817653274,
+        "p50_ns": 8924292325,
+        "p95_ns": 8981977727,
+        "max_ns": 9271673644
+      },
+      "resources": {
+        "cpu_percent": {
+          "mean": 360.3,
+          "peak": 412.1
+        },
+        "rss_bytes": {
+          "mean": 2468868913,
+          "peak": 5695082496
+        },
+        "n_samples": 1002,
+        "interval_ms": 100
+      },
+      "meta": {
+        "log_inv_rate": 2,
+        "proof_kib_by_path": [
+          {
+            "depth": 0,
+            "kib": 228,
+            "path": []
+          }
+        ],
+        "proof_kib_leaf": 228,
+        "proof_kib_root": 228,
+        "raw_xmss": 1000,
+        "reports": [
+          {
+            "nodes": [
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 642343,
+                  "dots": 19842,
+                  "memory": 2517869,
+                  "n_xmss": 1000,
+                  "poseidons": 167205,
+                  "proof_kib": 228,
+                  "time_secs": 8.845544195
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 642343,
+                  "dots": 19842,
+                  "memory": 2517869,
+                  "n_xmss": 1000,
+                  "poseidons": 167205,
+                  "proof_kib": 227,
+                  "time_secs": 8.897212021
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 642343,
+                  "dots": 19842,
+                  "memory": 2517869,
+                  "n_xmss": 1000,
+                  "poseidons": 167205,
+                  "proof_kib": 227,
+                  "time_secs": 9.235129391
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 642343,
+                  "dots": 19842,
+                  "memory": 2517869,
+                  "n_xmss": 1000,
+                  "poseidons": 167205,
+                  "proof_kib": 227,
+                  "time_secs": 8.937026512
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 642343,
+                  "dots": 19842,
+                  "memory": 2517869,
+                  "n_xmss": 1000,
+                  "poseidons": 167205,
+                  "proof_kib": 228,
+                  "time_secs": 8.827359758
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 642343,
+                  "dots": 19842,
+                  "memory": 2517869,
+                  "n_xmss": 1000,
+                  "poseidons": 167205,
+                  "proof_kib": 227,
+                  "time_secs": 8.945234558
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 642343,
+                  "dots": 19842,
+                  "memory": 2517869,
+                  "n_xmss": 1000,
+                  "poseidons": 167205,
+                  "proof_kib": 227,
+                  "time_secs": 8.82196133
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 642343,
+                  "dots": 19842,
+                  "memory": 2517869,
+                  "n_xmss": 1000,
+                  "poseidons": 167205,
+                  "proof_kib": 227,
+                  "time_secs": 8.865980524
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 642343,
+                  "dots": 19842,
+                  "memory": 2517869,
+                  "n_xmss": 1000,
+                  "poseidons": 167205,
+                  "proof_kib": 227,
+                  "time_secs": 8.78070931
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 642343,
+                  "dots": 19842,
+                  "memory": 2517869,
+                  "n_xmss": 1000,
+                  "poseidons": 167205,
+                  "proof_kib": 226,
+                  "time_secs": 8.887396591
+                }
+              }
+            ]
+          }
+        ],
+        "topology": "flat"
+      }
+    },
+    {
+      "name": "aggregate.tree_2x125_r2",
+      "unit": "ns",
+      "samples_ns": [
+        4649995890,
+        4722766675,
+        4614330321,
+        4705639483,
+        4660389893,
+        4679707747,
+        4681734569,
+        4730956040,
+        4635502940,
+        4811433941
+      ],
+      "timing": {
+        "n": 10,
+        "mean_ns": 4689245749,
+        "stddev_ns": 56846111,
+        "min_ns": 4614330321,
+        "p5_ns": 4614330321,
+        "p50_ns": 4681734569,
+        "p95_ns": 4730956040,
+        "max_ns": 4811433941
+      },
+      "resources": {
+        "cpu_percent": {
+          "mean": 341.3,
+          "peak": 406.7
+        },
+        "rss_bytes": {
+          "mean": 1308806140,
+          "peak": 2251595776
+        },
+        "n_samples": 546,
+        "interval_ms": 100
+      },
+      "meta": {
+        "fan_in": 2,
+        "leaf_raw_xmss": 125,
+        "log_inv_rate": 2,
+        "note": "recursion-only time = root node `time_secs` from any report; or total - 2 \u00d7 aggregate.flat_125_r2 as a fallback",
+        "proof_kib_by_path": [
+          {
+            "depth": 1,
+            "kib": 185,
+            "path": [
+              0
+            ]
+          },
+          {
+            "depth": 1,
+            "kib": 184,
+            "path": [
+              1
+            ]
+          },
+          {
+            "depth": 0,
+            "kib": 195,
+            "path": []
+          }
+        ],
+        "proof_kib_leaf": 185,
+        "proof_kib_root": 195,
+        "reports": [
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 81232,
+                  "dots": 2506,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.121256799
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 81249,
+                  "dots": 2525,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 184,
+                  "time_secs": 1.14530432
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 201303,
+                  "dots": 74877,
+                  "memory": 562152,
+                  "n_xmss": null,
+                  "poseidons": 17742,
+                  "proof_kib": 195,
+                  "time_secs": 2.352678851
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 81232,
+                  "dots": 2506,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.129459448
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 81249,
+                  "dots": 2525,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.159864297
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 201303,
+                  "dots": 74877,
+                  "memory": 562152,
+                  "n_xmss": null,
+                  "poseidons": 17742,
+                  "proof_kib": 194,
+                  "time_secs": 2.402515512
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 81232,
+                  "dots": 2506,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.083895688
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 81249,
+                  "dots": 2525,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.107882386
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 201303,
+                  "dots": 74877,
+                  "memory": 562152,
+                  "n_xmss": null,
+                  "poseidons": 17742,
+                  "proof_kib": 194,
+                  "time_secs": 2.390593317
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 81232,
+                  "dots": 2506,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.096116468
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 81249,
+                  "dots": 2525,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.174044197
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 201303,
+                  "dots": 74877,
+                  "memory": 562152,
+                  "n_xmss": null,
+                  "poseidons": 17742,
+                  "proof_kib": 196,
+                  "time_secs": 2.404614034
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 81232,
+                  "dots": 2506,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 184,
+                  "time_secs": 1.137766978
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 81249,
+                  "dots": 2525,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.104253143
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 201303,
+                  "dots": 74877,
+                  "memory": 562152,
+                  "n_xmss": null,
+                  "poseidons": 17742,
+                  "proof_kib": 195,
+                  "time_secs": 2.387686834
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 81232,
+                  "dots": 2506,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 186,
+                  "time_secs": 1.120182246
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 81249,
+                  "dots": 2525,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 184,
+                  "time_secs": 1.132115858
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 201303,
+                  "dots": 74877,
+                  "memory": 562152,
+                  "n_xmss": null,
+                  "poseidons": 17742,
+                  "proof_kib": 194,
+                  "time_secs": 2.396513294
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 81232,
+                  "dots": 2506,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 186,
+                  "time_secs": 1.089095934
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 81249,
+                  "dots": 2525,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 186,
+                  "time_secs": 1.113838143
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 201303,
+                  "dots": 74877,
+                  "memory": 562152,
+                  "n_xmss": null,
+                  "poseidons": 17742,
+                  "proof_kib": 195,
+                  "time_secs": 2.441052034
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 81232,
+                  "dots": 2506,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.137509009
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 81249,
+                  "dots": 2525,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.114138018
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 201303,
+                  "dots": 74877,
+                  "memory": 562152,
+                  "n_xmss": null,
+                  "poseidons": 17742,
+                  "proof_kib": 194,
+                  "time_secs": 2.448238309
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 81232,
+                  "dots": 2506,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 186,
+                  "time_secs": 1.099918483
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 81249,
+                  "dots": 2525,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.116080591
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 201303,
+                  "dots": 74877,
+                  "memory": 562152,
+                  "n_xmss": null,
+                  "poseidons": 17742,
+                  "proof_kib": 195,
+                  "time_secs": 2.388442068
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 81232,
+                  "dots": 2506,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 186,
+                  "time_secs": 1.139303178
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 81249,
+                  "dots": 2525,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 186,
+                  "time_secs": 1.159402544
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 201303,
+                  "dots": 74877,
+                  "memory": 562152,
+                  "n_xmss": null,
+                  "poseidons": 17742,
+                  "proof_kib": 194,
+                  "time_secs": 2.482081628
+                }
+              }
+            ]
+          }
+        ],
+        "topology": "2-to-1 recursion"
+      }
+    },
+    {
+      "name": "aggregate.tree_2x250_r2",
+      "unit": "ns",
+      "samples_ns": [
+        6730275334,
+        6856650760,
+        6839386376,
+        6785252710,
+        6783669685,
+        6777516788,
+        6771128921,
+        6804643148,
+        6764796651,
+        6840814365
+      ],
+      "timing": {
+        "n": 10,
+        "mean_ns": 6795413473,
+        "stddev_ns": 39667513,
+        "min_ns": 6730275334,
+        "p5_ns": 6730275334,
+        "p50_ns": 6785252710,
+        "p95_ns": 6840814365,
+        "max_ns": 6856650760
+      },
+      "resources": {
+        "cpu_percent": {
+          "mean": 350.3,
+          "peak": 410.6
+        },
+        "rss_bytes": {
+          "mean": 1449683410,
+          "peak": 2259894272
+        },
+        "n_samples": 769,
+        "interval_ms": 100
+      },
+      "meta": {
+        "fan_in": 2,
+        "leaf_raw_xmss": 250,
+        "log_inv_rate": 2,
+        "note": "recursion-only time = root node `time_secs` from any report; or total - 2 \u00d7 aggregate.flat_250_r2 as a fallback",
+        "proof_kib_by_path": [
+          {
+            "depth": 1,
+            "kib": 194,
+            "path": [
+              0
+            ]
+          },
+          {
+            "depth": 1,
+            "kib": 194,
+            "path": [
+              1
+            ]
+          },
+          {
+            "depth": 0,
+            "kib": 194,
+            "path": []
+          }
+        ],
+        "proof_kib_leaf": 194,
+        "proof_kib_root": 194,
+        "reports": [
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 161417,
+                  "dots": 5004,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.145153495
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 161353,
+                  "dots": 4970,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.148522794
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 213501,
+                  "dots": 80367,
+                  "memory": 588834,
+                  "n_xmss": null,
+                  "poseidons": 19052,
+                  "proof_kib": 194,
+                  "time_secs": 2.405507347
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 161417,
+                  "dots": 5004,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.224906408
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 161353,
+                  "dots": 4970,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 193,
+                  "time_secs": 2.210923297
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 213501,
+                  "dots": 80367,
+                  "memory": 588834,
+                  "n_xmss": null,
+                  "poseidons": 19052,
+                  "proof_kib": 195,
+                  "time_secs": 2.3894161179999998
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 161417,
+                  "dots": 5004,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 193,
+                  "time_secs": 2.189034415
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 161353,
+                  "dots": 4970,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 193,
+                  "time_secs": 2.198109542
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 213501,
+                  "dots": 80367,
+                  "memory": 588834,
+                  "n_xmss": null,
+                  "poseidons": 19052,
+                  "proof_kib": 194,
+                  "time_secs": 2.420824782
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 161417,
+                  "dots": 5004,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.199646826
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 161353,
+                  "dots": 4970,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 193,
+                  "time_secs": 2.171299769
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 213501,
+                  "dots": 80367,
+                  "memory": 588834,
+                  "n_xmss": null,
+                  "poseidons": 19052,
+                  "proof_kib": 195,
+                  "time_secs": 2.382641739
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 161417,
+                  "dots": 5004,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 192,
+                  "time_secs": 2.174633293
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 161353,
+                  "dots": 4970,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.177190259
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 213501,
+                  "dots": 80367,
+                  "memory": 588834,
+                  "n_xmss": null,
+                  "poseidons": 19052,
+                  "proof_kib": 194,
+                  "time_secs": 2.400490067
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 161417,
+                  "dots": 5004,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.17377247
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 161353,
+                  "dots": 4970,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 193,
+                  "time_secs": 2.195009698
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 213501,
+                  "dots": 80367,
+                  "memory": 588834,
+                  "n_xmss": null,
+                  "poseidons": 19052,
+                  "proof_kib": 194,
+                  "time_secs": 2.377507189
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 161417,
+                  "dots": 5004,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.166822576
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 161353,
+                  "dots": 4970,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.187799922
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 213501,
+                  "dots": 80367,
+                  "memory": 588834,
+                  "n_xmss": null,
+                  "poseidons": 19052,
+                  "proof_kib": 194,
+                  "time_secs": 2.385312972
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 161417,
+                  "dots": 5004,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 193,
+                  "time_secs": 2.145497951
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 161353,
+                  "dots": 4970,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.25391669
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 213501,
+                  "dots": 80367,
+                  "memory": 588834,
+                  "n_xmss": null,
+                  "poseidons": 19052,
+                  "proof_kib": 195,
+                  "time_secs": 2.373765388
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 161417,
+                  "dots": 5004,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.235624181
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 161353,
+                  "dots": 4970,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.147231221
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 213501,
+                  "dots": 80367,
+                  "memory": 588834,
+                  "n_xmss": null,
+                  "poseidons": 19052,
+                  "proof_kib": 195,
+                  "time_secs": 2.350817022
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 161417,
+                  "dots": 5004,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.175933802
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 161353,
+                  "dots": 4970,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 193,
+                  "time_secs": 2.176788725
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 213501,
+                  "dots": 80367,
+                  "memory": 588834,
+                  "n_xmss": null,
+                  "poseidons": 19052,
+                  "proof_kib": 194,
+                  "time_secs": 2.456574298
+                }
+              }
+            ]
+          }
+        ],
+        "topology": "2-to-1 recursion"
+      }
+    },
+    {
+      "name": "aggregate.tree_2x500_r2",
+      "unit": "ns",
+      "samples_ns": [
+        11387400546,
+        11038097353,
+        11168917726,
+        11069169282,
+        11150357920,
+        11070108149,
+        11194659945,
+        11137480077,
+        11143337383,
+        11096859941
+      ],
+      "timing": {
+        "n": 10,
+        "mean_ns": 11145638832,
+        "stddev_ns": 98310653,
+        "min_ns": 11038097353,
+        "p5_ns": 11038097353,
+        "p50_ns": 11143337383,
+        "p95_ns": 11194659945,
+        "max_ns": 11387400546
+      },
+      "resources": {
+        "cpu_percent": {
+          "mean": 358.0,
+          "peak": 409.2
+        },
+        "rss_bytes": {
+          "mean": 1753624645,
+          "peak": 3419820032
+        },
+        "n_samples": 1236,
+        "interval_ms": 100
+      },
+      "meta": {
+        "fan_in": 2,
+        "leaf_raw_xmss": 500,
+        "log_inv_rate": 2,
+        "note": "recursion-only time = root node `time_secs` from any report; or total - 2 \u00d7 aggregate.flat_500_r2 as a fallback",
+        "proof_kib_by_path": [
+          {
+            "depth": 1,
+            "kib": 207,
+            "path": [
+              0
+            ]
+          },
+          {
+            "depth": 1,
+            "kib": 206,
+            "path": [
+              1
+            ]
+          },
+          {
+            "depth": 0,
+            "kib": 194,
+            "path": []
+          }
+        ],
+        "proof_kib_leaf": 207,
+        "proof_kib_root": 194,
+        "reports": [
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 321706,
+                  "dots": 9947,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 207,
+                  "time_secs": 4.52166206
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 321703,
+                  "dots": 9922,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 206,
+                  "time_secs": 4.381207134
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 235269,
+                  "dots": 90347,
+                  "memory": 629884,
+                  "n_xmss": null,
+                  "poseidons": 21096,
+                  "proof_kib": 194,
+                  "time_secs": 2.451337553
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 321706,
+                  "dots": 9947,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 206,
+                  "time_secs": 4.296018071
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 321703,
+                  "dots": 9922,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 206,
+                  "time_secs": 4.305573054
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 235269,
+                  "dots": 90347,
+                  "memory": 629884,
+                  "n_xmss": null,
+                  "poseidons": 21096,
+                  "proof_kib": 194,
+                  "time_secs": 2.403705012
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 321706,
+                  "dots": 9947,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 205,
+                  "time_secs": 4.354310683
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 321703,
+                  "dots": 9922,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 206,
+                  "time_secs": 4.348249229
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 235269,
+                  "dots": 90347,
+                  "memory": 629884,
+                  "n_xmss": null,
+                  "poseidons": 21096,
+                  "proof_kib": 195,
+                  "time_secs": 2.430759014
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 321706,
+                  "dots": 9947,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 206,
+                  "time_secs": 4.300043408
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 321703,
+                  "dots": 9922,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 206,
+                  "time_secs": 4.30755517
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 235269,
+                  "dots": 90347,
+                  "memory": 629884,
+                  "n_xmss": null,
+                  "poseidons": 21096,
+                  "proof_kib": 195,
+                  "time_secs": 2.428965463
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 321706,
+                  "dots": 9947,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 206,
+                  "time_secs": 4.320183275
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 321703,
+                  "dots": 9922,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 206,
+                  "time_secs": 4.314233354
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 235269,
+                  "dots": 90347,
+                  "memory": 629884,
+                  "n_xmss": null,
+                  "poseidons": 21096,
+                  "proof_kib": 194,
+                  "time_secs": 2.482540079
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 321706,
+                  "dots": 9947,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 206,
+                  "time_secs": 4.275716418
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 321703,
+                  "dots": 9922,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 205,
+                  "time_secs": 4.319949971
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 235269,
+                  "dots": 90347,
+                  "memory": 629884,
+                  "n_xmss": null,
+                  "poseidons": 21096,
+                  "proof_kib": 195,
+                  "time_secs": 2.441362051
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 321706,
+                  "dots": 9947,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 207,
+                  "time_secs": 4.332700206
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 321703,
+                  "dots": 9922,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 205,
+                  "time_secs": 4.346526424
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 235269,
+                  "dots": 90347,
+                  "memory": 629884,
+                  "n_xmss": null,
+                  "poseidons": 21096,
+                  "proof_kib": 195,
+                  "time_secs": 2.482367557
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 321706,
+                  "dots": 9947,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 206,
+                  "time_secs": 4.3286548
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 321703,
+                  "dots": 9922,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 207,
+                  "time_secs": 4.294865747
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 235269,
+                  "dots": 90347,
+                  "memory": 629884,
+                  "n_xmss": null,
+                  "poseidons": 21096,
+                  "proof_kib": 194,
+                  "time_secs": 2.480408703
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 321706,
+                  "dots": 9947,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 206,
+                  "time_secs": 4.365865747
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 321703,
+                  "dots": 9922,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 205,
+                  "time_secs": 4.318998819
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 235269,
+                  "dots": 90347,
+                  "memory": 629884,
+                  "n_xmss": null,
+                  "poseidons": 21096,
+                  "proof_kib": 195,
+                  "time_secs": 2.425559212
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 321706,
+                  "dots": 9947,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 206,
+                  "time_secs": 4.333234811
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 321703,
+                  "dots": 9922,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 206,
+                  "time_secs": 4.323679398
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 235269,
+                  "dots": 90347,
+                  "memory": 629884,
+                  "n_xmss": null,
+                  "poseidons": 21096,
+                  "proof_kib": 194,
+                  "time_secs": 2.4064831079999998
+                }
+              }
+            ]
+          }
+        ],
+        "topology": "2-to-1 recursion"
+      }
+    },
+    {
+      "name": "aggregate.tree_4x125_r2",
+      "unit": "ns",
+      "samples_ns": [
+        9276089548,
+        9238955251,
+        9180281105,
+        9134987210,
+        9205137550,
+        9165538085,
+        9220920023,
+        9157367104,
+        9132560856,
+        9147404796
+      ],
+      "timing": {
+        "n": 10,
+        "mean_ns": 9185924152,
+        "stddev_ns": 47987100,
+        "min_ns": 9132560856,
+        "p5_ns": 9132560856,
+        "p50_ns": 9180281105,
+        "p95_ns": 9238955251,
+        "max_ns": 9276089548
+      },
+      "resources": {
+        "cpu_percent": {
+          "mean": 353.1,
+          "peak": 409.6
+        },
+        "rss_bytes": {
+          "mean": 1518718358,
+          "peak": 3440521216
+        },
+        "n_samples": 1022,
+        "interval_ms": 100
+      },
+      "meta": {
+        "fan_in": 4,
+        "leaf_raw_xmss": 125,
+        "log_inv_rate": 2,
+        "note": "recursion-only time = root node `time_secs` from any report; or total - 4 \u00d7 aggregate.flat_125_r2 as a fallback",
+        "proof_kib_by_path": [
+          {
+            "depth": 1,
+            "kib": 185,
+            "path": [
+              0
+            ]
+          },
+          {
+            "depth": 1,
+            "kib": 186,
+            "path": [
+              1
+            ]
+          },
+          {
+            "depth": 1,
+            "kib": 184,
+            "path": [
+              2
+            ]
+          },
+          {
+            "depth": 1,
+            "kib": 185,
+            "path": [
+              3
+            ]
+          },
+          {
+            "depth": 0,
+            "kib": 206,
+            "path": []
+          }
+        ],
+        "proof_kib_leaf": 185,
+        "proof_kib_root": 206,
+        "reports": [
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 81232,
+                  "dots": 2506,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.141362712
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 81249,
+                  "dots": 2525,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 186,
+                  "time_secs": 1.140693042
+                }
+              },
+              {
+                "path": [
+                  2
+                ],
+                "stats": {
+                  "cycles": 81176,
+                  "dots": 2480,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 184,
+                  "time_secs": 1.102373793
+                }
+              },
+              {
+                "path": [
+                  3
+                ],
+                "stats": {
+                  "cycles": 81241,
+                  "dots": 2517,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.121480783
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 399909,
+                  "dots": 149479,
+                  "memory": 1093116,
+                  "n_xmss": null,
+                  "poseidons": 35188,
+                  "proof_kib": 206,
+                  "time_secs": 4.737418963
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 81232,
+                  "dots": 2506,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 184,
+                  "time_secs": 1.155854951
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 81249,
+                  "dots": 2525,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 187,
+                  "time_secs": 1.117254104
+                }
+              },
+              {
+                "path": [
+                  2
+                ],
+                "stats": {
+                  "cycles": 81176,
+                  "dots": 2480,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 184,
+                  "time_secs": 1.140396424
+                }
+              },
+              {
+                "path": [
+                  3
+                ],
+                "stats": {
+                  "cycles": 81241,
+                  "dots": 2517,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.100649489
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 399909,
+                  "dots": 149479,
+                  "memory": 1093116,
+                  "n_xmss": null,
+                  "poseidons": 35188,
+                  "proof_kib": 207,
+                  "time_secs": 4.689881457
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 81232,
+                  "dots": 2506,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 186,
+                  "time_secs": 1.07237306
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 81249,
+                  "dots": 2525,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.11217953
+                }
+              },
+              {
+                "path": [
+                  2
+                ],
+                "stats": {
+                  "cycles": 81176,
+                  "dots": 2480,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 186,
+                  "time_secs": 1.163377839
+                }
+              },
+              {
+                "path": [
+                  3
+                ],
+                "stats": {
+                  "cycles": 81241,
+                  "dots": 2517,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 186,
+                  "time_secs": 1.131404561
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 399909,
+                  "dots": 149479,
+                  "memory": 1093116,
+                  "n_xmss": null,
+                  "poseidons": 35188,
+                  "proof_kib": 206,
+                  "time_secs": 4.66827061
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 81232,
+                  "dots": 2506,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.1212081760000001
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 81249,
+                  "dots": 2525,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.094660204
+                }
+              },
+              {
+                "path": [
+                  2
+                ],
+                "stats": {
+                  "cycles": 81176,
+                  "dots": 2480,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.138823534
+                }
+              },
+              {
+                "path": [
+                  3
+                ],
+                "stats": {
+                  "cycles": 81241,
+                  "dots": 2517,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 186,
+                  "time_secs": 1.091156862
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 399909,
+                  "dots": 149479,
+                  "memory": 1093116,
+                  "n_xmss": null,
+                  "poseidons": 35188,
+                  "proof_kib": 208,
+                  "time_secs": 4.653364047
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 81232,
+                  "dots": 2506,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.112535058
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 81249,
+                  "dots": 2525,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.153257336
+                }
+              },
+              {
+                "path": [
+                  2
+                ],
+                "stats": {
+                  "cycles": 81176,
+                  "dots": 2480,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.118741603
+                }
+              },
+              {
+                "path": [
+                  3
+                ],
+                "stats": {
+                  "cycles": 81241,
+                  "dots": 2517,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 186,
+                  "time_secs": 1.103556011
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 399909,
+                  "dots": 149479,
+                  "memory": 1093116,
+                  "n_xmss": null,
+                  "poseidons": 35188,
+                  "proof_kib": 207,
+                  "time_secs": 4.682404331
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 81232,
+                  "dots": 2506,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.119060706
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 81249,
+                  "dots": 2525,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 186,
+                  "time_secs": 1.073831907
+                }
+              },
+              {
+                "path": [
+                  2
+                ],
+                "stats": {
+                  "cycles": 81176,
+                  "dots": 2480,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.14110449
+                }
+              },
+              {
+                "path": [
+                  3
+                ],
+                "stats": {
+                  "cycles": 81241,
+                  "dots": 2517,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.117458681
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 399909,
+                  "dots": 149479,
+                  "memory": 1093116,
+                  "n_xmss": null,
+                  "poseidons": 35188,
+                  "proof_kib": 208,
+                  "time_secs": 4.678459394
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 81232,
+                  "dots": 2506,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 186,
+                  "time_secs": 1.110177326
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 81249,
+                  "dots": 2525,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 186,
+                  "time_secs": 1.115358383
+                }
+              },
+              {
+                "path": [
+                  2
+                ],
+                "stats": {
+                  "cycles": 81176,
+                  "dots": 2480,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.12944757
+                }
+              },
+              {
+                "path": [
+                  3
+                ],
+                "stats": {
+                  "cycles": 81241,
+                  "dots": 2517,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 186,
+                  "time_secs": 1.139679591
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 399909,
+                  "dots": 149479,
+                  "memory": 1093116,
+                  "n_xmss": null,
+                  "poseidons": 35188,
+                  "proof_kib": 207,
+                  "time_secs": 4.693392517
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 81232,
+                  "dots": 2506,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.163374389
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 81249,
+                  "dots": 2525,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.109128911
+                }
+              },
+              {
+                "path": [
+                  2
+                ],
+                "stats": {
+                  "cycles": 81176,
+                  "dots": 2480,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 186,
+                  "time_secs": 1.095268887
+                }
+              },
+              {
+                "path": [
+                  3
+                ],
+                "stats": {
+                  "cycles": 81241,
+                  "dots": 2517,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.079862953
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 399909,
+                  "dots": 149479,
+                  "memory": 1093116,
+                  "n_xmss": null,
+                  "poseidons": 35188,
+                  "proof_kib": 206,
+                  "time_secs": 4.676727907
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 81232,
+                  "dots": 2506,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 186,
+                  "time_secs": 1.073271852
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 81249,
+                  "dots": 2525,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 186,
+                  "time_secs": 1.088990201
+                }
+              },
+              {
+                "path": [
+                  2
+                ],
+                "stats": {
+                  "cycles": 81176,
+                  "dots": 2480,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 186,
+                  "time_secs": 1.119688061
+                }
+              },
+              {
+                "path": [
+                  3
+                ],
+                "stats": {
+                  "cycles": 81241,
+                  "dots": 2517,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 186,
+                  "time_secs": 1.100653621
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 399909,
+                  "dots": 149479,
+                  "memory": 1093116,
+                  "n_xmss": null,
+                  "poseidons": 35188,
+                  "proof_kib": 207,
+                  "time_secs": 4.715622627
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 81232,
+                  "dots": 2506,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.136031389
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 81249,
+                  "dots": 2525,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.071990475
+                }
+              },
+              {
+                "path": [
+                  2
+                ],
+                "stats": {
+                  "cycles": 81176,
+                  "dots": 2480,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.116294764
+                }
+              },
+              {
+                "path": [
+                  3
+                ],
+                "stats": {
+                  "cycles": 81241,
+                  "dots": 2517,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.103705273
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 399909,
+                  "dots": 149479,
+                  "memory": 1093116,
+                  "n_xmss": null,
+                  "poseidons": 35188,
+                  "proof_kib": 206,
+                  "time_secs": 4.6866418880000005
+                }
+              }
+            ]
+          }
+        ],
+        "topology": "4-to-1 recursion"
+      }
+    },
+    {
+      "name": "aggregate.tree_4x250_r2",
+      "unit": "ns",
+      "samples_ns": [
+        13598692361,
+        13554684676,
+        13661953775,
+        13530625468,
+        13614855626,
+        13455036751,
+        13640572850,
+        13632198143,
+        13527372684,
+        13549118279
+      ],
+      "timing": {
+        "n": 10,
+        "mean_ns": 13576511061,
+        "stddev_ns": 64092440,
+        "min_ns": 13455036751,
+        "p5_ns": 13455036751,
+        "p50_ns": 13598692361,
+        "p95_ns": 13640572850,
+        "max_ns": 13661953775
+      },
+      "resources": {
+        "cpu_percent": {
+          "mean": 357.4,
+          "peak": 410.5
+        },
+        "rss_bytes": {
+          "mean": 1651511320,
+          "peak": 3434889216
+        },
+        "n_samples": 1492,
+        "interval_ms": 100
+      },
+      "meta": {
+        "fan_in": 4,
+        "leaf_raw_xmss": 250,
+        "log_inv_rate": 2,
+        "note": "recursion-only time = root node `time_secs` from any report; or total - 4 \u00d7 aggregate.flat_250_r2 as a fallback",
+        "proof_kib_by_path": [
+          {
+            "depth": 1,
+            "kib": 193,
+            "path": [
+              0
+            ]
+          },
+          {
+            "depth": 1,
+            "kib": 194,
+            "path": [
+              1
+            ]
+          },
+          {
+            "depth": 1,
+            "kib": 194,
+            "path": [
+              2
+            ]
+          },
+          {
+            "depth": 1,
+            "kib": 193,
+            "path": [
+              3
+            ]
+          },
+          {
+            "depth": 0,
+            "kib": 207,
+            "path": []
+          }
+        ],
+        "proof_kib_leaf": 193,
+        "proof_kib_root": 207,
+        "reports": [
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 161417,
+                  "dots": 5004,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 193,
+                  "time_secs": 2.199333441
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 161353,
+                  "dots": 4970,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.194258104
+                }
+              },
+              {
+                "path": [
+                  2
+                ],
+                "stats": {
+                  "cycles": 161358,
+                  "dots": 4961,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.197881014
+                }
+              },
+              {
+                "path": [
+                  3
+                ],
+                "stats": {
+                  "cycles": 161409,
+                  "dots": 4988,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 193,
+                  "time_secs": 2.19244332
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 424303,
+                  "dots": 160459,
+                  "memory": 1146480,
+                  "n_xmss": null,
+                  "poseidons": 37808,
+                  "proof_kib": 207,
+                  "time_secs": 4.780410167
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 161417,
+                  "dots": 5004,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 193,
+                  "time_secs": 2.211551567
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 161353,
+                  "dots": 4970,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 193,
+                  "time_secs": 2.159114432
+                }
+              },
+              {
+                "path": [
+                  2
+                ],
+                "stats": {
+                  "cycles": 161358,
+                  "dots": 4961,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.198591044
+                }
+              },
+              {
+                "path": [
+                  3
+                ],
+                "stats": {
+                  "cycles": 161409,
+                  "dots": 4988,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.208095745
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 424303,
+                  "dots": 160459,
+                  "memory": 1146480,
+                  "n_xmss": null,
+                  "poseidons": 37808,
+                  "proof_kib": 207,
+                  "time_secs": 4.742853073
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 161417,
+                  "dots": 5004,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.18568259
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 161353,
+                  "dots": 4970,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.181600261
+                }
+              },
+              {
+                "path": [
+                  2
+                ],
+                "stats": {
+                  "cycles": 161358,
+                  "dots": 4961,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.276706772
+                }
+              },
+              {
+                "path": [
+                  3
+                ],
+                "stats": {
+                  "cycles": 161409,
+                  "dots": 4988,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.211114835
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 424303,
+                  "dots": 160459,
+                  "memory": 1146480,
+                  "n_xmss": null,
+                  "poseidons": 37808,
+                  "proof_kib": 206,
+                  "time_secs": 4.772318051
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 161417,
+                  "dots": 5004,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.205904346
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 161353,
+                  "dots": 4970,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 195,
+                  "time_secs": 2.153698249
+                }
+              },
+              {
+                "path": [
+                  2
+                ],
+                "stats": {
+                  "cycles": 161358,
+                  "dots": 4961,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 193,
+                  "time_secs": 2.178063029
+                }
+              },
+              {
+                "path": [
+                  3
+                ],
+                "stats": {
+                  "cycles": 161409,
+                  "dots": 4988,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.220522804
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 424303,
+                  "dots": 160459,
+                  "memory": 1146480,
+                  "n_xmss": null,
+                  "poseidons": 37808,
+                  "proof_kib": 207,
+                  "time_secs": 4.735913965
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 161417,
+                  "dots": 5004,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 193,
+                  "time_secs": 2.194328565
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 161353,
+                  "dots": 4970,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.192427024
+                }
+              },
+              {
+                "path": [
+                  2
+                ],
+                "stats": {
+                  "cycles": 161358,
+                  "dots": 4961,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.237845396
+                }
+              },
+              {
+                "path": [
+                  3
+                ],
+                "stats": {
+                  "cycles": 161409,
+                  "dots": 4988,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 195,
+                  "time_secs": 2.212604426
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 424303,
+                  "dots": 160459,
+                  "memory": 1146480,
+                  "n_xmss": null,
+                  "poseidons": 37808,
+                  "proof_kib": 207,
+                  "time_secs": 4.743347257
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 161417,
+                  "dots": 5004,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.16649125
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 161353,
+                  "dots": 4970,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 193,
+                  "time_secs": 2.217361362
+                }
+              },
+              {
+                "path": [
+                  2
+                ],
+                "stats": {
+                  "cycles": 161358,
+                  "dots": 4961,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 193,
+                  "time_secs": 2.142339089
+                }
+              },
+              {
+                "path": [
+                  3
+                ],
+                "stats": {
+                  "cycles": 161409,
+                  "dots": 4988,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 193,
+                  "time_secs": 2.1611886670000002
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 424303,
+                  "dots": 160459,
+                  "memory": 1146480,
+                  "n_xmss": null,
+                  "poseidons": 37808,
+                  "proof_kib": 207,
+                  "time_secs": 4.7331607909999995
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 161417,
+                  "dots": 5004,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 193,
+                  "time_secs": 2.203163739
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 161353,
+                  "dots": 4970,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.190051156
+                }
+              },
+              {
+                "path": [
+                  2
+                ],
+                "stats": {
+                  "cycles": 161358,
+                  "dots": 4961,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.184650508
+                }
+              },
+              {
+                "path": [
+                  3
+                ],
+                "stats": {
+                  "cycles": 161409,
+                  "dots": 4988,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.2135201
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 424303,
+                  "dots": 160459,
+                  "memory": 1146480,
+                  "n_xmss": null,
+                  "poseidons": 37808,
+                  "proof_kib": 206,
+                  "time_secs": 4.814158976
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 161417,
+                  "dots": 5004,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 193,
+                  "time_secs": 2.202933096
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 161353,
+                  "dots": 4970,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 193,
+                  "time_secs": 2.219057462
+                }
+              },
+              {
+                "path": [
+                  2
+                ],
+                "stats": {
+                  "cycles": 161358,
+                  "dots": 4961,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 193,
+                  "time_secs": 2.229348447
+                }
+              },
+              {
+                "path": [
+                  3
+                ],
+                "stats": {
+                  "cycles": 161409,
+                  "dots": 4988,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 193,
+                  "time_secs": 2.190120202
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 424303,
+                  "dots": 160459,
+                  "memory": 1146480,
+                  "n_xmss": null,
+                  "poseidons": 37808,
+                  "proof_kib": 205,
+                  "time_secs": 4.754386189
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 161417,
+                  "dots": 5004,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.179968311
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 161353,
+                  "dots": 4970,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.16507069
+                }
+              },
+              {
+                "path": [
+                  2
+                ],
+                "stats": {
+                  "cycles": 161358,
+                  "dots": 4961,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.200664154
+                }
+              },
+              {
+                "path": [
+                  3
+                ],
+                "stats": {
+                  "cycles": 161409,
+                  "dots": 4988,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 193,
+                  "time_secs": 2.181348528
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 424303,
+                  "dots": 160459,
+                  "memory": 1146480,
+                  "n_xmss": null,
+                  "poseidons": 37808,
+                  "proof_kib": 206,
+                  "time_secs": 4.765943562
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 161417,
+                  "dots": 5004,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.182224861
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 161353,
+                  "dots": 4970,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 193,
+                  "time_secs": 2.208356918
+                }
+              },
+              {
+                "path": [
+                  2
+                ],
+                "stats": {
+                  "cycles": 161358,
+                  "dots": 4961,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 193,
+                  "time_secs": 2.157887161
+                }
+              },
+              {
+                "path": [
+                  3
+                ],
+                "stats": {
+                  "cycles": 161409,
+                  "dots": 4988,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.186168579
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 424303,
+                  "dots": 160459,
+                  "memory": 1146480,
+                  "n_xmss": null,
+                  "poseidons": 37808,
+                  "proof_kib": 207,
+                  "time_secs": 4.780319943
+                }
+              }
+            ]
+          }
+        ],
+        "topology": "4-to-1 recursion"
+      }
+    },
+    {
+      "name": "aggregate.tree_4x500_r2",
+      "unit": "ns",
+      "samples_ns": [
+        22224980972,
+        22205798885,
+        22210542901,
+        22188478004,
+        22163194450
+      ],
+      "timing": {
+        "n": 5,
+        "mean_ns": 22198599042,
+        "stddev_ns": 23698208,
+        "min_ns": 22163194450,
+        "p5_ns": 22163194450,
+        "p50_ns": 22205798885,
+        "p95_ns": 22210542901,
+        "max_ns": 22224980972
+      },
+      "resources": {
+        "cpu_percent": {
+          "mean": 359.0,
+          "peak": 411.2
+        },
+        "rss_bytes": {
+          "mean": 1877702793,
+          "peak": 3547611136
+        },
+        "n_samples": 1338,
+        "interval_ms": 100
+      },
+      "meta": {
+        "fan_in": 4,
+        "leaf_raw_xmss": 500,
+        "log_inv_rate": 2,
+        "note": "recursion-only time = root node `time_secs` from any report; or total - 4 \u00d7 aggregate.flat_500_r2 as a fallback",
+        "proof_kib_by_path": [
+          {
+            "depth": 1,
+            "kib": 205,
+            "path": [
+              0
+            ]
+          },
+          {
+            "depth": 1,
+            "kib": 205,
+            "path": [
+              1
+            ]
+          },
+          {
+            "depth": 1,
+            "kib": 205,
+            "path": [
+              2
+            ]
+          },
+          {
+            "depth": 1,
+            "kib": 206,
+            "path": [
+              3
+            ]
+          },
+          {
+            "depth": 0,
+            "kib": 207,
+            "path": []
+          }
+        ],
+        "proof_kib_leaf": 205,
+        "proof_kib_root": 207,
+        "reports": [
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 321706,
+                  "dots": 9947,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 205,
+                  "time_secs": 4.360664487
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 321703,
+                  "dots": 9922,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 205,
+                  "time_secs": 4.373146011
+                }
+              },
+              {
+                "path": [
+                  2
+                ],
+                "stats": {
+                  "cycles": 321484,
+                  "dots": 9830,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 205,
+                  "time_secs": 4.305261498
+                }
+              },
+              {
+                "path": [
+                  3
+                ],
+                "stats": {
+                  "cycles": 321692,
+                  "dots": 9935,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 206,
+                  "time_secs": 4.366882
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 467922,
+                  "dots": 180419,
+                  "memory": 1231736,
+                  "n_xmss": null,
+                  "poseidons": 41896,
+                  "proof_kib": 207,
+                  "time_secs": 4.782253107
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 321706,
+                  "dots": 9947,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 206,
+                  "time_secs": 4.363019132
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 321703,
+                  "dots": 9922,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 206,
+                  "time_secs": 4.3330287290000005
+                }
+              },
+              {
+                "path": [
+                  2
+                ],
+                "stats": {
+                  "cycles": 321484,
+                  "dots": 9830,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 205,
+                  "time_secs": 4.34146378
+                }
+              },
+              {
+                "path": [
+                  3
+                ],
+                "stats": {
+                  "cycles": 321692,
+                  "dots": 9935,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 206,
+                  "time_secs": 4.338270579
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 467922,
+                  "dots": 180419,
+                  "memory": 1231736,
+                  "n_xmss": null,
+                  "poseidons": 41896,
+                  "proof_kib": 207,
+                  "time_secs": 4.793265993
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 321706,
+                  "dots": 9947,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 206,
+                  "time_secs": 4.307350224
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 321703,
+                  "dots": 9922,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 206,
+                  "time_secs": 4.405249607
+                }
+              },
+              {
+                "path": [
+                  2
+                ],
+                "stats": {
+                  "cycles": 321484,
+                  "dots": 9830,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 205,
+                  "time_secs": 4.345037831
+                }
+              },
+              {
+                "path": [
+                  3
+                ],
+                "stats": {
+                  "cycles": 321692,
+                  "dots": 9935,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 205,
+                  "time_secs": 4.29751258
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 467922,
+                  "dots": 180419,
+                  "memory": 1231736,
+                  "n_xmss": null,
+                  "poseidons": 41896,
+                  "proof_kib": 206,
+                  "time_secs": 4.817459502
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 321706,
+                  "dots": 9947,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 206,
+                  "time_secs": 4.3343733669999995
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 321703,
+                  "dots": 9922,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 205,
+                  "time_secs": 4.318848021
+                }
+              },
+              {
+                "path": [
+                  2
+                ],
+                "stats": {
+                  "cycles": 321484,
+                  "dots": 9830,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 206,
+                  "time_secs": 4.386137283
+                }
+              },
+              {
+                "path": [
+                  3
+                ],
+                "stats": {
+                  "cycles": 321692,
+                  "dots": 9935,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 206,
+                  "time_secs": 4.3319877909999995
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 467922,
+                  "dots": 180419,
+                  "memory": 1231736,
+                  "n_xmss": null,
+                  "poseidons": 41896,
+                  "proof_kib": 207,
+                  "time_secs": 4.780261726
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 321706,
+                  "dots": 9947,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 205,
+                  "time_secs": 4.285817096
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 321703,
+                  "dots": 9922,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 205,
+                  "time_secs": 4.343802329
+                }
+              },
+              {
+                "path": [
+                  2
+                ],
+                "stats": {
+                  "cycles": 321484,
+                  "dots": 9830,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 205,
+                  "time_secs": 4.345483301
+                }
+              },
+              {
+                "path": [
+                  3
+                ],
+                "stats": {
+                  "cycles": 321692,
+                  "dots": 9935,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 207,
+                  "time_secs": 4.335362789
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 467922,
+                  "dots": 180419,
+                  "memory": 1231736,
+                  "n_xmss": null,
+                  "poseidons": 41896,
+                  "proof_kib": 206,
+                  "time_secs": 4.8140082060000005
+                }
+              }
+            ]
+          }
+        ],
+        "topology": "4-to-1 recursion"
+      }
+    },
+    {
+      "name": "aggregate.tree_8x125_r2",
+      "unit": "ns",
+      "samples_ns": [
+        18400885292,
+        18535065309,
+        18817451805,
+        19005384500,
+        18791212529
+      ],
+      "timing": {
+        "n": 5,
+        "mean_ns": 18709999887,
+        "stddev_ns": 240596870,
+        "min_ns": 18400885292,
+        "p5_ns": 18400885292,
+        "p50_ns": 18791212529,
+        "p95_ns": 18817451805,
+        "max_ns": 19005384500
+      },
+      "resources": {
+        "cpu_percent": {
+          "mean": 356.2,
+          "peak": 411.3
+        },
+        "rss_bytes": {
+          "mean": 1938389635,
+          "peak": 5811597312
+        },
+        "n_samples": 1129,
+        "interval_ms": 100
+      },
+      "meta": {
+        "fan_in": 8,
+        "leaf_raw_xmss": 125,
+        "log_inv_rate": 2,
+        "note": "recursion-only time = root node `time_secs` from any report; or total - 8 \u00d7 aggregate.flat_125_r2 as a fallback",
+        "proof_kib_by_path": [
+          {
+            "depth": 1,
+            "kib": 185,
+            "path": [
+              0
+            ]
+          },
+          {
+            "depth": 1,
+            "kib": 185,
+            "path": [
+              1
+            ]
+          },
+          {
+            "depth": 1,
+            "kib": 186,
+            "path": [
+              2
+            ]
+          },
+          {
+            "depth": 1,
+            "kib": 185,
+            "path": [
+              3
+            ]
+          },
+          {
+            "depth": 1,
+            "kib": 185,
+            "path": [
+              4
+            ]
+          },
+          {
+            "depth": 1,
+            "kib": 184,
+            "path": [
+              5
+            ]
+          },
+          {
+            "depth": 1,
+            "kib": 186,
+            "path": [
+              6
+            ]
+          },
+          {
+            "depth": 1,
+            "kib": 184,
+            "path": [
+              7
+            ]
+          },
+          {
+            "depth": 0,
+            "kib": 228,
+            "path": []
+          }
+        ],
+        "proof_kib_leaf": 185,
+        "proof_kib_root": 228,
+        "reports": [
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 81232,
+                  "dots": 2506,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.092543544
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 81249,
+                  "dots": 2525,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.128410094
+                }
+              },
+              {
+                "path": [
+                  2
+                ],
+                "stats": {
+                  "cycles": 81176,
+                  "dots": 2480,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 186,
+                  "time_secs": 1.12924884
+                }
+              },
+              {
+                "path": [
+                  3
+                ],
+                "stats": {
+                  "cycles": 81241,
+                  "dots": 2517,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.134315328
+                }
+              },
+              {
+                "path": [
+                  4
+                ],
+                "stats": {
+                  "cycles": 81173,
+                  "dots": 2473,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.106030816
+                }
+              },
+              {
+                "path": [
+                  5
+                ],
+                "stats": {
+                  "cycles": 81249,
+                  "dots": 2515,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 184,
+                  "time_secs": 1.089297679
+                }
+              },
+              {
+                "path": [
+                  6
+                ],
+                "stats": {
+                  "cycles": 81232,
+                  "dots": 2498,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 186,
+                  "time_secs": 1.099667065
+                }
+              },
+              {
+                "path": [
+                  7
+                ],
+                "stats": {
+                  "cycles": 81241,
+                  "dots": 2517,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 184,
+                  "time_secs": 1.137139569
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 797119,
+                  "dots": 298683,
+                  "memory": 2155044,
+                  "n_xmss": null,
+                  "poseidons": 70080,
+                  "proof_kib": 228,
+                  "time_secs": 9.444272349
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 81232,
+                  "dots": 2506,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.114982312
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 81249,
+                  "dots": 2525,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 186,
+                  "time_secs": 1.137670445
+                }
+              },
+              {
+                "path": [
+                  2
+                ],
+                "stats": {
+                  "cycles": 81176,
+                  "dots": 2480,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.117149192
+                }
+              },
+              {
+                "path": [
+                  3
+                ],
+                "stats": {
+                  "cycles": 81241,
+                  "dots": 2517,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.110511329
+                }
+              },
+              {
+                "path": [
+                  4
+                ],
+                "stats": {
+                  "cycles": 81173,
+                  "dots": 2473,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 186,
+                  "time_secs": 1.128061807
+                }
+              },
+              {
+                "path": [
+                  5
+                ],
+                "stats": {
+                  "cycles": 81249,
+                  "dots": 2515,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 183,
+                  "time_secs": 1.119205622
+                }
+              },
+              {
+                "path": [
+                  6
+                ],
+                "stats": {
+                  "cycles": 81232,
+                  "dots": 2498,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 184,
+                  "time_secs": 1.108757434
+                }
+              },
+              {
+                "path": [
+                  7
+                ],
+                "stats": {
+                  "cycles": 81241,
+                  "dots": 2517,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.133589669
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 797119,
+                  "dots": 298683,
+                  "memory": 2155044,
+                  "n_xmss": null,
+                  "poseidons": 70080,
+                  "proof_kib": 228,
+                  "time_secs": 9.527093162
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 81232,
+                  "dots": 2506,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.1516055139999999
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 81249,
+                  "dots": 2525,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 186,
+                  "time_secs": 1.121073534
+                }
+              },
+              {
+                "path": [
+                  2
+                ],
+                "stats": {
+                  "cycles": 81176,
+                  "dots": 2480,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.170557456
+                }
+              },
+              {
+                "path": [
+                  3
+                ],
+                "stats": {
+                  "cycles": 81241,
+                  "dots": 2517,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.155721297
+                }
+              },
+              {
+                "path": [
+                  4
+                ],
+                "stats": {
+                  "cycles": 81173,
+                  "dots": 2473,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.08665495
+                }
+              },
+              {
+                "path": [
+                  5
+                ],
+                "stats": {
+                  "cycles": 81249,
+                  "dots": 2515,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 186,
+                  "time_secs": 1.151683682
+                }
+              },
+              {
+                "path": [
+                  6
+                ],
+                "stats": {
+                  "cycles": 81232,
+                  "dots": 2498,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.093762141
+                }
+              },
+              {
+                "path": [
+                  7
+                ],
+                "stats": {
+                  "cycles": 81241,
+                  "dots": 2517,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.17626218
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 797119,
+                  "dots": 298683,
+                  "memory": 2155044,
+                  "n_xmss": null,
+                  "poseidons": 70080,
+                  "proof_kib": 228,
+                  "time_secs": 9.672343026
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 81232,
+                  "dots": 2506,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.108652059
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 81249,
+                  "dots": 2525,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.161524774
+                }
+              },
+              {
+                "path": [
+                  2
+                ],
+                "stats": {
+                  "cycles": 81176,
+                  "dots": 2480,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 186,
+                  "time_secs": 1.124711305
+                }
+              },
+              {
+                "path": [
+                  3
+                ],
+                "stats": {
+                  "cycles": 81241,
+                  "dots": 2517,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.177834257
+                }
+              },
+              {
+                "path": [
+                  4
+                ],
+                "stats": {
+                  "cycles": 81173,
+                  "dots": 2473,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 186,
+                  "time_secs": 1.105252706
+                }
+              },
+              {
+                "path": [
+                  5
+                ],
+                "stats": {
+                  "cycles": 81249,
+                  "dots": 2515,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.173009691
+                }
+              },
+              {
+                "path": [
+                  6
+                ],
+                "stats": {
+                  "cycles": 81232,
+                  "dots": 2498,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.185067434
+                }
+              },
+              {
+                "path": [
+                  7
+                ],
+                "stats": {
+                  "cycles": 81241,
+                  "dots": 2517,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.211051961
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 797119,
+                  "dots": 298683,
+                  "memory": 2155044,
+                  "n_xmss": null,
+                  "poseidons": 70080,
+                  "proof_kib": 227,
+                  "time_secs": 9.720485094
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 81232,
+                  "dots": 2506,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.145893975
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 81249,
+                  "dots": 2525,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 186,
+                  "time_secs": 1.122157728
+                }
+              },
+              {
+                "path": [
+                  2
+                ],
+                "stats": {
+                  "cycles": 81176,
+                  "dots": 2480,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 183,
+                  "time_secs": 1.179568411
+                }
+              },
+              {
+                "path": [
+                  3
+                ],
+                "stats": {
+                  "cycles": 81241,
+                  "dots": 2517,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 186,
+                  "time_secs": 1.120344936
+                }
+              },
+              {
+                "path": [
+                  4
+                ],
+                "stats": {
+                  "cycles": 81173,
+                  "dots": 2473,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.1287906699999999
+                }
+              },
+              {
+                "path": [
+                  5
+                ],
+                "stats": {
+                  "cycles": 81249,
+                  "dots": 2515,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.099819728
+                }
+              },
+              {
+                "path": [
+                  6
+                ],
+                "stats": {
+                  "cycles": 81232,
+                  "dots": 2498,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 186,
+                  "time_secs": 1.156828119
+                }
+              },
+              {
+                "path": [
+                  7
+                ],
+                "stats": {
+                  "cycles": 81241,
+                  "dots": 2517,
+                  "memory": 323369,
+                  "n_xmss": 125,
+                  "poseidons": 21080,
+                  "proof_kib": 185,
+                  "time_secs": 1.172502533
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 797119,
+                  "dots": 298683,
+                  "memory": 2155044,
+                  "n_xmss": null,
+                  "poseidons": 70080,
+                  "proof_kib": 229,
+                  "time_secs": 9.62481078
+                }
+              }
+            ]
+          }
+        ],
+        "topology": "8-to-1 recursion"
+      }
+    },
+    {
+      "name": "aggregate.tree_8x250_r2",
+      "unit": "ns",
+      "samples_ns": [
+        26966598289,
+        29300124403,
+        29776914341,
+        28204597884,
+        27028976031
+      ],
+      "timing": {
+        "n": 5,
+        "mean_ns": 28255442189,
+        "stddev_ns": 1282006378,
+        "min_ns": 26966598289,
+        "p5_ns": 26966598289,
+        "p50_ns": 28204597884,
+        "p95_ns": 29300124403,
+        "max_ns": 29776914341
+      },
+      "resources": {
+        "cpu_percent": {
+          "mean": 360.2,
+          "peak": 411.3
+        },
+        "rss_bytes": {
+          "mean": 1878348039,
+          "peak": 5869711360
+        },
+        "n_samples": 1677,
+        "interval_ms": 100
+      },
+      "meta": {
+        "fan_in": 8,
+        "leaf_raw_xmss": 250,
+        "log_inv_rate": 2,
+        "note": "recursion-only time = root node `time_secs` from any report; or total - 8 \u00d7 aggregate.flat_250_r2 as a fallback",
+        "proof_kib_by_path": [
+          {
+            "depth": 1,
+            "kib": 194,
+            "path": [
+              0
+            ]
+          },
+          {
+            "depth": 1,
+            "kib": 193,
+            "path": [
+              1
+            ]
+          },
+          {
+            "depth": 1,
+            "kib": 193,
+            "path": [
+              2
+            ]
+          },
+          {
+            "depth": 1,
+            "kib": 193,
+            "path": [
+              3
+            ]
+          },
+          {
+            "depth": 1,
+            "kib": 194,
+            "path": [
+              4
+            ]
+          },
+          {
+            "depth": 1,
+            "kib": 195,
+            "path": [
+              5
+            ]
+          },
+          {
+            "depth": 1,
+            "kib": 193,
+            "path": [
+              6
+            ]
+          },
+          {
+            "depth": 1,
+            "kib": 194,
+            "path": [
+              7
+            ]
+          },
+          {
+            "depth": 0,
+            "kib": 228,
+            "path": []
+          }
+        ],
+        "proof_kib_leaf": 194,
+        "proof_kib_root": 228,
+        "reports": [
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 161417,
+                  "dots": 5004,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.162543178
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 161353,
+                  "dots": 4970,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 193,
+                  "time_secs": 2.181496446
+                }
+              },
+              {
+                "path": [
+                  2
+                ],
+                "stats": {
+                  "cycles": 161358,
+                  "dots": 4961,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 193,
+                  "time_secs": 2.154894263
+                }
+              },
+              {
+                "path": [
+                  3
+                ],
+                "stats": {
+                  "cycles": 161409,
+                  "dots": 4988,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 193,
+                  "time_secs": 2.199418858
+                }
+              },
+              {
+                "path": [
+                  4
+                ],
+                "stats": {
+                  "cycles": 161209,
+                  "dots": 4895,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.178131185
+                }
+              },
+              {
+                "path": [
+                  5
+                ],
+                "stats": {
+                  "cycles": 161339,
+                  "dots": 4962,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 195,
+                  "time_secs": 2.180795067
+                }
+              },
+              {
+                "path": [
+                  6
+                ],
+                "stats": {
+                  "cycles": 161388,
+                  "dots": 4988,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 193,
+                  "time_secs": 2.208683079
+                }
+              },
+              {
+                "path": [
+                  7
+                ],
+                "stats": {
+                  "cycles": 161368,
+                  "dots": 4974,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.191523794
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 845990,
+                  "dots": 320643,
+                  "memory": 2264928,
+                  "n_xmss": null,
+                  "poseidons": 75320,
+                  "proof_kib": 228,
+                  "time_secs": 9.466802485
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 161417,
+                  "dots": 5004,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.21977383
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 161353,
+                  "dots": 4970,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.212870166
+                }
+              },
+              {
+                "path": [
+                  2
+                ],
+                "stats": {
+                  "cycles": 161358,
+                  "dots": 4961,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 193,
+                  "time_secs": 2.186110135
+                }
+              },
+              {
+                "path": [
+                  3
+                ],
+                "stats": {
+                  "cycles": 161409,
+                  "dots": 4988,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.256716617
+                }
+              },
+              {
+                "path": [
+                  4
+                ],
+                "stats": {
+                  "cycles": 161209,
+                  "dots": 4895,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.152720436
+                }
+              },
+              {
+                "path": [
+                  5
+                ],
+                "stats": {
+                  "cycles": 161339,
+                  "dots": 4962,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 193,
+                  "time_secs": 2.395952037
+                }
+              },
+              {
+                "path": [
+                  6
+                ],
+                "stats": {
+                  "cycles": 161388,
+                  "dots": 4988,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.61278758
+                }
+              },
+              {
+                "path": [
+                  7
+                ],
+                "stats": {
+                  "cycles": 161368,
+                  "dots": 4974,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 193,
+                  "time_secs": 2.470453371
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 845990,
+                  "dots": 320643,
+                  "memory": 2264928,
+                  "n_xmss": null,
+                  "poseidons": 75320,
+                  "proof_kib": 228,
+                  "time_secs": 10.746548586
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 161417,
+                  "dots": 5004,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 193,
+                  "time_secs": 2.487789859
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 161353,
+                  "dots": 4970,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.556014862
+                }
+              },
+              {
+                "path": [
+                  2
+                ],
+                "stats": {
+                  "cycles": 161358,
+                  "dots": 4961,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 193,
+                  "time_secs": 2.348396472
+                }
+              },
+              {
+                "path": [
+                  3
+                ],
+                "stats": {
+                  "cycles": 161409,
+                  "dots": 4988,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.245350267
+                }
+              },
+              {
+                "path": [
+                  4
+                ],
+                "stats": {
+                  "cycles": 161209,
+                  "dots": 4895,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.174222838
+                }
+              },
+              {
+                "path": [
+                  5
+                ],
+                "stats": {
+                  "cycles": 161339,
+                  "dots": 4962,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 193,
+                  "time_secs": 2.275708687
+                }
+              },
+              {
+                "path": [
+                  6
+                ],
+                "stats": {
+                  "cycles": 161388,
+                  "dots": 4988,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.537218087
+                }
+              },
+              {
+                "path": [
+                  7
+                ],
+                "stats": {
+                  "cycles": 161368,
+                  "dots": 4974,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.4901152509999998
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 845990,
+                  "dots": 320643,
+                  "memory": 2264928,
+                  "n_xmss": null,
+                  "poseidons": 75320,
+                  "proof_kib": 229,
+                  "time_secs": 10.616908136
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 161417,
+                  "dots": 5004,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 193,
+                  "time_secs": 2.593527381
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 161353,
+                  "dots": 4970,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.570971814
+                }
+              },
+              {
+                "path": [
+                  2
+                ],
+                "stats": {
+                  "cycles": 161358,
+                  "dots": 4961,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 193,
+                  "time_secs": 2.384045336
+                }
+              },
+              {
+                "path": [
+                  3
+                ],
+                "stats": {
+                  "cycles": 161409,
+                  "dots": 4988,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.178350398
+                }
+              },
+              {
+                "path": [
+                  4
+                ],
+                "stats": {
+                  "cycles": 161209,
+                  "dots": 4895,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 193,
+                  "time_secs": 2.207034796
+                }
+              },
+              {
+                "path": [
+                  5
+                ],
+                "stats": {
+                  "cycles": 161339,
+                  "dots": 4962,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 193,
+                  "time_secs": 2.166788284
+                }
+              },
+              {
+                "path": [
+                  6
+                ],
+                "stats": {
+                  "cycles": 161388,
+                  "dots": 4988,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.159795988
+                }
+              },
+              {
+                "path": [
+                  7
+                ],
+                "stats": {
+                  "cycles": 161368,
+                  "dots": 4974,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 193,
+                  "time_secs": 2.202918811
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 845990,
+                  "dots": 320643,
+                  "memory": 2264928,
+                  "n_xmss": null,
+                  "poseidons": 75320,
+                  "proof_kib": 228,
+                  "time_secs": 9.701352852
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 161417,
+                  "dots": 5004,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 195,
+                  "time_secs": 2.170354778
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 161353,
+                  "dots": 4970,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 193,
+                  "time_secs": 2.169609755
+                }
+              },
+              {
+                "path": [
+                  2
+                ],
+                "stats": {
+                  "cycles": 161358,
+                  "dots": 4961,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.166158943
+                }
+              },
+              {
+                "path": [
+                  3
+                ],
+                "stats": {
+                  "cycles": 161409,
+                  "dots": 4988,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 192,
+                  "time_secs": 2.158456416
+                }
+              },
+              {
+                "path": [
+                  4
+                ],
+                "stats": {
+                  "cycles": 161209,
+                  "dots": 4895,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 193,
+                  "time_secs": 2.167343734
+                }
+              },
+              {
+                "path": [
+                  5
+                ],
+                "stats": {
+                  "cycles": 161339,
+                  "dots": 4962,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.183617124
+                }
+              },
+              {
+                "path": [
+                  6
+                ],
+                "stats": {
+                  "cycles": 161388,
+                  "dots": 4988,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.216970239
+                }
+              },
+              {
+                "path": [
+                  7
+                ],
+                "stats": {
+                  "cycles": 161368,
+                  "dots": 4974,
+                  "memory": 636869,
+                  "n_xmss": 250,
+                  "poseidons": 41955,
+                  "proof_kib": 194,
+                  "time_secs": 2.205055312
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 845990,
+                  "dots": 320643,
+                  "memory": 2264928,
+                  "n_xmss": null,
+                  "poseidons": 75320,
+                  "proof_kib": 228,
+                  "time_secs": 9.551210568
+                }
+              }
+            ]
+          }
+        ],
+        "topology": "8-to-1 recursion"
+      }
+    },
+    {
+      "name": "aggregate.tree_8x500_r2",
+      "unit": "ns",
+      "samples_ns": [
+        44542909159,
+        44520371674,
+        44550224101,
+        44563923210,
+        44540252433
+      ],
+      "timing": {
+        "n": 5,
+        "mean_ns": 44543536115,
+        "stddev_ns": 15875529,
+        "min_ns": 44520371674,
+        "p5_ns": 44520371674,
+        "p50_ns": 44542909159,
+        "p95_ns": 44550224101,
+        "max_ns": 44563923210
+      },
+      "resources": {
+        "cpu_percent": {
+          "mean": 363.7,
+          "peak": 410.9
+        },
+        "rss_bytes": {
+          "mean": 2036180054,
+          "peak": 5720244224
+        },
+        "n_samples": 2642,
+        "interval_ms": 100
+      },
+      "meta": {
+        "fan_in": 8,
+        "leaf_raw_xmss": 500,
+        "log_inv_rate": 2,
+        "note": "recursion-only time = root node `time_secs` from any report; or total - 8 \u00d7 aggregate.flat_500_r2 as a fallback",
+        "proof_kib_by_path": [
+          {
+            "depth": 1,
+            "kib": 207,
+            "path": [
+              0
+            ]
+          },
+          {
+            "depth": 1,
+            "kib": 205,
+            "path": [
+              1
+            ]
+          },
+          {
+            "depth": 1,
+            "kib": 205,
+            "path": [
+              2
+            ]
+          },
+          {
+            "depth": 1,
+            "kib": 206,
+            "path": [
+              3
+            ]
+          },
+          {
+            "depth": 1,
+            "kib": 206,
+            "path": [
+              4
+            ]
+          },
+          {
+            "depth": 1,
+            "kib": 205,
+            "path": [
+              5
+            ]
+          },
+          {
+            "depth": 1,
+            "kib": 206,
+            "path": [
+              6
+            ]
+          },
+          {
+            "depth": 1,
+            "kib": 206,
+            "path": [
+              7
+            ]
+          },
+          {
+            "depth": 0,
+            "kib": 227,
+            "path": []
+          }
+        ],
+        "proof_kib_leaf": 207,
+        "proof_kib_root": 227,
+        "reports": [
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 321706,
+                  "dots": 9947,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 207,
+                  "time_secs": 4.333962099
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 321703,
+                  "dots": 9922,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 205,
+                  "time_secs": 4.322778692
+                }
+              },
+              {
+                "path": [
+                  2
+                ],
+                "stats": {
+                  "cycles": 321484,
+                  "dots": 9830,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 205,
+                  "time_secs": 4.354745519
+                }
+              },
+              {
+                "path": [
+                  3
+                ],
+                "stats": {
+                  "cycles": 321692,
+                  "dots": 9935,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 206,
+                  "time_secs": 4.344610822
+                }
+              },
+              {
+                "path": [
+                  4
+                ],
+                "stats": {
+                  "cycles": 321590,
+                  "dots": 9847,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 206,
+                  "time_secs": 4.365655966
+                }
+              },
+              {
+                "path": [
+                  5
+                ],
+                "stats": {
+                  "cycles": 321577,
+                  "dots": 9882,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 205,
+                  "time_secs": 4.389570133
+                }
+              },
+              {
+                "path": [
+                  6
+                ],
+                "stats": {
+                  "cycles": 321686,
+                  "dots": 9955,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 206,
+                  "time_secs": 4.306050692
+                }
+              },
+              {
+                "path": [
+                  7
+                ],
+                "stats": {
+                  "cycles": 321645,
+                  "dots": 9932,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 206,
+                  "time_secs": 4.393634543
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 933201,
+                  "dots": 360563,
+                  "memory": 2434388,
+                  "n_xmss": null,
+                  "poseidons": 83496,
+                  "proof_kib": 227,
+                  "time_secs": 9.686091777
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 321706,
+                  "dots": 9947,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 205,
+                  "time_secs": 4.395733003
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 321703,
+                  "dots": 9922,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 206,
+                  "time_secs": 4.336793942
+                }
+              },
+              {
+                "path": [
+                  2
+                ],
+                "stats": {
+                  "cycles": 321484,
+                  "dots": 9830,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 205,
+                  "time_secs": 4.3313997650000005
+                }
+              },
+              {
+                "path": [
+                  3
+                ],
+                "stats": {
+                  "cycles": 321692,
+                  "dots": 9935,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 206,
+                  "time_secs": 4.380435791
+                }
+              },
+              {
+                "path": [
+                  4
+                ],
+                "stats": {
+                  "cycles": 321590,
+                  "dots": 9847,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 206,
+                  "time_secs": 4.302018686
+                }
+              },
+              {
+                "path": [
+                  5
+                ],
+                "stats": {
+                  "cycles": 321577,
+                  "dots": 9882,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 207,
+                  "time_secs": 4.322400989
+                }
+              },
+              {
+                "path": [
+                  6
+                ],
+                "stats": {
+                  "cycles": 321686,
+                  "dots": 9955,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 206,
+                  "time_secs": 4.333834868
+                }
+              },
+              {
+                "path": [
+                  7
+                ],
+                "stats": {
+                  "cycles": 321645,
+                  "dots": 9932,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 204,
+                  "time_secs": 4.366533789
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 933201,
+                  "dots": 360563,
+                  "memory": 2434388,
+                  "n_xmss": null,
+                  "poseidons": 83496,
+                  "proof_kib": 228,
+                  "time_secs": 9.706447383
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 321706,
+                  "dots": 9947,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 207,
+                  "time_secs": 4.319746178
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 321703,
+                  "dots": 9922,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 206,
+                  "time_secs": 4.351948898
+                }
+              },
+              {
+                "path": [
+                  2
+                ],
+                "stats": {
+                  "cycles": 321484,
+                  "dots": 9830,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 205,
+                  "time_secs": 4.397225285
+                }
+              },
+              {
+                "path": [
+                  3
+                ],
+                "stats": {
+                  "cycles": 321692,
+                  "dots": 9935,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 206,
+                  "time_secs": 4.37523225
+                }
+              },
+              {
+                "path": [
+                  4
+                ],
+                "stats": {
+                  "cycles": 321590,
+                  "dots": 9847,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 206,
+                  "time_secs": 4.379948795
+                }
+              },
+              {
+                "path": [
+                  5
+                ],
+                "stats": {
+                  "cycles": 321577,
+                  "dots": 9882,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 205,
+                  "time_secs": 4.324142715
+                }
+              },
+              {
+                "path": [
+                  6
+                ],
+                "stats": {
+                  "cycles": 321686,
+                  "dots": 9955,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 206,
+                  "time_secs": 4.337173262
+                }
+              },
+              {
+                "path": [
+                  7
+                ],
+                "stats": {
+                  "cycles": 321645,
+                  "dots": 9932,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 206,
+                  "time_secs": 4.365039472
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 933201,
+                  "dots": 360563,
+                  "memory": 2434388,
+                  "n_xmss": null,
+                  "poseidons": 83496,
+                  "proof_kib": 228,
+                  "time_secs": 9.654269694
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 321706,
+                  "dots": 9947,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 205,
+                  "time_secs": 4.362269024
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 321703,
+                  "dots": 9922,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 206,
+                  "time_secs": 4.421123139
+                }
+              },
+              {
+                "path": [
+                  2
+                ],
+                "stats": {
+                  "cycles": 321484,
+                  "dots": 9830,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 205,
+                  "time_secs": 4.333578738
+                }
+              },
+              {
+                "path": [
+                  3
+                ],
+                "stats": {
+                  "cycles": 321692,
+                  "dots": 9935,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 206,
+                  "time_secs": 4.334701229
+                }
+              },
+              {
+                "path": [
+                  4
+                ],
+                "stats": {
+                  "cycles": 321590,
+                  "dots": 9847,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 206,
+                  "time_secs": 4.32803406
+                }
+              },
+              {
+                "path": [
+                  5
+                ],
+                "stats": {
+                  "cycles": 321577,
+                  "dots": 9882,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 206,
+                  "time_secs": 4.357572378
+                }
+              },
+              {
+                "path": [
+                  6
+                ],
+                "stats": {
+                  "cycles": 321686,
+                  "dots": 9955,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 205,
+                  "time_secs": 4.367350694
+                }
+              },
+              {
+                "path": [
+                  7
+                ],
+                "stats": {
+                  "cycles": 321645,
+                  "dots": 9932,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 205,
+                  "time_secs": 4.355129923
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 933201,
+                  "dots": 360563,
+                  "memory": 2434388,
+                  "n_xmss": null,
+                  "poseidons": 83496,
+                  "proof_kib": 229,
+                  "time_secs": 9.658409147
+                }
+              }
+            ]
+          },
+          {
+            "nodes": [
+              {
+                "path": [
+                  0
+                ],
+                "stats": {
+                  "cycles": 321706,
+                  "dots": 9947,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 206,
+                  "time_secs": 4.31549156
+                }
+              },
+              {
+                "path": [
+                  1
+                ],
+                "stats": {
+                  "cycles": 321703,
+                  "dots": 9922,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 204,
+                  "time_secs": 4.419566722
+                }
+              },
+              {
+                "path": [
+                  2
+                ],
+                "stats": {
+                  "cycles": 321484,
+                  "dots": 9830,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 205,
+                  "time_secs": 4.340214871
+                }
+              },
+              {
+                "path": [
+                  3
+                ],
+                "stats": {
+                  "cycles": 321692,
+                  "dots": 9935,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 205,
+                  "time_secs": 4.336506493
+                }
+              },
+              {
+                "path": [
+                  4
+                ],
+                "stats": {
+                  "cycles": 321590,
+                  "dots": 9847,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 206,
+                  "time_secs": 4.382093909
+                }
+              },
+              {
+                "path": [
+                  5
+                ],
+                "stats": {
+                  "cycles": 321577,
+                  "dots": 9882,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 205,
+                  "time_secs": 4.381381588
+                }
+              },
+              {
+                "path": [
+                  6
+                ],
+                "stats": {
+                  "cycles": 321686,
+                  "dots": 9955,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 206,
+                  "time_secs": 4.299456363
+                }
+              },
+              {
+                "path": [
+                  7
+                ],
+                "stats": {
+                  "cycles": 321645,
+                  "dots": 9932,
+                  "memory": 1263869,
+                  "n_xmss": 500,
+                  "poseidons": 83705,
+                  "proof_kib": 206,
+                  "time_secs": 4.33388714
+                }
+              },
+              {
+                "path": [],
+                "stats": {
+                  "cycles": 933201,
+                  "dots": 360563,
+                  "memory": 2434388,
+                  "n_xmss": null,
+                  "poseidons": 83496,
+                  "proof_kib": 228,
+                  "time_secs": 9.68624175
+                }
+              }
+            ]
+          }
+        ],
+        "topology": "8-to-1 recursion"
+      }
+    }
+  ],
+  "notes": ""
+}
