@@ -47,7 +47,12 @@ async function renderTopologyPage() {
 
   const combos = topoIndexData.combos || [];
   const params = new URLSearchParams(location.search);
-  topoActiveLeanvmBranch = params.get("leanmultisig_branch") || null;
+  // URL > shared config default > null. app.js loads config.json once
+  // and caches; we just await the same helper from this page.
+  const cfg = await loadLeanBenchConfig();
+  const available = new Set(combos.map((c) => c.leanmultisig_branch).filter(Boolean));
+  const requested = params.get("leanmultisig_branch") || cfg.default_leanvm_branch || null;
+  topoActiveLeanvmBranch = (requested && available.has(requested)) ? requested : null;
   const filtered = filterTopoCombosByBranch(combos, topoActiveLeanvmBranch);
   const ls = params.get("leansig");
   const lm = params.get("leanmultisig");

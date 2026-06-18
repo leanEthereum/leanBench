@@ -103,6 +103,18 @@ const chartTheme = () => {
 })();
 
 
+// Site-wide config (e.g. default branch filter for all branch dropdowns).
+// Fetched once from site/config.json on first need; falls back to an
+// empty object if the file is missing or malformed.
+let leanBenchConfig = null;
+async function loadLeanBenchConfig() {
+  if (leanBenchConfig) return leanBenchConfig;
+  try {
+    leanBenchConfig = await fetch("config.json").then((r) => r.json());
+  } catch { leanBenchConfig = {}; }
+  return leanBenchConfig;
+}
+
 // Active (leansig, leanmultisig) SHA pair. Runs from other combos are hidden
 // from the stats row, compare charts, and machine cards. Defaults to the
 // most-recent combo (sorted server-side).
@@ -125,7 +137,12 @@ async function renderRun() {
   }
 
   const combos = indexData.combos || [];
-  activeLeanvmBranch = leanvmBranchFromUrl();
+  const cfg = await loadLeanBenchConfig();
+  // URL > config default > null. Validate against actual combo set so
+  // a stale config doesn't strand the page on an empty filter.
+  const available = new Set(combos.map((c) => c.leanmultisig_branch).filter(Boolean));
+  const requested = leanvmBranchFromUrl() ?? cfg.default_leanvm_branch ?? null;
+  activeLeanvmBranch = (requested && available.has(requested)) ? requested : null;
   const filtered = filterCombosByBranch(combos, activeLeanvmBranch);
   // Restore last-picked combo from URL (`?leansig=<sha>&leanmultisig=<sha>`)
   // so a refresh keeps the user's selection. Falls back to most-recent combo
@@ -1237,9 +1254,8 @@ function indexHeadlineGroup(name) {
   return "other";
 }
 
-// Branch filter defaults to devnet5 — the canonical "active devnet" line.
-// `null` means "any branch".
-const INDEX_DEFAULT_BRANCH = "devnet5";
+// Branch filter default comes from site/config.json (default_leanvm_branch).
+// `null` means "all branches".
 let indexActiveLeanvmBranch = null;
 let indexBranchCharts = [];
 
@@ -1269,12 +1285,14 @@ async function renderIndex() {
     return;
   }
 
-  // Initial branch: URL > default. Fall back to "any" if the chosen
-  // branch isn't present in the data so the page never starts empty.
+  // Initial branch: URL > config default > all branches. Fall back to
+  // "all branches" if the chosen branch isn't present in the data so
+  // the page never starts empty.
+  const cfg = await loadLeanBenchConfig();
   const urlBranch = new URLSearchParams(location.search).get("leanmultisig_branch");
   const branches = [...new Set(combos.map((c) => c.leanmultisig_branch).filter(Boolean))];
-  const initial = urlBranch ?? INDEX_DEFAULT_BRANCH;
-  indexActiveLeanvmBranch = branches.includes(initial) ? initial : null;
+  const initial = urlBranch ?? cfg.default_leanvm_branch ?? null;
+  indexActiveLeanvmBranch = (initial && branches.includes(initial)) ? initial : null;
 
   setupIndexBranchFilter(combos, machines);
   setupIndexMachineSelector(machines, combos);
