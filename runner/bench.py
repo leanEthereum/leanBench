@@ -45,8 +45,6 @@ class Workload:
 # cross-machine comparison and topology fitting. Keeps the full matrix
 # under a ~30-min wall budget on 8-core remote VMs.
 ALL_WORKLOADS: list[Workload] = [
-    Workload(["xmss-keygen"],               "xmss.keygen",             in_default_set=False),
-    Workload(["xmss-verify"],               "xmss.verify",             in_default_set=True),
     Workload(["aggregate-flat", "125"],     "aggregate.flat_125_r2",   in_default_set=True),
     Workload(["aggregate-flat", "250"],     "aggregate.flat_250_r2",   in_default_set=True),
     Workload(["aggregate-flat", "500"],     "aggregate.flat_500_r2",   in_default_set=True),
@@ -84,11 +82,8 @@ def parse_args():
     ap.add_argument("--samples", type=int, default=10,
                     help="Timed samples per workload (warm-up excluded)")
     ap.add_argument("--warmup", type=int, default=1)
-    ap.add_argument("--include-keygen", action="store_true",
-                    help="Also run xmss.keygen (slow on lifetime-2^32 schemes)")
     ap.add_argument("--only", action="append", default=None,
-                    help="Run only these workload names; repeatable. Implies --include-keygen "
-                         "semantics if you list them explicitly.")
+                    help="Run only these workload names; repeatable.")
     ap.add_argument("--notes", default="",
                     help="Free-form note attached to the run record")
     ap.add_argument("--features", default=None,
@@ -106,7 +101,7 @@ def select_workloads(args) -> list[Workload]:
         if missing:
             sys.exit(f"unknown workload(s): {', '.join(sorted(missing))}")
         return selected
-    return [w for w in ALL_WORKLOADS if w.in_default_set or args.include_keygen]
+    return [w for w in ALL_WORKLOADS if w.in_default_set]
 
 
 RUST_DIR = ROOT / "workloads"

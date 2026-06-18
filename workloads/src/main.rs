@@ -7,7 +7,6 @@
 //! not the union.
 
 use std::io::Write;
-use std::time::Instant;
 
 use anyhow::Result;
 use clap::Parser;
@@ -39,11 +38,6 @@ const LEANMULTISIG_BRANCH: &str = match option_env!("LEANMULTISIG_BRANCH") {
 #[derive(Parser)]
 #[command(version, about = "Run one leanSig / leanMultisig workload and emit JSON samples.")]
 enum Cli {
-    #[command(about = "XMSS (leanSpec PROD_CONFIG) key generation")]
-    XmssKeygen(CommonArgs),
-    #[command(about = "XMSS verify")]
-    XmssVerify(CommonArgs),
-
     #[command(name = "aggregate-flat",
               about = "Aggregation: flat n-sig leaf at LOG_INV_RATE_PROD=2")]
     AggregateFlat {
@@ -126,8 +120,6 @@ struct Record {
 fn main() -> Result<()> {
     let cli = Cli::parse();
     let rec = match cli {
-        Cli::XmssKeygen(a)    => workloads::xmss_wl::keygen(&a),
-        Cli::XmssVerify(a)    => workloads::xmss_wl::verify(&a),
         Cli::AggregateFlat { n, common } => workloads::aggregate::flat_r2(&common, n),
         Cli::AggregateTree { fan, n, common } => workloads::aggregate::tree_r2(&common, fan, n),
         Cli::Split { per_component, n_components, common } =>
@@ -143,21 +135,6 @@ fn main() -> Result<()> {
     stdout.write_all(out.as_bytes())?;
     stdout.write_all(b"\n")?;
     Ok(())
-}
-
-/// Helper: time `f` for `args.samples` iterations after `args.warmup` warm-ups,
-/// returning nanos-per-iter samples.
-fn time_loop<F: FnMut()>(args: &CommonArgs, mut f: F) -> Vec<u128> {
-    for _ in 0..args.warmup {
-        f();
-    }
-    let mut samples = Vec::with_capacity(args.samples);
-    for _ in 0..args.samples {
-        let t = Instant::now();
-        f();
-        samples.push(t.elapsed().as_nanos());
-    }
-    samples
 }
 
 fn make_record(
