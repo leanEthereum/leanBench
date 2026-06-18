@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>leanBench result</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer data-domain="bench.leanroadmap.org" src="https://analytics.leanroadmap.org/js/script.js"></script>
+</head>
+<body>
+  <header>
+    <div class="container header-row">
+      <div class="header-title">
+        <h1 id="result-title">loading…</h1>
+        <p class="tagline" id="result-subtitle"></p>
+      </div>
+      <span class="nav-links">
+        <a href="index.html" class="nav-link">trend</a>
+        <a href="run.html" class="nav-link nav-link-current">runs</a>
+        <a href="topology.html" class="nav-link">topology explorer</a>
+      </span>
+    </div>
+  </header>
+
+  <main class="container">
+    <section id="specs">
+      <h2>Machine specs</h2>
+      <dl id="spec-grid"></dl>
+    </section>
+
+    <section id="provenance">
+      <h2>Toolchain &amp; provenance</h2>
+      <dl id="prov-grid"></dl>
+    </section>
+
+    <section id="workloads">
+      <h2>Workloads</h2>
+      <div id="workload-list"></div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <a href="index.html">index</a> ·
+      <a id="raw-link" href="#">raw JSON</a>
+    </div>
+  </footer>
+
+  <script src="vendor/chart.umd.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

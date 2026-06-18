@@ -3,40 +3,80 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>leanBench run</title>
+  <title>leanBench · runs</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext x='50' y='75' text-anchor='middle' font-size='85'%3E%E2%9A%A1%3C/text%3E%3C/svg%3E">
   <script defer data-domain="bench.leanroadmap.org" src="https://analytics.leanroadmap.org/js/script.js"></script>
 </head>
 <body>
   <header>
-    <div class="container">
-      <a class="back-link" href="index.html">← all runs</a>
-      <h1 id="run-title">loading…</h1>
-      <p class="tagline" id="run-subtitle"></p>
+    <div class="container header-row">
+      <div class="header-title">
+        <h1><a href="index.html" class="home-link">leanBench</a></h1>
+        <p class="tagline">leanSig &amp; leanVM performance across hardware</p>
+      </div>
+      <span class="nav-links">
+        <a href="index.html" class="nav-link">trend</a>
+        <a href="run.html" class="nav-link nav-link-current">runs</a>
+        <a href="topology.html" class="nav-link">topology explorer</a>
+      </span>
     </div>
   </header>
 
   <main class="container">
-    <section id="specs">
-      <h2>Machine specs</h2>
-      <dl id="spec-grid"></dl>
+    <section id="filter">
+      <div class="filter-row">
+        <label class="trend-machine-label">
+          leanVM branch
+          <select id="branch-filter-leanvm" class="filter-machine" title="Filter combos by leanVM branch"></select>
+        </label>
+        <label class="trend-machine-label">
+          combo
+          <details class="combo-filter" id="combo-filter">
+            <summary>
+              <span class="combo-label">loading…</span>
+              <span class="combo-chevron" aria-hidden="true">▾</span>
+            </summary>
+            <div class="combo-menu" id="combo-menu"></div>
+          </details>
+        </label>
+      </div>
     </section>
 
-    <section id="provenance">
-      <h2>Toolchain &amp; provenance</h2>
-      <dl id="prov-grid"></dl>
+    <section id="overview">
+      <div class="stat-row">
+        <div class="stat"><div class="stat-value" id="stat-runs">—</div><div class="stat-label">runs</div></div>
+        <div class="stat"><div class="stat-value" id="stat-machines">—</div><div class="stat-label">machines</div></div>
+        <div class="stat"><div class="stat-value" id="stat-generated">—</div><div class="stat-label">last updated</div></div>
+      </div>
     </section>
 
-    <section id="workloads">
-      <h2>Workloads</h2>
-      <div id="workload-list"></div>
+    <section id="compare">
+      <h2>Across machines</h2>
+      <div id="compare-grid"></div>
+    </section>
+
+    <section id="proof-sizes">
+      <h2>Proof sizes</h2>
+      <p class="section-note">Root proof size in KiB per aggregation workload — what gets gossiped to validators each slot. Deterministic per topology (same value across all machines for a given combo); read from any one run that recorded it.</p>
+      <div id="proof-size-grid"></div>
+    </section>
+
+    <section id="scaling">
+      <h2>Scaling on c4 (timing vs cores)</h2>
+      <p class="section-note">Granite Rapids only — same per-core arch across the four c4-standard-* sizes, so the only thing changing is core count. X axis is logical cores (vCPU) since that's what GCP charges per and what Rayon's threadpool sizes itself to; per-workload mean (best run) on the y axis.</p>
+      <div id="scaling-grid"></div>
+    </section>
+
+    <section id="machines">
+      <h2>Machines</h2>
+      <div id="machine-list"></div>
     </section>
   </main>
 
   <footer>
     <div class="container">
-      <a href="index.html">index</a> ·
-      <a id="raw-link" href="#">raw JSON</a>
+      <a href="https://github.com/leanEthereum/leanBench">source</a>
     </div>
   </footer>
 

@@ -107,12 +107,21 @@ h2 {
 select.filter-machine {
   font-family: var(--mono);
   font-size: 12px;
-  padding: 6px 12px;
-  background: var(--accent-soft);
+  line-height: 1;
+  box-sizing: border-box;
+  padding: 8px 26px 8px 12px;
+  background-color: var(--accent-soft);
   color: var(--ink);
   border: 1px solid var(--border);
   border-radius: 999px;
   cursor: pointer;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0 L5 6 L10 0' fill='%23888'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 8px;
 }
 select.filter-machine:hover { border-color: var(--accent); }
 .combo-warning {
@@ -138,7 +147,9 @@ select.filter-machine:hover { border-color: var(--accent); }
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  padding: 6px 12px;
+  box-sizing: border-box;
+  line-height: 1;
+  padding: 8px 12px;
   background: var(--accent-soft);
   color: var(--ink);
   border: 1px solid var(--border);
@@ -619,6 +630,10 @@ select.filter-machine:hover { border-color: var(--accent); }
 }
 .nav-link:hover { border-bottom-color: var(--accent); }
 .nav-link:hover::after { transform: translateX(3px); }
+.nav-link-current {
+  font-weight: 700;
+  color: var(--ink);
+}
 /* Back-direction variant — arrow on the left, slides left on hover. */
 .nav-link-back::after { content: none; }
 .nav-link-back::before {
@@ -629,7 +644,6 @@ select.filter-machine:hover { border-color: var(--accent); }
 }
 .nav-link-back:hover::before { transform: translateX(-3px); }
 
-/* Trend page */
 .trend-machine-label {
   display: inline-flex;
   align-items: center;
@@ -640,39 +654,78 @@ select.filter-machine:hover { border-color: var(--accent); }
   text-transform: uppercase;
   color: var(--ink-faint);
 }
-.trend-machine-label select {
-  font-family: var(--mono);
-  font-size: 13px;
-  padding: 4px 8px;
+/* The label's own text is uppercase; children opt out so their own
+ * styling (combo refs, machine names, dropdown chevron) reads normally. */
+.trend-machine-label > * {
+  text-transform: none;
+  letter-spacing: normal;
+  color: var(--ink);
+}
+.compare-empty {
+  color: var(--ink-faint);
+  font-size: 12px;
+  text-align: center;
+  margin: 32px 0;
+}
+
+/* Annotations legend — one row per numbered badge that appears above charts. */
+.trend-markings-legend {
+  margin-top: 24px;
+  padding: 16px;
   background: var(--panel);
   border: 1px solid var(--border);
-  border-radius: 6px;
-  color: var(--ink);
-  text-transform: none;
-  letter-spacing: 0;
-}
-.trend-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-family: var(--mono);
+  border-radius: 8px;
   font-size: 13px;
 }
-.trend-table th,
-.trend-table td {
-  padding: 8px 12px;
-  text-align: left;
-  border-bottom: 1px solid var(--border);
-}
-.trend-table th {
+.trend-markings-legend h3 {
+  margin: 0 0 12px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--ink-faint);
   text-transform: uppercase;
-  font-size: 11px;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
 }
-.trend-table td.trend-ts { color: var(--ink-soft); white-space: nowrap; }
-.trend-table td.trend-name a { color: var(--ink); text-decoration: none; }
-.trend-table td.trend-name a:hover { color: var(--accent); }
+.trend-markings-legend .marking-row {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 0;
+}
+.trend-markings-legend .marking-row + .marking-row {
+  border-top: 1px solid var(--border);
+}
+.trend-markings-legend .marking-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--ink-faint);
+  color: #fff;
+  font-family: var(--mono);
+  font-size: 7px;
+  font-weight: 600;
+  line-height: 1;
+  opacity: 0.5;
+}
+.trend-markings-legend .marking-combo {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+.trend-markings-legend .marking-label {
+  color: var(--ink);
+}
+.trend-markings-legend .marking-row-flash {
+  animation: marking-flash 1.5s ease-out;
+}
+@keyframes marking-flash {
+  0%   { background: var(--accent-soft); }
+  100% { background: transparent; }
+}
 
 /* Group adjacent nav links in the header row */
 .nav-links {
@@ -874,63 +927,3 @@ footer {
 footer a { color: var(--ink-soft); text-decoration: none; }
 footer a:hover { color: var(--accent); }
 
-/* Trend page — legend for on-chart numbered markings */
-.trend-markings-legend {
-  margin-top: 24px;
-  padding: 16px;
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  font-size: 13px;
-}
-.trend-markings-legend h3 {
-  margin: 0 0 12px;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--ink-faint);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-.trend-markings-legend .marking-row {
-  display: grid;
-  grid-template-columns: auto auto 1fr;
-  align-items: center;
-  gap: 12px;
-  padding: 6px 0;
-}
-.trend-markings-legend .marking-row + .marking-row {
-  border-top: 1px solid var(--border);
-}
-.trend-markings-legend .marking-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--ink-faint);
-  color: #fff;
-  font-family: var(--mono);
-  font-size: 7px;
-  font-weight: 600;
-  line-height: 1;
-  opacity: 0.5;
-}
-.trend-markings-legend .marking-combo {
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--ink-soft);
-  white-space: nowrap;
-}
-.trend-markings-legend .marking-label {
-  color: var(--ink);
-}
-/* Brief highlight when a chart badge is clicked and scrolls its row
- * into view — fades from accent-soft back to transparent. */
-.trend-markings-legend .marking-row-flash {
-  animation: marking-flash 1.5s ease-out;
-}
-@keyframes marking-flash {
-  0%   { background: var(--accent-soft); }
-  100% { background: transparent; }
-}

@@ -161,6 +161,11 @@ def _combos(runs: list[dict]) -> list[dict]:
     """Unique (leansig, leanmultisig) SHA pairs seen across runs, sorted
     descending by the most-recent run that used each pair. `latest_run_ts`
     is what the frontend uses for ordering — SHAs themselves aren't orderable.
+
+    `first_run_ts` is what the per-branch progress index uses as a proxy
+    for "when this leanVM SHA landed on the branch": the bench-then-commit
+    workflow puts the first benchmark within minutes of the upstream
+    commit, and unlike `latest_run_ts` it stays stable across re-benches.
     """
     buckets: dict[tuple[str, str], dict] = {}
     for r in runs:
@@ -170,6 +175,7 @@ def _combos(runs: list[dict]) -> list[dict]:
             "leanmultisig_sha":    key[1],
             "leansig_branch":      r["branches"].get("leansig_branch", "unknown"),
             "leanmultisig_branch": r["branches"].get("leanmultisig_branch", "unknown"),
+            "first_run_ts":        r["timestamp"],
             "latest_run_ts":       r["timestamp"],
             "run_count":           0,
             "_machines":           set(),
@@ -178,6 +184,8 @@ def _combos(runs: list[dict]) -> list[dict]:
         b["_machines"].add(r["machine"].get("fingerprint"))
         if r["timestamp"] > b["latest_run_ts"]:
             b["latest_run_ts"] = r["timestamp"]
+        if r["timestamp"] < b["first_run_ts"]:
+            b["first_run_ts"] = r["timestamp"]
 
     out = []
     for b in buckets.values():
@@ -186,6 +194,7 @@ def _combos(runs: list[dict]) -> list[dict]:
             "leanmultisig_sha":    b["leanmultisig_sha"],
             "leansig_branch":      b["leansig_branch"],
             "leanmultisig_branch": b["leanmultisig_branch"],
+            "first_run_ts":        b["first_run_ts"],
             "latest_run_ts":       b["latest_run_ts"],
             "run_count":           b["run_count"],
             "machine_count":       len(b["_machines"]),

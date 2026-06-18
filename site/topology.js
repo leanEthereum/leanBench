@@ -133,9 +133,9 @@ function setupBranchFilter(allCombos) {
   if (!select) return;
   const branches = [...new Set(allCombos.map((c) => c.leanmultisig_branch).filter(Boolean))].sort();
   select.innerHTML = "";
-  select.appendChild(new Option("leanvm (any)", ""));
+  select.appendChild(new Option("all branches", ""));
   for (const v of branches) {
-    select.appendChild(new Option(`leanvm ${v}`, v, false, v === topoActiveLeanvmBranch));
+    select.appendChild(new Option(v, v, false, v === topoActiveLeanvmBranch));
   }
   select.onchange = () => {
     topoActiveLeanvmBranch = select.value || null;
