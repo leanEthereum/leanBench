@@ -46,7 +46,6 @@ class Workload:
 # under a ~30-min wall budget on 8-core remote VMs.
 ALL_WORKLOADS: list[Workload] = [
     Workload(["xmss-keygen"],               "xmss.keygen",             in_default_set=False),
-    Workload(["xmss-sign"],                 "xmss.sign",               in_default_set=True),
     Workload(["xmss-verify"],               "xmss.verify",             in_default_set=True),
     Workload(["aggregate-flat", "125"],     "aggregate.flat_125_r2",   in_default_set=True),
     Workload(["aggregate-flat", "250"],     "aggregate.flat_250_r2",   in_default_set=True),

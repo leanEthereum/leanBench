@@ -44,28 +44,6 @@ pub mod xmss_wl {
             ))
         }
 
-        pub fn sign(args: &CommonArgs) -> Result<Record> {
-            let mut rng = StdRng::seed_from_u64(args.seed);
-            let (_pk, sk) = Scheme::key_gen(&mut rng, BENCHMARK_SLOT as usize, 1);
-            let msg: [u8; MESSAGE_LENGTH] = rng.random();
-
-            let samples = time_loop(args, || {
-                let _ = Scheme::sign(&sk, BENCHMARK_SLOT, &msg).expect("sign");
-            });
-            let sig = Scheme::sign(&sk, BENCHMARK_SLOT, &msg).expect("sign");
-            let sig_bytes = sig.to_bytes().len();
-            Ok(make_record(
-                "xmss.sign",
-                samples,
-                args.warmup,
-                serde_json::json!({
-                    "log_lifetime": LOG_LIFETIME,
-                    "message_bytes": MESSAGE_LENGTH,
-                    "signature_bytes": sig_bytes,
-                }),
-            ))
-        }
-
         pub fn verify(args: &CommonArgs) -> Result<Record> {
             let mut rng = StdRng::seed_from_u64(args.seed);
             let (pk, sk) = Scheme::key_gen(&mut rng, BENCHMARK_SLOT as usize, 1);
@@ -92,12 +70,8 @@ pub mod xmss_wl {
     mod imp {
         use super::super::*;
         use ::xmss::signers_cache::{message_for_benchmark, BENCHMARK_SLOT};
-        use ::xmss::{xmss_key_gen, xmss_sign, xmss_verify, LOG_LIFETIME, MESSAGE_LEN_FE};
+        use ::xmss::{xmss_key_gen, xmss_sign, xmss_verify, LOG_LIFETIME};
         use rand::{rngs::StdRng, SeedableRng};
-
-        // KoalaBear field elements serialize to 4 bytes on the wire,
-        // mirroring how the on-chain payload counts message length.
-        const F_BYTE_SIZE: usize = 4;
 
         fn seed_from(args: &CommonArgs, i: u64) -> [u8; 32] {
             let mut seed = [0u8; 32];
@@ -123,29 +97,6 @@ pub mod xmss_wl {
                 samples,
                 args.warmup,
                 serde_json::json!({ "log_lifetime": LOG_LIFETIME, "num_active_epochs": 1 }),
-            ))
-        }
-
-        pub fn sign(args: &CommonArgs) -> Result<Record> {
-            let mut rng = StdRng::seed_from_u64(args.seed);
-            let (sk, _pk) = xmss_key_gen(seed_from(args, 0), BENCHMARK_SLOT, BENCHMARK_SLOT, false)
-                .expect("keygen");
-            let msg = message_for_benchmark();
-
-            let samples = time_loop(args, || {
-                let _ = xmss_sign(&mut rng, &sk, &msg, BENCHMARK_SLOT).expect("sign");
-            });
-            let sig = xmss_sign(&mut rng, &sk, &msg, BENCHMARK_SLOT).expect("sign");
-            let sig_bytes = postcard::to_allocvec(&sig).expect("sig serialize").len();
-            Ok(make_record(
-                "xmss.sign",
-                samples,
-                args.warmup,
-                serde_json::json!({
-                    "log_lifetime": LOG_LIFETIME,
-                    "message_bytes": MESSAGE_LEN_FE * F_BYTE_SIZE,
-                    "signature_bytes": sig_bytes,
-                }),
             ))
         }
 

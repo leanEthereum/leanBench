@@ -41,8 +41,6 @@ const LEANMULTISIG_BRANCH: &str = match option_env!("LEANMULTISIG_BRANCH") {
 enum Cli {
     #[command(about = "XMSS (leanSpec PROD_CONFIG) key generation")]
     XmssKeygen(CommonArgs),
-    #[command(about = "XMSS sign")]
-    XmssSign(CommonArgs),
     #[command(about = "XMSS verify")]
     XmssVerify(CommonArgs),
 
@@ -129,7 +127,6 @@ fn main() -> Result<()> {
     let cli = Cli::parse();
     let rec = match cli {
         Cli::XmssKeygen(a)    => workloads::xmss_wl::keygen(&a),
-        Cli::XmssSign(a)      => workloads::xmss_wl::sign(&a),
         Cli::XmssVerify(a)    => workloads::xmss_wl::verify(&a),
         Cli::AggregateFlat { n, common } => workloads::aggregate::flat_r2(&common, n),
         Cli::AggregateTree { fan, n, common } => workloads::aggregate::tree_r2(&common, fan, n),
