@@ -13,5 +13,10 @@
     "from_leansig_sha": "n/a",
     "from_leanmultisig_sha": "a82c65ee",
     "label": "leanVM: Poseidon AIR uses mds_fft_16 (was mds_circ_16); instructions_multilinear_packed sumcheck switches to run_product_sumcheck."
+  },
+  {
+    "from_leansig_sha": "n/a",
+    "from_leanmultisig_sha": "c868330c",
+    "label": "leanVM: SIMD packing for Powers (Plonky3 #1639 mirror); logup-GKR fix for packing_width=1 (no-SIMD path); grinding-cycle reduction in recursion."
   }
 ]
