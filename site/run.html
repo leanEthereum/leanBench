@@ -28,10 +28,10 @@
       <div class="filter-row">
         <label class="trend-machine-label">
           leanVM branch
-          <select id="branch-filter-leanvm" class="filter-machine" title="Filter combos by leanVM branch"></select>
+          <select id="branch-filter-leanvm" class="filter-machine" title="Filter commits by leanVM branch"></select>
         </label>
         <label class="trend-machine-label">
-          combo
+          commit
           <details class="combo-filter" id="combo-filter">
             <summary>
               <span class="combo-label">loading…</span>
@@ -58,7 +58,7 @@
 
     <section id="proof-sizes">
       <h2>Proof sizes</h2>
-      <p class="section-note">Root proof size in KiB per aggregation workload — what gets gossiped to validators each slot. Deterministic per topology (same value across all machines for a given combo); read from any one run that recorded it.</p>
+      <p class="section-note">Root proof size in KiB per aggregation workload — what gets gossiped to validators each slot. Deterministic per topology (same value across all machines for a given commit); read from any one run that recorded it.</p>
       <div id="proof-size-grid"></div>
     </section>
 

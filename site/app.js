@@ -192,8 +192,8 @@ function showComboMissingWarning(requested) {
   const filter = document.querySelector("#filter");
   if (!filter || filter.querySelector(".combo-warning")) return;
   const warn = el("div", { class: "combo-warning" },
-    `Requested combo (leanVM ${requested.leanmultisig} · leanSig ${requested.leansig}) `
-    + `is not in the index — showing the most-recent combo instead. Pick another from the dropdown to update the URL.`,
+    `Requested commit (leanVM ${requested.leanmultisig} · leanSig ${requested.leansig}) `
+    + `is not in the index — showing the most-recent commit instead. Pick another from the dropdown to update the URL.`,
   );
   filter.insertBefore(warn, filter.firstChild);
 }
@@ -278,7 +278,7 @@ function renderComboFilter(combos) {
   }
 
   if (!combos.length) {
-    label.textContent = activeLeanvmBranch ? "no combos on this branch" : "no runs yet";
+    label.textContent = activeLeanvmBranch ? "no commits on this branch" : "no runs yet";
     details.open = false;
     details.style.pointerEvents = "none";
     menu.innerHTML = "";
@@ -318,7 +318,7 @@ function renderComboFilter(combos) {
 }
 
 function comboShortLabel(c, withTime = true) {
-  if (!c) return "no combo";
+  if (!c) return "no commit";
   const ls = `leanSig ${comboRef(c.leansig_branch, c.leansig_sha)}`;
   const lm = `leanVM ${comboRef(c.leanmultisig_branch, c.leanmultisig_sha)}`;
   return withTime
@@ -327,7 +327,7 @@ function comboShortLabel(c, withTime = true) {
 }
 
 function comboFullLabel(c) {
-  if (!c) return "no combo";
+  if (!c) return "no commit";
   const ls = `leanSig ${comboRef(c.leansig_branch, c.leansig_sha, /*fullSha=*/true)}`;
   const lm = `leanVM ${comboRef(c.leanmultisig_branch, c.leanmultisig_sha, /*fullSha=*/true)}`;
   return `${lm} · ${ls}`;
@@ -355,7 +355,7 @@ function shortSha(s) { return s && s.length >= 8 ? s.slice(0, 8) : (s || "—");
 // for text-only contexts like tooltips and Chart.js axis labels.
 function comboLabelDom(c, withTime = true) {
   const frag = document.createDocumentFragment();
-  if (!c) { frag.appendChild(document.createTextNode("no combo")); return frag; }
+  if (!c) { frag.appendChild(document.createTextNode("no commit")); return frag; }
   frag.appendChild(document.createTextNode("leanVM "));
   frag.appendChild(repoRefLink("leanVM", c.leanmultisig_branch, c.leanmultisig_sha));
   frag.appendChild(document.createTextNode(" · leanSig "));
@@ -415,7 +415,7 @@ function rerenderRunForCombo() {
   const list = document.querySelector("#machine-list");
   list.innerHTML = "";
   if (!machines.length) {
-    list.appendChild(el("p", { text: "No runs match this version combo." }));
+    list.appendChild(el("p", { text: "No runs match this commit." }));
   } else {
     for (const m of machines) list.appendChild(renderMachineCard(m));
   }
@@ -715,7 +715,7 @@ function renderProofSizes(container, workloadNames, machines) {
 
   if (rows.every((r) => r.root == null && r.leaf == null)) {
     container.appendChild(el("p", { class: "section-note",
-      text: "No proof-size data in this combo yet — re-run bench with the proof_kib-capturing runner to populate." }));
+      text: "No proof-size data for this commit yet — re-run bench with the proof_kib-capturing runner to populate." }));
     return;
   }
 
@@ -756,7 +756,7 @@ function renderScaling(container, workloadNames, machines) {
 
   if (c4.length < 2) {
     container.appendChild(el("p", { class: "section-note",
-      text: "Need at least 2 c4-standard-* machines for a scaling line; only " + c4.length + " in this combo." }));
+      text: "Need at least 2 c4-standard-* machines for a scaling line; only " + c4.length + " for this commit." }));
     return;
   }
 

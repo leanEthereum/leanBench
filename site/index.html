@@ -28,7 +28,7 @@
       <div class="filter-row">
         <label class="trend-machine-label">
           leanVM branch
-          <select id="branch-filter-leanvm" class="filter-machine" title="Filter combos by leanVM branch"></select>
+          <select id="branch-filter-leanvm" class="filter-machine" title="Filter commits by leanVM branch"></select>
         </label>
         <label class="trend-machine-label">
           target machine
@@ -38,8 +38,8 @@
     </section>
 
     <section id="branch-trend-section">
-      <h2>Workload means across combos</h2>
-      <p class="section-note">One chart per headline workload — y-axis is wall-clock mean on the chosen machine, points are individual combos plotted at first-bench timestamp (proxy for when the SHA landed on the branch). Use the leanVM branch filter to scope to a single branch's progress.</p>
+      <h2>Workload means across commits</h2>
+      <p class="section-note">One chart per headline workload — y-axis is wall-clock mean on the chosen machine, points are individual commits plotted at first-bench timestamp (proxy for when the SHA landed on the branch). Use the leanVM branch filter to scope to a single branch's progress.</p>
       <div id="branch-trend-grid"></div>
     </section>
   </main>

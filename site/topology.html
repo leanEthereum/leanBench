@@ -26,7 +26,7 @@
   <main class="container">
     <section id="filter">
       <div class="filter-row">
-        <select id="branch-filter-leanvm" class="filter-machine" title="Filter combos by leanVM branch"></select>
+        <select id="branch-filter-leanvm" class="filter-machine" title="Filter commits by leanVM branch"></select>
         <details class="combo-filter" id="combo-filter">
           <summary>
             <span class="combo-label">loading…</span>
@@ -97,7 +97,7 @@
 
     <section id="topology-cost-model">
       <h2>Cost model</h2>
-      <p class="section-note">Per-machine linear fits over the active combo's measurements. R² near 1.0 means the fit captures the trend; lower R² (or extrapolation past benched values) is where uncertainty creeps in.</p>
+      <p class="section-note">Per-machine linear fits over the active commit's measurements. R² near 1.0 means the fit captures the trend; lower R² (or extrapolation past benched values) is where uncertainty creeps in.</p>
       <div id="topo-cost-grid"></div>
     </section>
   </main>

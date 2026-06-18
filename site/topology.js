@@ -62,7 +62,7 @@ async function renderTopologyPage() {
 
   if (!topoActiveCombo) {
     document.querySelector("#topology-results").innerHTML =
-      "<p>No combos in the index.</p>";
+      "<p>No commits in the index.</p>";
     return;
   }
 
