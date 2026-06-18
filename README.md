@@ -12,14 +12,11 @@ to Pages).
 
 ## Workload groups
 
-1. **xmss** — leanSpec `PROD_CONFIG` GeneralizedXMSS (DIMENSION=46,
-   BASE=8, TARGET_SUM=200, LOG_LIFETIME=32), the scheme leanVM's
-   mainnet ships. sign / verify by default; opt-in keygen via
-   `--include-keygen`.
-2. **leanVM aggregation** at `LOG_INV_RATE_PROD=2` — flat
+1. **leanVM aggregation** at `LOG_INV_RATE_PROD=2` — flat
    aggregation over 125 / 250 / 500 / 1000 sigs, plus tree aggregation
    with fan-in 2 / 4 / 8 over 125 / 250 / 500-sig leaves. 13 aggregate
-   variants total, all run by default.
+   variants total, all run by default. split / merge_many variants
+   are devnet5-only and gated out of the default set.
 
 ## Running on a target machine
 
@@ -43,11 +40,11 @@ uv run bench
 | Option | Description |
 |---|---|
 | `--label <name>` | Override the auto-detected label (defaults to hostname, falling back to a CPU-derived slug if the hostname is generic) |
-| `--include-keygen` | Also run leansig.keygen and xmss.keygen workloads — excluded by default because lifetime-2^20 keygen is slow |
 | `--only <workload>` | Run only the named workload(s); pass the flag multiple times to include more than one workload |
 | `--samples <N>` | Timed samples per workload (default 30); more = tighter stats at the cost of wall time |
 | `--warmup <N>` | Warm-up runs before timing (default 3); more reduces cold-start noise |
 | `--notes <text>` | Free-form note attached to the record |
+| `--features <feat>` | Pick the API mode: `api-leansig` (devnet4 / devnet5 leanVM, default) or `api-xmss` (leanVM main). Forwarded to `cargo build`. |
 
 Output lands at `results/<YYYY-MM-DDTHH-MM-SSZ>__<fingerprint>.json`. The
 fingerprint is a 10-char hash of (CPU model, physical cores, memory GB, OS
@@ -68,6 +65,13 @@ uv run remote-bench \
     --credentials gcp-credentials.json \
     --machine-type n2-standard-8 \
     --image-family ubuntu-2404-lts-amd64
+
+# Bench against leanVM main (api-xmss path). Bump the Cargo.toml
+# pin on a working branch first, then point remote-bench at it:
+uv run remote-bench \
+    --credentials gcp-credentials.json \
+    --branch <your-working-branch> \
+    --bench-args='--features api-xmss'
 ```
 
 The default matrix is intentionally small and EIP-7870-anchored — defined
@@ -159,11 +163,12 @@ leanBench/
 │     └─ provisioners/           cloud-provider drivers (currently GCP only)
 ├─ results/                      committed JSON, one file per run
 ├─ site/                         static site (vanilla JS + Chart.js, vendored)
-│  ├─ index.html                 list of machines; cross-machine comparison
-│  ├─ run.html                   per-run detail with per-workload charts
+│  ├─ index.html                 per-branch progress dashboard (the front page)
+│  ├─ run.html                   combo overview — cross-machine comparison, proof sizes, scaling on c4
+│  ├─ result.html                per-result-file detail with per-workload charts
 │  ├─ topology.html              aggregation-topology feasibility explorer
-│  ├─ trend.html                 trends across runs and SHAs
-│  ├─ app.js / topology.js / trend.js
+│  ├─ trend-markings.json        annotations layered on the front page's per-branch charts
+│  ├─ app.js / topology.js
 │  ├─ style.css
 │  └─ vendor/                    chart.umd.min.js (no CDN dependency)
 └─ .github/workflows/

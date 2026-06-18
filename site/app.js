@@ -404,7 +404,7 @@ function rerenderRunForCombo() {
   }
 }
 
-// One chart per workload, grouped by category. leansig / xmss stay at the top
+// One chart per workload, grouped by category. leansig stays at the top
 // level; aggregate.* is subdivided by second segment (flat / tree / split /
 // merge) so the leanVM section breaks down into focused subsections.
 // Unknown prefixes fall into an "other" bucket so new workloads render without
@@ -750,12 +750,12 @@ function renderScaling(container, workloadNames, machines) {
   }
   for (const v of Object.values(grouped)) v.sort();
 
-  const preferredOrder = ["leansig", "xmss", "aggregate"];
+  const preferredOrder = ["leansig", "aggregate"];
   const keys = [
     ...preferredOrder.filter((k) => grouped[k]),
     ...Object.keys(grouped).filter((k) => !preferredOrder.includes(k)).sort(),
   ];
-  const displayLabel = (g) => ({ leansig: "leanSig", xmss: "leanVM.xmss", aggregate: "leanVM" }[g] || g);
+  const displayLabel = (g) => ({ leansig: "leanSig", aggregate: "leanVM" }[g] || g);
 
   for (const group of keys) {
     const section = el("div", { class: "compare-group" },
@@ -1642,7 +1642,11 @@ async function renderResult() {
   }
 
   const list = document.querySelector("#workload-list");
-  for (const [i, w] of (rec.workloads || []).entries()) {
+  // xmss.* workloads are gone from the codebase but historical result
+  // files still carry them — hide so the UI stays in sync with the
+  // current workload set.
+  const workloads = (rec.workloads || []).filter((w) => !w.name.startsWith("xmss."));
+  for (const [i, w] of workloads.entries()) {
     list.appendChild(renderWorkload(w, i));
   }
 }
