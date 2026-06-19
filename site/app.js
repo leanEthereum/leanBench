@@ -317,6 +317,14 @@ function renderComboFilter(combos) {
   }
 }
 
+// Timestamp the trend chart plots a combo at. Prefer the upstream
+// leanVM commit's author time (set on result files for historical-SHA
+// sweeps where bench time ≠ code time); fall back to first_run_ts for
+// every combo where the bench-then-commit cadence makes them ~equal.
+function comboTimestamp(c) {
+  return c && (c.leanvm_commit_ts || c.first_run_ts);
+}
+
 function comboShortLabel(c, withTime = true) {
   if (!c) return "no commit";
   const ls = `leanSig ${comboRef(c.leansig_branch, c.leansig_sha)}`;
@@ -1218,7 +1226,9 @@ let indexAnnotations = []; // loaded from trend-annotations.json on first render
 // --- index page: workload progression across combos ------------------
 //
 // Branch dropdown + machine selector. Each chart traces a single line:
-// the filtered branch's combos plotted at `first_run_ts` (proxy for when
+// the filtered branch's combos plotted at `leanvm_commit_ts` if present
+// (the upstream commit's author time) else `first_run_ts` as fallback —
+// proxies for when
 // the SHA landed on the branch — stable across re-benches, unlike
 // `latest_run_ts`). "any branch" merges every combo into one line.
 // Charts grouped by category mirror the run page's compare grouping.
@@ -1374,7 +1384,7 @@ function recomputeBranchTrends(machines, combos) {
     (byBranch[b] = byBranch[b] || []).push(c);
   }
   for (const arr of Object.values(byBranch)) {
-    arr.sort((a, b) => (a.first_run_ts || "").localeCompare(b.first_run_ts || ""));
+    arr.sort((a, b) => (comboTimestamp(a) || "").localeCompare(comboTimestamp(b) || ""));
   }
   const branchNames = Object.keys(byBranch).sort();
 
@@ -1388,7 +1398,7 @@ function recomputeBranchTrends(machines, combos) {
         && c.leansig_sha.startsWith(m.from_leansig_sha || "")
         && c.leanmultisig_sha.startsWith(m.from_leanmultisig_sha || ""));
       if (!combo) return null;
-      return { x: new Date(combo.first_run_ts).getTime(), combo, label: m.label };
+      return { x: new Date(comboTimestamp(combo)).getTime(), combo, label: m.label };
     })
     .filter(Boolean)
     .sort((a, b) => a.x - b.x)
@@ -1433,7 +1443,7 @@ function renderBranchTrendCharts(machine, byBranch, branchNames, best, resolvedA
         .map((c) => {
           const ms = best(c, h.name);
           if (ms == null) return null;
-          return { x: new Date(c.first_run_ts).getTime(), y: ms, combo: c };
+          return { x: new Date(comboTimestamp(c)).getTime(), y: ms, combo: c };
         })
         .filter((p) => p != null);
       if (!data.length) continue;

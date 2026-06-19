@@ -143,6 +143,11 @@ def _summarize(rec: dict, filename: str) -> dict:
     return {
         "run_id": rec.get("run_id"),
         "timestamp": rec.get("timestamp"),
+        # leanvm_commit_ts is the upstream commit's author timestamp.
+        # Optional: only present when the result file was produced with
+        # the commit-ts plumbing or backfilled after the fact (e.g. for
+        # historical-commit sweeps where bench time ≠ code time).
+        "leanvm_commit_ts": rec.get("leanvm_commit_ts"),
         "file": filename,
         "machine": rec.get("machine", {}),
         "git_shas": {
@@ -166,6 +171,12 @@ def _combos(runs: list[dict]) -> list[dict]:
     for "when this leanVM SHA landed on the branch": the bench-then-commit
     workflow puts the first benchmark within minutes of the upstream
     commit, and unlike `latest_run_ts` it stays stable across re-benches.
+
+    `leanvm_commit_ts` is the upstream commit's actual author timestamp
+    when known — populated for sweeps where we deliberately benched an
+    older SHA (so bench time ≠ code time) and the trend chart needs the
+    code-time on the x-axis instead of the bench-time. Missing on combos
+    where we don't have it; the frontend falls back to first_run_ts.
     """
     buckets: dict[tuple[str, str], dict] = {}
     for r in runs:
@@ -177,6 +188,7 @@ def _combos(runs: list[dict]) -> list[dict]:
             "leanmultisig_branch": r["branches"].get("leanmultisig_branch", "unknown"),
             "first_run_ts":        r["timestamp"],
             "latest_run_ts":       r["timestamp"],
+            "leanvm_commit_ts":    None,
             "run_count":           0,
             "_machines":           set(),
         })
@@ -186,6 +198,9 @@ def _combos(runs: list[dict]) -> list[dict]:
             b["latest_run_ts"] = r["timestamp"]
         if r["timestamp"] < b["first_run_ts"]:
             b["first_run_ts"] = r["timestamp"]
+        commit_ts = r.get("leanvm_commit_ts")
+        if commit_ts and not b["leanvm_commit_ts"]:
+            b["leanvm_commit_ts"] = commit_ts
 
     out = []
     for b in buckets.values():
@@ -196,6 +211,7 @@ def _combos(runs: list[dict]) -> list[dict]:
             "leanmultisig_branch": b["leanmultisig_branch"],
             "first_run_ts":        b["first_run_ts"],
             "latest_run_ts":       b["latest_run_ts"],
+            "leanvm_commit_ts":    b["leanvm_commit_ts"],
             "run_count":           b["run_count"],
             "machine_count":       len(b["_machines"]),
         })
