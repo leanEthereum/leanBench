@@ -1394,8 +1394,7 @@ function recomputeBranchTrends(machines, combos) {
   const resolvedAnnotations = (indexAnnotations || [])
     .map((m) => {
       const combo = visibleCombos.find((c) =>
-        c.leansig_sha && c.leanmultisig_sha
-        && c.leansig_sha.startsWith(m.from_leansig_sha || "")
+        c.leanmultisig_sha
         && c.leanmultisig_sha.startsWith(m.from_leanmultisig_sha || ""));
       if (!combo) return null;
       return { x: new Date(comboTimestamp(combo)).getTime(), combo, label: m.label };
@@ -1587,8 +1586,14 @@ function renderBranchTrendCharts(machine, byBranch, branchNames, best, resolvedA
     for (const m of resolvedAnnotations) {
       const row = el("div", { id: `annotation-${m.number}`, class: "annotation-row" });
       row.appendChild(el("span", { class: "annotation-badge", text: String(m.number) }));
-      row.appendChild(el("span", { class: "annotation-combo" },
-        comboLabelDom(m.combo, /*withTime=*/false)));
+      // Annotations key off the leanVM commit; the leanSig pair is
+      // historical / orthogonal so the legend row only shows the leanVM
+      // ref to keep things tight and aligned with how the annotation
+      // pins itself.
+      const leanvmFrag = document.createDocumentFragment();
+      leanvmFrag.appendChild(document.createTextNode("leanVM "));
+      leanvmFrag.appendChild(repoRefLink("leanVM", m.combo.leanmultisig_branch, m.combo.leanmultisig_sha));
+      row.appendChild(el("span", { class: "annotation-combo" }, leanvmFrag));
       row.appendChild(el("span", { class: "annotation-label", text: m.label }));
       legend.appendChild(row);
     }
