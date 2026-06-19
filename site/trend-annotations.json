@@ -34,5 +34,9 @@
   {
     "from_leanmultisig_sha": "9d53d2db",
     "label": "leanVM: recursion table ordering (sorted by decreasing height when stacked — the EXECUTION table no longer needs to be the biggest); dynamic_unroll removed (#230)."
+  },
+  {
+    "from_leanmultisig_sha": "b00d6ba3",
+    "label": "leanVM: window-cumulative perf opts — PR #235 (sumcheck_utils + open.rs simplification, parallel-threshold tuning); slice hashing now folds length into the IV; verifier lazily restores pruned Merkle batches; rec_aggregation rename type-1/2 → single/multi-message."
   }
 ]
