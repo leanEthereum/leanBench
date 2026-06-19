@@ -1474,6 +1474,7 @@ function renderBranchTrendCharts(machine, byBranch, branchNames, best, annotatio
               labels: { boxWidth: 12, padding: 8, font: { size: 11 } },
             },
             tooltip: {
+              displayColors: false,
               callbacks: {
                 title: (items) => {
                   const c = items[0].raw.combo;
@@ -1483,13 +1484,14 @@ function renderBranchTrendCharts(machine, byBranch, branchNames, best, annotatio
                   const ms = ctx.parsed.y;
                   const day = new Date(ctx.parsed.x).toISOString().slice(0, 10);
                   const str = ms < 1000 ? `${ms.toFixed(0)} ms` : `${(ms / 1000).toFixed(2)} s`;
-                  const lines = [`${day}: ${str}`];
+                  const lines = [];
                   const note = annotationByLm.get(ctx.raw.combo.leanmultisig_sha);
                   if (note) {
                     // Split long annotation labels into ~70-char chunks so
                     // Chart.js tooltip text doesn't overflow off the canvas.
-                    lines.push("", ...wrapAnnotationLines(note));
+                    lines.push(...wrapAnnotationLines(note), "");
                   }
+                  lines.push(`${day}: ${str}`);
                   return lines;
                 },
               },
