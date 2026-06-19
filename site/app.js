@@ -1487,8 +1487,6 @@ function renderBranchTrendCharts(machine, byBranch, branchNames, best, annotatio
                   const lines = [];
                   const note = annotationByLm.get(ctx.raw.combo.leanmultisig_sha);
                   if (note) {
-                    // Split long annotation labels into ~70-char chunks so
-                    // Chart.js tooltip text doesn't overflow off the canvas.
                     lines.push(...wrapAnnotationLines(note), "");
                   }
                   lines.push(`${day}: ${str}`);
@@ -1524,10 +1522,11 @@ function renderBranchTrendCharts(machine, byBranch, branchNames, best, annotatio
   }
 }
 
-// Soft-wrap a long annotation label into ~70-char lines so Chart.js
-// tooltip body text doesn't overflow off the canvas. Word-aware so we
-// don't split mid-token.
-function wrapAnnotationLines(text, width = 70) {
+// Soft-wrap a long annotation label into shorter lines that fit inside
+// the tooltip's max width (chart cards are ~320 px → ~38 mono-glyphs
+// before Chart.js clips the tooltip against the canvas edge). Word-
+// aware so we don't split mid-token.
+function wrapAnnotationLines(text, width = 38) {
   const words = String(text).split(/\s+/);
   const out = [];
   let cur = "";
