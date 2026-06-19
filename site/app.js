@@ -1178,49 +1178,6 @@ function renderMachineCard(m) {
 }
 
 
-// Chart.js plugin: numbered badge + dashed vertical line at marked combo
-// positions. Badge sits in the top padding (above the plot grid). The
-// number keys into the Annotations legend below the chart grid.
-const indexAnnotationsPlugin = {
-  id: "index-annotations",
-  afterDatasetsDraw(chart, _args, opts) {
-    if (!opts || !opts.annotations || !opts.annotations.length) return;
-    const ctx = chart.ctx;
-    const x = chart.scales.x;
-    const y = chart.scales.y;
-    const BADGE_R = 5;
-    const BADGE_CY = y.top - BADGE_R - 6;
-    const grey = getComputedStyle(document.body)
-      .getPropertyValue("--ink-faint").trim() || "#888";
-    ctx.save();
-    for (const m of opts.annotations) {
-      const px = x.getPixelForValue(m.x);
-      if (!Number.isFinite(px)) continue;
-      ctx.strokeStyle = "rgba(128,128,128,0.3)";
-      ctx.lineWidth = 1;
-      ctx.setLineDash([4, 3]);
-      ctx.beginPath();
-      ctx.moveTo(px, BADGE_CY + BADGE_R);
-      ctx.lineTo(px, y.bottom);
-      ctx.stroke();
-      ctx.setLineDash([]);
-      ctx.globalAlpha = 0.5;
-      ctx.fillStyle = grey;
-      ctx.beginPath();
-      ctx.arc(px, BADGE_CY, BADGE_R, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = "#fff";
-      ctx.font = "600 7px ui-monospace, SFMono-Regular, monospace";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText(String(m.number), px, BADGE_CY);
-      ctx.globalAlpha = 1;
-    }
-    ctx.restore();
-  },
-};
-if (typeof Chart !== "undefined") Chart.register(indexAnnotationsPlugin);
-
 let indexAnnotations = []; // loaded from trend-annotations.json on first render
 
 // --- index page: workload progression across combos ------------------
@@ -1391,28 +1348,25 @@ function recomputeBranchTrends(machines, combos) {
   // Annotation resolution scope: visible combos only. An annotation whose combo
   // isn't in the current filter just doesn't render.
   const visibleCombos = filtered;
-  const resolvedAnnotations = (indexAnnotations || [])
-    .map((m) => {
-      const combo = visibleCombos.find((c) =>
-        c.leanmultisig_sha
-        && c.leanmultisig_sha.startsWith(m.from_leanmultisig_sha || ""));
-      if (!combo) return null;
-      return { x: new Date(comboTimestamp(combo)).getTime(), combo, label: m.label };
-    })
-    .filter(Boolean)
-    .sort((a, b) => a.x - b.x)
-    .map((m, i) => ({ ...m, number: i + 1 }));
+  // Resolve each annotation entry to a combo in the current scope. The
+  // tooltip looks up by leanmultisig_sha so we can fold the annotation
+  // text in when the user hovers a point that has one.
+  const annotationByLm = new Map();
+  for (const m of (indexAnnotations || [])) {
+    const combo = visibleCombos.find((c) =>
+      c.leanmultisig_sha
+      && c.leanmultisig_sha.startsWith(m.from_leanmultisig_sha || ""));
+    if (combo) annotationByLm.set(combo.leanmultisig_sha, m.label);
+  }
 
-  renderBranchTrendCharts(machine, byBranch, branchNames, best, resolvedAnnotations);
+  renderBranchTrendCharts(machine, byBranch, branchNames, best, annotationByLm);
 }
 
-function renderBranchTrendCharts(machine, byBranch, branchNames, best, resolvedAnnotations) {
+function renderBranchTrendCharts(machine, byBranch, branchNames, best, annotationByLm) {
   const container = document.querySelector("#branch-trend-grid");
   for (const c of indexBranchCharts) c.destroy();
   indexBranchCharts = [];
   container.innerHTML = "";
-  // Clear any prior annotations legend on machine / filter change.
-  document.querySelector("#index-annotations-legend")?.remove();
 
   // Lazily create one section per category as charts arrive; keeps the
   // section ordering deterministic via INDEX_GROUP_ORDER.
@@ -1513,9 +1467,6 @@ function renderBranchTrendCharts(machine, byBranch, branchNames, best, resolvedA
           responsive: true,
           maintainAspectRatio: false,
           parsing: false,
-          // Reserve space above the plot for the annotations badge row
-          // (only when at least one annotation lands on this chart).
-          layout: { padding: { top: resolvedAnnotations.length ? 18 : 0 } },
           plugins: {
             legend: {
               display: showLegend,
@@ -1532,11 +1483,17 @@ function renderBranchTrendCharts(machine, byBranch, branchNames, best, resolvedA
                   const ms = ctx.parsed.y;
                   const day = new Date(ctx.parsed.x).toISOString().slice(0, 10);
                   const str = ms < 1000 ? `${ms.toFixed(0)} ms` : `${(ms / 1000).toFixed(2)} s`;
-                  return `${day}: ${str}`;
+                  const lines = [`${day}: ${str}`];
+                  const note = annotationByLm.get(ctx.raw.combo.leanmultisig_sha);
+                  if (note) {
+                    // Split long annotation labels into ~70-char chunks so
+                    // Chart.js tooltip text doesn't overflow off the canvas.
+                    lines.push("", ...wrapAnnotationLines(note));
+                  }
+                  return lines;
                 },
               },
             },
-            "index-annotations": { annotations: resolvedAnnotations },
           },
           scales: {
             x: {
@@ -1558,70 +1515,28 @@ function renderBranchTrendCharts(machine, byBranch, branchNames, best, resolvedA
       });
       indexBranchCharts.push(chart);
 
-      // Click halo around each badge → scroll the matching legend row
-      // into view and flash it. Geometry mirrors indexAnnotationsPlugin.
-      if (resolvedAnnotations.length) {
-        const BADGE_R = 5;
-        const HIT_R = BADGE_R + 3;
-        const badgeHit = (e) => {
-          const rect = canvas.getBoundingClientRect();
-          const cx = e.clientX - rect.left;
-          const cy = e.clientY - rect.top;
-          const xs = chart.scales.x;
-          const ys = chart.scales.y;
-          const badgeCY = ys.top - BADGE_R - 6;
-          for (const m of resolvedAnnotations) {
-            const badgeCX = xs.getPixelForValue(m.x);
-            const dx = cx - badgeCX;
-            const dy = cy - badgeCY;
-            if (dx * dx + dy * dy <= HIT_R * HIT_R) return m;
-          }
-          return null;
-        };
-        canvas.addEventListener("click", (e) => {
-          const m = badgeHit(e);
-          if (!m) return;
-          const row = document.getElementById(`annotation-${m.number}`);
-          if (!row) return;
-          row.scrollIntoView({ behavior: "smooth", block: "center" });
-          row.classList.remove("annotation-row-flash");
-          // Force reflow so the animation restarts on a repeat click.
-          // eslint-disable-next-line no-unused-expressions
-          row.offsetWidth;
-          row.classList.add("annotation-row-flash");
-        });
-        canvas.addEventListener("mousemove", (e) => {
-          canvas.style.cursor = badgeHit(e) ? "pointer" : "";
-        });
-      }
     });
   }
   if (!any) {
     container.innerHTML = "<p>No headline-workload data on this machine in the current branch scope.</p>";
-    return;
   }
+}
 
-  // Legend rows live below the chart grid, ids = annotation-<number> so
-  // badge clicks scroll the matching row into view.
-  if (resolvedAnnotations.length) {
-    const legend = el("div", { id: "index-annotations-legend", class: "trend-annotations-legend" });
-    legend.appendChild(el("h3", { text: "Annotations" }));
-    for (const m of resolvedAnnotations) {
-      const row = el("div", { id: `annotation-${m.number}`, class: "annotation-row" });
-      row.appendChild(el("span", { class: "annotation-badge", text: String(m.number) }));
-      // Annotations key off the leanVM commit; the leanSig pair is
-      // historical / orthogonal so the legend row only shows the leanVM
-      // ref to keep things tight and aligned with how the annotation
-      // pins itself.
-      const leanvmFrag = document.createDocumentFragment();
-      leanvmFrag.appendChild(document.createTextNode("leanVM "));
-      leanvmFrag.appendChild(repoRefLink("leanVM", m.combo.leanmultisig_branch, m.combo.leanmultisig_sha));
-      row.appendChild(el("span", { class: "annotation-combo" }, leanvmFrag));
-      row.appendChild(el("span", { class: "annotation-label", text: m.label }));
-      legend.appendChild(row);
-    }
-    container.parentNode.appendChild(legend);
+// Soft-wrap a long annotation label into ~70-char lines so Chart.js
+// tooltip body text doesn't overflow off the canvas. Word-aware so we
+// don't split mid-token.
+function wrapAnnotationLines(text, width = 70) {
+  const words = String(text).split(/\s+/);
+  const out = [];
+  let cur = "";
+  for (const w of words) {
+    if (!cur.length) { cur = w; continue; }
+    if (cur.length + 1 + w.length <= width) { cur += " " + w; continue; }
+    out.push(cur);
+    cur = w;
   }
+  if (cur.length) out.push(cur);
+  return out;
 }
 
 

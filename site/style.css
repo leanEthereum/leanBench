@@ -670,65 +670,6 @@ select.filter-machine:hover { border-color: var(--accent); }
   margin: 32px 0;
 }
 
-/* Annotations legend — one row per numbered badge that appears above charts. */
-.trend-annotations-legend {
-  margin-top: 24px;
-  padding: 16px;
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  font-size: 13px;
-}
-.trend-annotations-legend h3 {
-  margin: 0 0 12px;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--ink-faint);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-.trend-annotations-legend .annotation-row {
-  display: grid;
-  grid-template-columns: auto auto 1fr;
-  align-items: center;
-  gap: 12px;
-  padding: 6px 0;
-}
-.trend-annotations-legend .annotation-row + .annotation-row {
-  border-top: 1px solid var(--border);
-}
-.trend-annotations-legend .annotation-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--ink-faint);
-  color: #fff;
-  font-family: var(--mono);
-  font-size: 7px;
-  font-weight: 600;
-  line-height: 1;
-  opacity: 0.5;
-}
-.trend-annotations-legend .annotation-combo {
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--ink-soft);
-  white-space: nowrap;
-}
-.trend-annotations-legend .annotation-label {
-  color: var(--ink);
-}
-.trend-annotations-legend .annotation-row-flash {
-  animation: annotation-flash 1.5s ease-out;
-}
-@keyframes annotation-flash {
-  0%   { background: var(--accent-soft); }
-  100% { background: transparent; }
-}
-
 /* Group adjacent nav links in the header row */
 .nav-links {
   display: inline-flex;
