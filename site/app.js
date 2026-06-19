@@ -1434,6 +1434,27 @@ function renderBranchTrendCharts(machine, byBranch, branchNames, best, resolvedA
   // charts on the page.
   const colorForBranch = (br) => colorFor(branchNames.indexOf(br));
 
+  // Shared x-axis range across every chart on the page. Computed from the
+  // visible-commit set so charts at the same vertical position read against
+  // the same dates, regardless of which workloads have which data points.
+  const allTimes = [];
+  for (const br of branchNames) {
+    for (const c of byBranch[br]) {
+      const t = comboTimestamp(c);
+      if (t) allTimes.push(new Date(t).getTime());
+    }
+  }
+  let xMin = null, xMax = null;
+  if (allTimes.length) {
+    xMin = Math.min(...allTimes);
+    xMax = Math.max(...allTimes);
+    // Pad ~3% on each side so the leftmost/rightmost points don't sit on
+    // the chart edge and annotation badges have room to draw.
+    const span = xMax - xMin || 86_400_000; // 1 day if everything's identical
+    xMin -= span * 0.03;
+    xMax += span * 0.03;
+  }
+
   let any = false;
   for (const h of INDEX_HEADLINES) {
     const datasets = [];
@@ -1520,7 +1541,9 @@ function renderBranchTrendCharts(machine, byBranch, branchNames, best, resolvedA
           scales: {
             x: {
               type: "linear",
-              title: { ...titleStyle, text: "first benched (UTC date)" },
+              min: xMin ?? undefined,
+              max: xMax ?? undefined,
+              title: { ...titleStyle, text: "commit date (UTC)" },
               ticks: {
                 callback: (v) => new Date(v).toISOString().slice(0, 10),
                 maxTicksLimit: 6,
