@@ -519,7 +519,20 @@ function renderCompare(container, workloadNames, machines) {
     // step. That bundled number isn't a metric worth charting on its own, so we
     // skip the per-workload cards for this group and show only the recursion-only
     // time (root node) extracted from the per-iteration report.
-    if (group !== "aggregate.tree") {
+    if (group === "aggregate.flat") {
+      // Collapse the four per-leaf bar cards into one leaf-size sweep (x = leaf
+      // size, one line per machine), mirroring the trend page's flat chart.
+      // Falls back to the per-workload bars if the sweep can't be built (a
+      // single leaf size, or no mean data on any machine).
+      const flatCard = buildFlatLeafCard(grouped[group], machines);
+      if (flatCard) {
+        section.appendChild(flatCard);
+      } else {
+        const grid = el("div", { class: "compare-group-grid" });
+        for (const wl of grouped[group]) grid.appendChild(buildCompareCard(wl, machines));
+        section.appendChild(grid);
+      }
+    } else if (group !== "aggregate.tree") {
       const grid = el("div", { class: "compare-group-grid" });
       for (const wl of grouped[group]) {
         grid.appendChild(buildCompareCard(wl, machines));
@@ -532,19 +545,12 @@ function renderCompare(container, workloadNames, machines) {
       ));
       const treeWorkloads = grouped[group].filter((n) => /\.tree_\d+x\d+_r2$/.test(n));
       if (treeWorkloads.length) {
-        section.appendChild(el("h4", { class: "compare-subgroup-head",
-          text: "recursion-only" }));
-        const recurGrid = el("div", { class: "compare-group-grid" });
-        for (const wl of treeWorkloads) {
-          const card = buildRecursionCard(wl, machines);
-          if (card) recurGrid.appendChild(card);
-        }
-        section.appendChild(recurGrid);
-
-        // Two complementary cross-section views of the (fan-in × leaf-size)
-        // grid: one fixes leaf size and varies fan-in, the other fixes
-        // fan-in and varies leaf size. Each card shows machines as separate
-        // lines so cross-CPU shape differences are visible at a glance.
+        // Recursion-only shown as merged line sweeps (machines as lines), not
+        // per-workload bar cards — mirrors the flat leaf-size sweep. Two
+        // complementary cross-section views of the (fan-in × leaf-size) grid:
+        // one fixes leaf size and varies fan-in, the other fixes fan-in and
+        // varies leaf size. Each card shows machines as separate lines so
+        // cross-CPU shape differences are visible at a glance.
         appendRecursionCrossSection(section, treeWorkloads, machines, "fanIn");
         appendRecursionCrossSection(section, treeWorkloads, machines, "leafSize");
       }
@@ -553,60 +559,94 @@ function renderCompare(container, workloadNames, machines) {
   }
 }
 
-// "aggregate.tree_NxM_r2" → derived recursion-only chart: mean tree timing
-// minus N × the matching flat_M_r2 mean. Skipped per-machine if either input
-// is missing; whole card is skipped if no machine has both.
-function buildRecursionCard(treeName, machines) {
-  const m = treeName.match(/^aggregate\.tree_(\d+)x(\d+)_r2$/);
-  if (!m) return null;
-  const fanIn = parseInt(m[1], 10);
-  const leafSize = parseInt(m[2], 10);
+// Run-page flat group as one chart: x = leaf size (raw XMSS sigs, log axis),
+// one line per machine, y = best mean ms. The across-machines analog of the
+// trend page's "leaf-size sweep". Returns a grid-wrapped card, or null when
+// there's too little data (caller falls back to per-workload bars).
+function buildFlatLeafCard(flatWorkloads, machines) {
+  const parsed = flatWorkloads
+    .map((name) => {
+      const m = name.match(/^aggregate\.flat_(\d+)_r2$/);
+      return m ? { name, leaf: parseInt(m[1], 10) } : null;
+    })
+    .filter(Boolean)
+    .sort((a, b) => a.leaf - b.leaf);
+  if (parsed.length < 2) return null;
 
-  const entries = [];
-  for (const [i, mach] of machines.entries()) {
-    const ns = recursionRootNs(mach, treeName);
-    if (ns == null) continue;
-    entries.push({ label: mach.label, value: ns / 1e6, color: colorFor(i) });
-  }
-  if (entries.length === 0) return null;
-  entries.sort((a, b) => a.value - b.value);
+  const bestMeanMs = (mach, workloadName) => {
+    let best = null;
+    for (const r of mach.runs || []) {
+      const w = (r.workloads || []).find((x) => x.name === workloadName);
+      if (w && w.mean_ns != null && (best == null || w.mean_ns < best)) best = w.mean_ns;
+    }
+    return best == null ? null : best / 1e6;
+  };
 
+  const datasets = [];
+  machines.forEach((mach, i) => {
+    const data = parsed.map((p) => {
+      const ms = bestMeanMs(mach, p.name);
+      return ms != null ? { x: p.leaf, y: ms } : null;
+    }).filter(Boolean);
+    if (data.length < 2) return;
+    datasets.push({
+      label: mach.label,
+      data,
+      borderColor: colorFor(i),
+      backgroundColor: colorFor(i) + "22",
+      tension: 0.15,
+      fill: false,
+      pointRadius: 4,
+      pointHoverRadius: 6,
+    });
+  });
+  if (!datasets.length) return null;
+
+  const xValues = parsed.map((p) => p.leaf);
+  const grid = el("div", { class: "compare-group-grid" });
   const card = el("div", { class: "compare-card" });
-  card.appendChild(el("h3", { text: `tree_${fanIn}x${leafSize} recursion` }));
+  card.appendChild(el("h3", { text: "leaf-size sweep" }));
   const wrap = el("div", { class: "compare-card-chart" });
   const canvas = el("canvas");
   wrap.appendChild(canvas);
   card.appendChild(wrap);
-
-  const labels = entries.map((e) => e.label);
-  const values = entries.map((e) => e.value);
-  const colors = entries.map((e) => e.color);
-  const xMax = niceCeil(Math.max(...values));
+  grid.appendChild(card);
 
   queueMicrotask(() => {
     new Chart(canvas.getContext("2d"), {
-      type: "bar",
-      data: { labels, datasets: [{ data: values, backgroundColor: colors, borderRadius: 4 }] },
+      type: "line",
+      data: { datasets },
       options: {
-        indexAxis: "y",
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: { display: false },
+          legend: { display: true, position: "bottom", labels: { boxWidth: 12, padding: 8, font: { size: 11 } } },
           tooltip: {
             callbacks: {
-              label: (ctx) => `${ctx.parsed.x.toFixed(3)} ms (recursion only)`,
+              title: (items) => `leaf size: ${items[0].parsed.x} raw XMSS sigs`,
+              label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(0)} ms`,
             },
           },
         },
         scales: {
-          x: { title: { display: true, text: "ms" }, beginAtZero: true, max: xMax },
-          y: { ticks: { font: { family: getComputedStyle(document.body).getPropertyValue("--mono") } } },
+          x: {
+            type: "logarithmic",
+            title: { display: true, text: "leaf size (raw XMSS sigs)" },
+            min: xValues[0],
+            max: xValues[xValues.length - 1],
+            afterBuildTicks: (axis) => { axis.ticks = xValues.map((v) => ({ value: v })); },
+            ticks: { callback: (v) => v },
+          },
+          y: {
+            type: yAxisType(),
+            title: { display: true, text: "ms (mean)" },
+            beginAtZero: !useLogScale,
+          },
         },
       },
     });
   });
-  return card;
+  return grid;
 }
 
 // Cross-section views of the (fan-in × leaf-size) grid. `varies` picks
@@ -798,6 +838,89 @@ function renderProofSizes(container, workloadNames, machines) {
   container.appendChild(table);
 }
 
+// Best (smallest) mean timing in ns for a workload on a machine, or null.
+function bestMeanNs(machine, workloadName) {
+  let best = null;
+  for (const r of machine.runs || []) {
+    const w = (r.workloads || []).find((x) => x.name === workloadName);
+    if (w && w.mean_ns != null && (best == null || w.mean_ns < best)) best = w.mean_ns;
+  }
+  return best;
+}
+
+// One merged scaling card: x = logical cores (c4 family, log-spaced), one line
+// per series entry. `valueMs(machine, name)` pulls the metric in ms (mean for
+// flat, root time for recursion). `yMax` (optional) shares a ceiling across
+// sibling cards. Respects the global log-scale toggle. Returns null if no
+// series has ≥2 core points.
+function buildMergedScalingCard({ title, yLabel, series, c4, valueMs, yMax }) {
+  const xs = c4.map((m) => m.logical_cores);
+  const datasets = [];
+  series.forEach((s, i) => {
+    const points = [];
+    for (const m of c4) {
+      const v = valueMs(m, s.name);
+      if (v != null) points.push({ x: m.logical_cores, y: v });
+    }
+    if (points.length < 2) return;
+    datasets.push({
+      label: s.label,
+      data: points,
+      borderColor: colorFor(i),
+      backgroundColor: colorFor(i) + "22",
+      pointRadius: 4,
+      pointHoverRadius: 6,
+      tension: 0.15,
+      fill: false,
+    });
+  });
+  if (!datasets.length) return null;
+
+  const card = el("div", { class: "compare-card" });
+  card.appendChild(el("h3", { text: title }));
+  const wrap = el("div", { class: "compare-card-chart" });
+  const canvas = el("canvas");
+  wrap.appendChild(canvas);
+  card.appendChild(wrap);
+
+  queueMicrotask(() => {
+    new Chart(canvas.getContext("2d"), {
+      type: "line",
+      data: { datasets },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: true, position: "bottom", labels: { boxWidth: 12, padding: 8, font: { size: 11 } } },
+          tooltip: {
+            callbacks: {
+              title: (items) => `${items[0].parsed.x} logical cores`,
+              label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(ctx.parsed.y < 10 ? 3 : 0)} ms`,
+            },
+          },
+        },
+        scales: {
+          x: {
+            type: "logarithmic",
+            title: { display: true, text: "logical cores (vCPU)" },
+            min: xs[0],
+            max: xs[xs.length - 1],
+            afterBuildTicks: (axis) => { axis.ticks = xs.map((v) => ({ value: v })); },
+            ticks: { callback: (v) => v },
+          },
+          y: {
+            type: yAxisType(),
+            title: { display: true, text: yLabel },
+            beginAtZero: !useLogScale,
+            ...(yMax != null && !useLogScale ? { max: yMax } : {}),
+          },
+        },
+      },
+    });
+  });
+  return card;
+}
+
 // Scaling section — for each workload, plot timing vs physical cores across
 // the c4-standard-* family. Same Granite Rapids core, only the count changes,
 // so the slope is a clean read on parallel scaling for that workload.
@@ -831,36 +954,70 @@ function renderScaling(container, workloadNames, machines) {
     const section = el("div", { class: "compare-group" },
       el("h3", { class: "compare-group-head", text: displayLabel(group) }),
     );
-    // Skip the bundled tree cards (N × leaf + recursion) here; the aggregate
-    // group's recursion-only subgroup below covers tree workloads instead.
-    const grid = el("div", { class: "compare-group-grid" });
-    const bundled = group === "aggregate"
-      ? grouped[group].filter((n) => !/\.tree_\d+x\d+_r2$/.test(n))
-      : grouped[group];
-    for (const wl of bundled) {
-      const card = buildScalingCard(wl, c4);
-      if (card) grid.appendChild(card);
-    }
-    section.appendChild(grid);
+
     if (group === "aggregate") {
-      const treeWorkloads = grouped[group].filter((n) => /\.tree_\d+x\d+_r2$/.test(n));
-      if (treeWorkloads.length) {
-        section.appendChild(el("h4", { class: "compare-subgroup-head",
-          text: "recursion-only" }));
-        // Pre-compute every recursion line's points so all charts in this
-        // subgroup share a y-axis ceiling — at-a-glance comparison across
-        // tree variants needs a common scale.
-        const built = treeWorkloads.map((wl) => ({
-          name: wl,
-          points: recursionScalingPoints(wl, c4),
-        })).filter((b) => b.points && b.points.length >= 2);
-        const yMax = niceCeil(Math.max(...built.flatMap((b) => b.points.map((p) => p.y))));
+      // Flat: one merged leaf-size sweep (x = cores, one line per leaf size),
+      // mirroring the across-machines flat sweep. Non-flat/non-tree aggregate
+      // workloads (split / merge) stay as individual cards. Falls back to
+      // per-workload flat cards if the merge can't be built.
+      const grid = el("div", { class: "compare-group-grid" });
+      const flatWls = grouped[group]
+        .filter((n) => /^aggregate\.flat_\d+_r2$/.test(n)).sort(byNaturalName);
+      const flatCard = buildMergedScalingCard({
+        title: "leaf-size sweep",
+        yLabel: "ms (mean)",
+        series: flatWls.map((n) => ({ name: n, label: n.match(/flat_(\d+)_r2/)[1] })),
+        c4,
+        valueMs: (m, n) => { const ns = bestMeanNs(m, n); return ns == null ? null : ns / 1e6; },
+      });
+      if (flatCard) {
+        grid.appendChild(flatCard);
+      } else {
+        for (const wl of flatWls) { const c = buildScalingCard(wl, c4); if (c) grid.appendChild(c); }
+      }
+      for (const wl of grouped[group].filter((n) =>
+        !/^aggregate\.flat_\d+_r2$/.test(n) && !/\.tree_\d+x\d+_r2$/.test(n))) {
+        const c = buildScalingCard(wl, c4);
+        if (c) grid.appendChild(c);
+      }
+      section.appendChild(grid);
+
+      // Recursion-only: one merged fan-in sweep per leaf size (x = cores, one
+      // line per fan-in), sharing a y-ceiling across the leaf cards so absolute
+      // magnitudes stay comparable.
+      const treeParsed = grouped[group]
+        .map((n) => {
+          const m = n.match(/^aggregate\.tree_(\d+)x(\d+)_r2$/);
+          return m ? { name: n, fanIn: +m[1], leaf: +m[2] } : null;
+        })
+        .filter(Boolean);
+      if (treeParsed.length) {
+        section.appendChild(el("h4", { class: "compare-subgroup-head", text: "recursion-only" }));
+        const recMs = (m, n) => { const ns = recursionRootNs(m, n); return ns == null ? null : ns / 1e6; };
+        const allY = treeParsed.flatMap((p) => recursionScalingPoints(p.name, c4).map((pt) => pt.y));
+        const yMax = allY.length ? niceCeil(Math.max(...allY)) : undefined;
+        const leaves = [...new Set(treeParsed.map((p) => p.leaf))].sort((a, b) => a - b);
         const recurGrid = el("div", { class: "compare-group-grid" });
-        for (const b of built) {
-          recurGrid.appendChild(buildRecursionScalingCard(b.name, b.points, yMax));
+        for (const leaf of leaves) {
+          const series = treeParsed.filter((p) => p.leaf === leaf)
+            .sort((a, b) => a.fanIn - b.fanIn)
+            .map((p) => ({ name: p.name, label: `${p.fanIn}×` }));
+          const card = buildMergedScalingCard({
+            title: `fan-in sweep · ${leaf}-leaf`,
+            yLabel: "ms (recursion-only)",
+            series, c4, valueMs: recMs, yMax,
+          });
+          if (card) recurGrid.appendChild(card);
         }
         section.appendChild(recurGrid);
       }
+    } else {
+      const grid = el("div", { class: "compare-group-grid" });
+      for (const wl of grouped[group]) {
+        const card = buildScalingCard(wl, c4);
+        if (card) grid.appendChild(card);
+      }
+      section.appendChild(grid);
     }
     container.appendChild(section);
   }
@@ -892,67 +1049,6 @@ function recursionScalingPoints(treeName, c4Machines) {
     points.push({ x: mach.logical_cores, y: ns / 1e6 });
   }
   return points;
-}
-
-function buildRecursionScalingCard(treeName, points, yMax) {
-  const m = treeName.match(/^aggregate\.tree_(\d+)x(\d+)_r2$/);
-  const fanIn = parseInt(m[1], 10);
-  const leafSize = parseInt(m[2], 10);
-
-  const card = el("div", { class: "compare-card" });
-  card.appendChild(el("h3", { text: `tree_${fanIn}x${leafSize} recursion` }));
-  const wrap = el("div", { class: "compare-card-chart" });
-  const canvas = el("canvas");
-  wrap.appendChild(canvas);
-  card.appendChild(wrap);
-
-  queueMicrotask(() => {
-    new Chart(canvas.getContext("2d"), {
-      type: "line",
-      data: {
-        datasets: [{
-          data: points,
-          borderColor: "#4a46d9",
-          backgroundColor: "#4a46d922",
-          pointRadius: 4,
-          pointHoverRadius: 6,
-          tension: 0.15,
-          fill: false,
-        }],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            callbacks: {
-              title: (items) => `${items[0].parsed.x} logical cores`,
-              label: (ctx) => `${ctx.parsed.y.toFixed(3)} ms (recursion only)`,
-            },
-          },
-        },
-        scales: {
-          x: {
-            type: "logarithmic",
-            title: { display: true, text: "logical cores (vCPU)" },
-            min: points[0].x,
-            max: points[points.length - 1].x,
-            afterBuildTicks: (axis) => {
-              axis.ticks = points.map((p) => ({ value: p.x }));
-            },
-            ticks: { callback: (v) => v },
-          },
-          y: {
-            title: { display: true, text: "ms (mean)" },
-            beginAtZero: true,
-            max: yMax,
-          },
-        },
-      },
-    });
-  });
-  return card;
 }
 
 function buildScalingCard(workloadName, c4Machines) {
@@ -1250,6 +1346,12 @@ const INDEX_HEADLINES = [
   { name: "aggregate.flat_250_r2",                         label: "flat_250" },
   { name: "aggregate.flat_500_r2",                         label: "flat_500" },
   { name: "aggregate.flat_1000_r2",                        label: "flat_1000" },
+  { name: "aggregate.tree_2x125_r2", label: "tree_2x125", metric: "time_ns_root", group: "recursion" },
+  { name: "aggregate.tree_4x125_r2", label: "tree_4x125", metric: "time_ns_root", group: "recursion" },
+  { name: "aggregate.tree_8x125_r2", label: "tree_8x125", metric: "time_ns_root", group: "recursion" },
+  { name: "aggregate.tree_2x250_r2", label: "tree_2x250", metric: "time_ns_root", group: "recursion" },
+  { name: "aggregate.tree_4x250_r2", label: "tree_4x250", metric: "time_ns_root", group: "recursion" },
+  { name: "aggregate.tree_8x250_r2", label: "tree_8x250", metric: "time_ns_root", group: "recursion" },
   { name: "aggregate.tree_2x500_r2", label: "tree_2x500", metric: "time_ns_root", group: "recursion" },
   { name: "aggregate.tree_4x500_r2", label: "tree_4x500", metric: "time_ns_root", group: "recursion" },
   { name: "aggregate.tree_8x500_r2", label: "tree_8x500", metric: "time_ns_root", group: "recursion" },
@@ -1266,6 +1368,27 @@ const INDEX_GROUP_LABEL = {
   split:     "leanVM.split",
   merge:     "leanVM.merge",
   other:     "leanVM.other",
+};
+
+// EXPERIMENT: groups listed here collapse their headlines into multi-line
+// charts instead of one card each.
+//   yLabel    — y-axis title (metric being plotted)
+//   cardTitle(key) — chart heading; `key` is the split value (or undefined)
+//   lineLabel(h)   — legend/tooltip label per line
+//   splitBy(h)     — optional: partition the group into one card per key
+//                    (e.g. recursion → one fan-in sweep per leaf size)
+const COMBINED_GROUPS = {
+  flat: {
+    yLabel:    "ms (mean)",
+    cardTitle: () => "leaf-size sweep",
+    lineLabel: (h) => h.label.replace(/^[a-z]+_/, ""),         // "flat_125" → "125"
+  },
+  recursion: {
+    yLabel:    "ms (recursion-only)",
+    splitBy:   (h) => Number(h.name.match(/_\d+x(\d+)_r2$/)[1]),
+    cardTitle: (leaf) => `fan-in sweep · ${leaf}-leaf`,
+    lineLabel: (h) => `${h.name.match(/_(\d+)x\d+_r2$/)[1]}×`,  // "tree_2x125" → "2×"
+  },
 };
 
 function indexHeadlineGroup(name) {
@@ -1475,7 +1598,120 @@ function renderBranchTrendCharts(machine, byBranch, branchNames, best, annotatio
   }
 
   let any = false;
+
+  // EXPERIMENT: render COMBINED_GROUPS as multi-line charts before the per-card
+  // loop, then skip those headlines below. Branch scope is flattened — combos
+  // across branches merged chronologically, lines colored per variant — so the
+  // combined view reads cleanly in the default single-branch case. Groups with
+  // a `splitBy` fan out into one card per split key (e.g. recursion → one
+  // fan-in sweep per leaf size).
+  const combinedHandled = new Set();
+  const flatCombos = branchNames
+    .flatMap((br) => byBranch[br])
+    .sort((a, b) => (comboTimestamp(a) || "").localeCompare(comboTimestamp(b) || ""));
+
+  const drawCombinedCard = (g, cfg, title, headlines) => {
+    const datasets = [];
+    headlines.forEach((h, i) => {
+      const data = flatCombos
+        .map((c) => {
+          const ms = best(c, h.name, h.metric);
+          if (ms == null) return null;
+          return { x: new Date(comboTimestamp(c)).getTime(), y: ms, combo: c };
+        })
+        .filter((p) => p != null);
+      if (!data.length) return;
+      datasets.push({
+        label: cfg.lineLabel(h),
+        data,
+        borderColor: colorFor(i),
+        backgroundColor: colorFor(i) + "22",
+        tension: 0.15,
+        fill: false,
+        pointRadius: 3,
+        pointHoverRadius: 6,
+        spanGaps: true,
+      });
+    });
+
+    const card = el("div", { class: "compare-card" });
+    card.appendChild(el("h3", { text: title }));
+    const wrap = el("div", { class: "compare-card-chart" });
+    card.appendChild(wrap);
+    ensureSubgroupGrid(g).appendChild(card);
+    if (!datasets.length) {
+      wrap.appendChild(el("p", { class: "compare-empty", text: "no data on this machine" }));
+      return;
+    }
+    any = true;
+    const canvas = el("canvas");
+    wrap.appendChild(canvas);
+    queueMicrotask(() => {
+      const titleStyle = { display: true, color: "rgba(128,128,128,0.7)", font: { size: 11, weight: "normal" } };
+      const chart = new Chart(canvas.getContext("2d"), {
+        type: "line",
+        data: { datasets },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          parsing: false,
+          plugins: {
+            legend: { display: true, position: "bottom", labels: { boxWidth: 12, padding: 8, font: { size: 11 } } },
+            tooltip: {
+              callbacks: {
+                title: (items) => {
+                  const c = items[0].raw.combo;
+                  return `leanVM ${comboRef(c.leanmultisig_branch, c.leanmultisig_sha)} · leanSig ${comboRef(c.leansig_branch, c.leansig_sha)}`;
+                },
+                label: (ctx) => {
+                  const ms = ctx.parsed.y;
+                  const str = ms < 1000 ? `${ms.toFixed(0)} ms` : `${(ms / 1000).toFixed(2)} s`;
+                  return `${ctx.dataset.label}: ${str}`;
+                },
+              },
+            },
+          },
+          scales: {
+            x: {
+              type: "linear",
+              min: xMin ?? undefined,
+              max: xMax ?? undefined,
+              title: { ...titleStyle, text: "commit date (UTC)" },
+              ticks: { callback: (v) => new Date(v).toISOString().slice(0, 10), maxTicksLimit: 6 },
+            },
+            y: { type: yAxisType(), title: { ...titleStyle, text: cfg.yLabel }, beginAtZero: !useLogScale },
+          },
+        },
+      });
+      indexBranchCharts.push(chart);
+    });
+  };
+
+  for (const g of INDEX_GROUP_ORDER) {
+    const cfg = COMBINED_GROUPS[g];
+    if (!cfg) continue;
+    const hs = INDEX_HEADLINES.filter((h) => (h.group || indexHeadlineGroup(h.name)) === g);
+    if (!hs.length) continue;
+    combinedHandled.add(g);
+
+    if (!cfg.splitBy) {
+      drawCombinedCard(g, cfg, cfg.cardTitle(), hs);
+      continue;
+    }
+    // One card per split key, keys in ascending order.
+    const buckets = new Map();
+    for (const h of hs) {
+      const k = cfg.splitBy(h);
+      if (!buckets.has(k)) buckets.set(k, []);
+      buckets.get(k).push(h);
+    }
+    const keys = [...buckets.keys()].sort((a, b) =>
+      (typeof a === "number" && typeof b === "number") ? a - b : String(a).localeCompare(String(b)));
+    for (const k of keys) drawCombinedCard(g, cfg, cfg.cardTitle(k), buckets.get(k));
+  }
+
   for (const h of INDEX_HEADLINES) {
+    if (combinedHandled.has(h.group || indexHeadlineGroup(h.name))) continue;
     const datasets = [];
     for (const br of branchNames) {
       const data = byBranch[br]
