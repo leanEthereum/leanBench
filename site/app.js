@@ -84,6 +84,37 @@ const PALETTE = [
 ];
 const colorFor = (i) => PALETTE[i % PALETTE.length];
 
+// Display toggle: log vs linear y-axis on the sweep / combined charts. Default
+// linear; flipped by the "log scale" checkbox on the run and trend pages, which
+// then re-render. Log can't begin at zero, so callers gate beginAtZero on it.
+// Persisted in localStorage (shared key) so the choice sticks across reloads
+// and stays consistent between the run and trend pages.
+const LOG_SCALE_KEY = "leanbench.logScale";
+let useLogScale = (() => {
+  try { return localStorage.getItem(LOG_SCALE_KEY) === "1"; } catch { return false; }
+})();
+const yAxisType = () => (useLogScale ? "logarithmic" : "linear");
+
+// Wire the "log scale" checkbox (if the page has one) to flip useLogScale,
+// persist it, and re-render via the page's own rerender fn.
+function wireLogToggle(rerender) {
+  const toggle = document.querySelector("#log-scale-toggle");
+  if (!toggle) return;
+  toggle.checked = useLogScale;
+  toggle.onchange = () => {
+    useLogScale = toggle.checked;
+    try { localStorage.setItem(LOG_SCALE_KEY, useLogScale ? "1" : "0"); } catch { /* private mode */ }
+    rerender();
+  };
+}
+
+// Machines hidden from every aggregate view. Their result files stay on disk;
+// they're just not charted or listed. c4-standard-4 (4 vCPU / 2 physical) was
+// dropped from the benchmark matrix, so we stop surfacing its historical runs.
+const HIDDEN_MACHINE_LABELS = new Set(["c4-standard-4"]);
+const visibleMachines = (machines) =>
+  (machines || []).filter((m) => !HIDDEN_MACHINE_LABELS.has(m.label));
+
 const chartTheme = () => {
   const dark = matchMedia("(prefers-color-scheme: dark)").matches;
   return {
@@ -129,6 +160,7 @@ let activeLeanvmBranch = null;
 async function renderRun() {
   try {
     indexData = await fetch("results/index.json").then((r) => r.json());
+    indexData.machines = visibleMachines(indexData.machines);
   } catch (e) {
     document.querySelector("#machines").innerHTML =
       `<p>No results yet. Run <code>uv run bench</code>, commit, push, and the
@@ -157,6 +189,7 @@ async function renderRun() {
   activeCombo = pick.found || filtered[0] || null;
   renderBranchFilter(combos);
   renderComboFilter(filtered);
+  wireLogToggle(rerenderRunForCombo);
   rerenderRunForCombo();
 }
 
@@ -1267,7 +1300,7 @@ async function renderIndex() {
   } catch (e) { /* ignore */ }
 
   const combos = data.combos || [];
-  const machines = [...(data.machines || [])].sort((a, b) =>
+  const machines = visibleMachines(data.machines).sort((a, b) =>
     (b.logical_cores || 0) - (a.logical_cores || 0));
   if (!combos.length || !machines.length) {
     document.querySelector("#branch-trend-section").innerHTML =
@@ -1286,6 +1319,7 @@ async function renderIndex() {
 
   setupIndexBranchFilter(combos, machines);
   setupIndexMachineSelector(machines, combos);
+  wireLogToggle(() => recomputeBranchTrends(machines, combos));
   recomputeBranchTrends(machines, combos);
 }
 

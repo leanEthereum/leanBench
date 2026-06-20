@@ -663,6 +663,18 @@ select.filter-machine:hover { border-color: var(--accent); }
   letter-spacing: normal;
   color: var(--ink);
 }
+.log-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  cursor: pointer;
+}
+.log-toggle input { cursor: pointer; margin: 0; }
 .compare-empty {
   color: var(--ink-faint);
   font-size: 12px;
