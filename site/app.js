@@ -429,6 +429,12 @@ function rerenderRunForCombo() {
   }
 }
 
+// Sort workload names so embedded numbers order numerically — flat_125 before
+// flat_1000 — instead of lexicographically, where "1000" < "125" makes the
+// card order jump around (1000, 125, 250, 500). Used wherever a group's cards
+// are laid out.
+const byNaturalName = (a, b) => a.localeCompare(b, undefined, { numeric: true });
+
 // One chart per workload, grouped by category. leansig stays at the top
 // level; aggregate.* is subdivided by second segment (flat / tree / split /
 // merge) so the leanVM section breaks down into focused subsections.
@@ -450,7 +456,7 @@ function renderCompare(container, workloadNames, machines) {
     }
     (grouped[key] = grouped[key] || []).push(name);
   }
-  for (const v of Object.values(grouped)) v.sort();
+  for (const v of Object.values(grouped)) v.sort(byNaturalName);
 
   const preferredOrder = [
     "leansig",
@@ -476,14 +482,20 @@ function renderCompare(container, workloadNames, machines) {
     const section = el("div", { class: "compare-group" },
       el("h3", { class: "compare-group-head", text: displayLabel(group) }),
     );
-    const grid = el("div", { class: "compare-group-grid" });
-    for (const wl of grouped[group]) {
-      grid.appendChild(buildCompareCard(wl, machines));
+    // aggregate.tree's wall-clock bundles N × leaf aggregation + the recursion
+    // step. That bundled number isn't a metric worth charting on its own, so we
+    // skip the per-workload cards for this group and show only the recursion-only
+    // time (root node) extracted from the per-iteration report.
+    if (group !== "aggregate.tree") {
+      const grid = el("div", { class: "compare-group-grid" });
+      for (const wl of grouped[group]) {
+        grid.appendChild(buildCompareCard(wl, machines));
+      }
+      section.appendChild(grid);
     }
-    section.appendChild(grid);
     if (group === "aggregate.tree") {
       section.appendChild(el("p", { class: "compare-group-note" },
-        "Note: aggregate.tree timing = N × leaf + recursion. Recursion-only time below is the root node's time_secs from the per-iteration benchmark report.",
+        "aggregate.tree wall-clock bundles N × leaf aggregation + recursion, so it isn't charted directly. Shown below is the recursion-only time — the root node's time_secs from the per-iteration benchmark report.",
       ));
       const treeWorkloads = grouped[group].filter((n) => /\.tree_\d+x\d+_r2$/.test(n));
       if (treeWorkloads.length) {
@@ -686,7 +698,7 @@ function appendRecursionCrossSection(section, treeWorkloads, machines, varies) {
 // machine's run that recorded proof data. Older runs (pre-proof_kib) get
 // "—" filler.
 function renderProofSizes(container, workloadNames, machines) {
-  const aggWorkloads = workloadNames.filter((n) => n.startsWith("aggregate.")).sort();
+  const aggWorkloads = workloadNames.filter((n) => n.startsWith("aggregate.")).sort(byNaturalName);
   if (!aggWorkloads.length) return;
 
   const findProof = (workloadName) => {
@@ -773,7 +785,7 @@ function renderScaling(container, workloadNames, machines) {
     const prefix = name.split(".")[0];
     (grouped[prefix] = grouped[prefix] || []).push(name);
   }
-  for (const v of Object.values(grouped)) v.sort();
+  for (const v of Object.values(grouped)) v.sort(byNaturalName);
 
   const preferredOrder = ["leansig", "aggregate"];
   const keys = [
@@ -786,8 +798,13 @@ function renderScaling(container, workloadNames, machines) {
     const section = el("div", { class: "compare-group" },
       el("h3", { class: "compare-group-head", text: displayLabel(group) }),
     );
+    // Skip the bundled tree cards (N × leaf + recursion) here; the aggregate
+    // group's recursion-only subgroup below covers tree workloads instead.
     const grid = el("div", { class: "compare-group-grid" });
-    for (const wl of grouped[group]) {
+    const bundled = group === "aggregate"
+      ? grouped[group].filter((n) => !/\.tree_\d+x\d+_r2$/.test(n))
+      : grouped[group];
+    for (const wl of bundled) {
       const card = buildScalingCard(wl, c4);
       if (card) grid.appendChild(card);
     }
@@ -1190,26 +1207,32 @@ let indexAnnotations = []; // loaded from trend-annotations.json on first render
 // `latest_run_ts`). "any branch" merges every combo into one line.
 // Charts grouped by category mirror the run page's compare grouping.
 
+// `metric` selects which per-workload field the trend plots (default mean_ns).
+// `group` overrides the category a headline lands in (default derived from the
+// workload name). The recursion-only headlines reuse the tree workloads but
+// read `time_ns_root` — the root node's own time, i.e. the recursion step with
+// leaf aggregation excluded — and file under their own `recursion` group.
 const INDEX_HEADLINES = [
   { name: "aggregate.flat_125_r2",                         label: "flat_125" },
   { name: "aggregate.flat_250_r2",                         label: "flat_250" },
   { name: "aggregate.flat_500_r2",                         label: "flat_500" },
   { name: "aggregate.flat_1000_r2",                        label: "flat_1000" },
-  { name: "aggregate.tree_2x500_r2",                       label: "tree_2x500" },
-  { name: "aggregate.tree_4x500_r2",                       label: "tree_4x500" },
-  { name: "aggregate.tree_8x500_r2",                       label: "tree_8x500" },
+  { name: "aggregate.tree_2x500_r2", label: "tree_2x500", metric: "time_ns_root", group: "recursion" },
+  { name: "aggregate.tree_4x500_r2", label: "tree_4x500", metric: "time_ns_root", group: "recursion" },
+  { name: "aggregate.tree_8x500_r2", label: "tree_8x500", metric: "time_ns_root", group: "recursion" },
   { name: "aggregate.split_2x500_r2",                      label: "split_2x500" },
   { name: "aggregate.merge_split_and_original_2x500_r2",   label: "merge_split_and_original_2x500" },
   { name: "aggregate.merge_split_and_leaves_2x500x500_r2", label: "merge_split_and_leaves_2x500x500" },
 ];
 
-const INDEX_GROUP_ORDER = ["flat", "tree", "split", "merge", "other"];
+const INDEX_GROUP_ORDER = ["flat", "recursion", "tree", "split", "merge", "other"];
 const INDEX_GROUP_LABEL = {
-  flat:  "leanVM.flat",
-  tree:  "leanVM.tree",
-  split: "leanVM.split",
-  merge: "leanVM.merge",
-  other: "leanVM.other",
+  flat:      "leanVM.flat",
+  recursion: "leanVM.recursion",
+  tree:      "leanVM.tree",
+  split:     "leanVM.split",
+  merge:     "leanVM.merge",
+  other:     "leanVM.other",
 };
 
 function indexHeadlineGroup(name) {
@@ -1316,15 +1339,18 @@ function recomputeBranchTrends(machines, combos) {
   const machineSelect = document.querySelector("#branch-trend-machine");
   const machine = machines.find((m) => m.fingerprint === machineSelect.value) || machines[0];
 
-  // best mean (ms) for a given (combo, workload) on this machine.
-  const best = (combo, workloadName) => {
+  // best (ms) for a given (combo, workload) on this machine. `metric` picks the
+  // per-workload ns field — mean_ns for total timing, time_ns_root for the
+  // recursion-only (root node) series.
+  const best = (combo, workloadName, metric = "mean_ns") => {
     const runs = (machine.runs || []).filter((r) =>
       r.git_shas.leansig_sha === combo.leansig_sha
       && r.git_shas.leanmultisig_sha === combo.leanmultisig_sha);
     let m = null;
     for (const r of runs) {
       const w = (r.workloads || []).find((x) => x.name === workloadName);
-      if (w?.mean_ns != null && (m == null || w.mean_ns < m)) m = w.mean_ns;
+      const v = w?.[metric];
+      if (v != null && (m == null || v < m)) m = v;
     }
     return m == null ? null : m / 1e6;
   };
@@ -1376,6 +1402,11 @@ function renderBranchTrendCharts(machine, byBranch, branchNames, best, annotatio
     const section = el("div", { class: "compare-group" },
       el("h3", { class: "compare-group-head", text: INDEX_GROUP_LABEL[g] || g }),
     );
+    if (g === "recursion") {
+      section.appendChild(el("p", { class: "compare-group-note" },
+        "Recursion-only time — the root node's time_secs from the per-iteration benchmark report, with leaf aggregation excluded. Lower is better.",
+      ));
+    }
     const grid = el("div", { class: "compare-group-grid" });
     section.appendChild(grid);
     section.dataset.group = g;
@@ -1415,7 +1446,7 @@ function renderBranchTrendCharts(machine, byBranch, branchNames, best, annotatio
     for (const br of branchNames) {
       const data = byBranch[br]
         .map((c) => {
-          const ms = best(c, h.name);
+          const ms = best(c, h.name, h.metric);
           if (ms == null) return null;
           return { x: new Date(comboTimestamp(c)).getTime(), y: ms, combo: c };
         })
@@ -1438,7 +1469,7 @@ function renderBranchTrendCharts(machine, byBranch, branchNames, best, annotatio
     card.appendChild(el("h3", { text: h.label }));
     const wrap = el("div", { class: "compare-card-chart" });
     card.appendChild(wrap);
-    ensureSubgroupGrid(indexHeadlineGroup(h.name)).appendChild(card);
+    ensureSubgroupGrid(h.group || indexHeadlineGroup(h.name)).appendChild(card);
 
     if (!datasets.length) {
       wrap.appendChild(el("p", { class: "compare-empty",
