@@ -56,16 +56,16 @@
       <div id="compare-grid"></div>
     </section>
 
+    <section id="scaling">
+      <h2>Scaling on c4 (timing vs cores)</h2>
+      <p class="section-note">Granite Rapids only — same per-core arch across the c4-standard-* sizes, so the only thing changing is core count. X axis is logical cores (vCPU) since that's what GCP charges per and what Rayon's threadpool sizes itself to; per-workload mean (best run) on the y axis.</p>
+      <div id="scaling-grid"></div>
+    </section>
+
     <section id="proof-sizes">
       <h2>Proof sizes</h2>
       <p class="section-note">Root proof size in KiB per aggregation workload — what gets gossiped to validators each slot. Deterministic per topology (same value across all machines for a given commit); read from any one run that recorded it.</p>
       <div id="proof-size-grid"></div>
-    </section>
-
-    <section id="scaling">
-      <h2>Scaling on c4 (timing vs cores)</h2>
-      <p class="section-note">Granite Rapids only — same per-core arch across the four c4-standard-* sizes, so the only thing changing is core count. X axis is logical cores (vCPU) since that's what GCP charges per and what Rayon's threadpool sizes itself to; per-workload mean (best run) on the y axis.</p>
-      <div id="scaling-grid"></div>
     </section>
 
     <section id="machines">
