@@ -40,9 +40,8 @@ from .provisioners.gcp import GCPProvisioner
 
 # Default machine matrix used when `--machine-type` is not given.
 # Anchored to EIP-7870 — a Rayon-scaling line on Granite Rapids
-# (c4-4 / c4-8 / c4-16, same uArch) plus a high-end reference.
+# (c4-8 / c4-16 / c4-32, same uArch).
 DEFAULT_MACHINE_TYPES = [
-    "c4-standard-4",   # 2  physical cores, Granite Rapids / AVX-512
     "c4-standard-8",   # 4  physical cores, Granite Rapids / AVX-512 — Full Node tier
     "c4-standard-16",  # 8  physical cores, Granite Rapids / AVX-512 — Attester tier
     "c4-standard-32",  # 16 physical cores, Granite Rapids / AVX-512 — high-end reference
